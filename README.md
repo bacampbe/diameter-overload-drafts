@@ -1,4 +1,5 @@
 diameter-overload-drafts
 ========================
 
-Various individual internet-drafts about Diameter overload issues.
+This is a catch-all repository for individual I-Ds concerning Diameter Overload.
+If any of these become work group items, they should move into other repositories.
