@@ -1,0 +1,1176 @@
+
+
+
+
+Internet Engineering Task Force                          S. Donovan, Ed.
+Internet-Draft                                               B. Campbell
+Intended status: Informational                                    Oracle
+Expires: October 30, 2014                                 April 28, 2014
+
+
+               Analysis of Diameter Endpoint Alternatives
+                           DOIC-Endpoints-01
+
+Abstract
+
+   The Diameter Overload Information Conveyance (DOIC) solution
+   describes a mechanism for exchanging information about Diameter
+   Overload among Diameter nodes.  DOIC defines the concept of DOIC
+   endpoints.  A DOIC endpoint is a Diameter node that acts as either a
+   reporting node are a reacting node.  A reporting node originates
+   overload reports, requesting reacting nodes to reduce the amount of
+   traffic sent.  The type of overload report determines the scope of
+   the request for traffic reduction.  The current definition of DOIC
+   endpoints is ambiguous, resulting in differing assumptions about the
+   implementation of the DOIC solution.  This document describes two
+   common interpretations of DOIC endpoints and analyzes how the two
+   approaches address various Diameter overload use cases and deployment
+   scenarios.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at http://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on October 30, 2014.
+
+Copyright Notice
+
+   Copyright (c) 2014 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014                [Page 1]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (http://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Terminology and Abbreviations . . . . . . . . . . . . . . . .   4
+   3.  DOIC Endpoints  . . . . . . . . . . . . . . . . . . . . . . .   4
+   4.  Deployment Architecture . . . . . . . . . . . . . . . . . . .   6
+   5.  Solution Alternatives . . . . . . . . . . . . . . . . . . . .   7
+     5.1.  Per Report Associations . . . . . . . . . . . . . . . . .   7
+     5.2.  Per Node Associations . . . . . . . . . . . . . . . . . .   8
+   6.  Use Cases . . . . . . . . . . . . . . . . . . . . . . . . . .  10
+     6.1.  Use Case - Basic DOIC Capability Advertisment . . . . . .  10
+     6.2.  Use Case - Basic Diameter Host Overload . . . . . . . . .  10
+     6.3.  Use Case - Missmatched Client and Agent Capabilities  . .  10
+     6.4.  Use Case - Multiple Algorithm Support . . . . . . . . . .  11
+     6.5.  Use Case - Hidden Failed Server . . . . . . . . . . . . .  11
+     6.6.  Use Case - End-to-End Security  . . . . . . . . . . . . .  12
+   7.  Analysis of Per-Report Endpoint Architecture  . . . . . . . .  13
+     7.1.  Handling of Use Cases . . . . . . . . . . . . . . . . . .  13
+       7.1.1.  Basic Capability Exchange . . . . . . . . . . . . . .  13
+       7.1.2.  Basic Host Overload . . . . . . . . . . . . . . . . .  14
+       7.1.3.  Mismatched Capabilities . . . . . . . . . . . . . . .  15
+       7.1.4.  Multiple Algorithm Support  . . . . . . . . . . . . .  15
+       7.1.5.  Hidden Server . . . . . . . . . . . . . . . . . . . .  17
+       7.1.6.  End-to-End Security . . . . . . . . . . . . . . . . .  17
+     7.2.  Client Impacts  . . . . . . . . . . . . . . . . . . . . .  17
+     7.3.  Server Impacts  . . . . . . . . . . . . . . . . . . . . .  17
+     7.4.  Agent Impacts . . . . . . . . . . . . . . . . . . . . . .  18
+   8.  Analysis of Per-Node Endpoint Architecture  . . . . . . . . .  18
+     8.1.  Handling of Use Cases . . . . . . . . . . . . . . . . . .  18
+       8.1.1.  Basic Capability Exchange . . . . . . . . . . . . . .  18
+       8.1.2.  Basic Host Overload . . . . . . . . . . . . . . . . .  18
+       8.1.3.  Mismatched Capabilities . . . . . . . . . . . . . . .  18
+       8.1.4.  Multiple Algorithm Support  . . . . . . . . . . . . .  19
+       8.1.5.  Hidden Server . . . . . . . . . . . . . . . . . . . .  20
+       8.1.6.  End-to-End Security . . . . . . . . . . . . . . . . .  20
+     8.2.  Client Impacts  . . . . . . . . . . . . . . . . . . . . .  20
+     8.3.  Server Impacts  . . . . . . . . . . . . . . . . . . . . .  20
+     8.4.  Agent Impacts . . . . . . . . . . . . . . . . . . . . . .  20
+
+
+
+Donovan & Campbell      Expires October 30, 2014                [Page 2]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+   9.  Comparison  . . . . . . . . . . . . . . . . . . . . . . . . .  20
+     9.1.  Per-Report Architecture . . . . . . . . . . . . . . . . .  20
+     9.2.  Per-Node Architecture . . . . . . . . . . . . . . . . . .  20
+   10. Recommendation  . . . . . . . . . . . . . . . . . . . . . . .  20
+   11. Security Considerations . . . . . . . . . . . . . . . . . . .  20
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  20
+     12.1.  Normative References . . . . . . . . . . . . . . . . . .  20
+     12.2.  Informative References . . . . . . . . . . . . . . . . .  20
+   Appendix A.  Additional Stuff . . . . . . . . . . . . . . . . . .  21
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  21
+
+1.  Introduction
+
+   The Diameter Overload Information Conveyance (DOIC) solution
+   describes a mechanism for exchanging information about Diameter
+   Overload among Diameter nodes.  DOIC defines the concept of DOIC
+   endpoints.  A DOIC endpoint is a Diameter node that acts as either a
+   reporting node are a reacting node.  A reporting node originates
+   overload reports, requesting reacting nodes to reduce the amount of
+   traffic sent.  The type of overload report determines the scope of
+   the request for traffic reduction.  The current definition of DOIC
+   endpoints is ambiguous, resulting in differing assumptions about the
+   implementation of the DOIC solution.  This document describes two
+   common interpretations of DOIC endpoints and analyzes how the two
+   approaches address various Diameter overload use cases and deployment
+   scenarios.
+
+   DOIC endpoints do not necessarily correspond to Diameter clients and
+   servers.  Any Diameter node that supports DOIC can be a DOIC
+   endpoint.  This includes Diameter agents, as well as Diameter clients
+   and servers.  A pair of DOIC endpoints that exchange overload
+   information, as well as information about DOIC support, can be said
+   to share a DOIC association.
+
+   The two interpretations of DOIC endpoints and the resulting
+   associations are summarized as follows:
+
+   o  The per report model implies there is a DOIC association per
+      report that can be originated.  With this model there can be
+      multiple associations generated as a result of a single Diameter
+      transaction.  See Section 5.1 for more information on this model.
+
+   o  The node model implies that there is a DOIC association between
+      each pair of Diameter nodes that support the DOIC solution.  With
+      this model a transaction can only create a single association
+      between any two Diameter nodes, but there can be a chain of
+      associations between the originator of the Diameter transaction
+      (typically a Diameter Client) and the responder to the Diameter
+
+
+
+Donovan & Campbell      Expires October 30, 2014                [Page 3]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+      transaction (typically a Diameter Server).  See Section 5.2 for
+      more information on this model.
+
+   The current DOIC specification [DOIC] does not fully specify the the
+   semantics associated with the DOIC endpoint concept.  It is also
+   possible that additional syntax will be required.
+
+   This document outlines an example deployment and multiple use cases
+   that can be used to evaluate how those use cases would be implemented
+   using the two assumed endpoint architectures.
+
+2.  Terminology and Abbreviations
+
+   Diameter Node:  A Diameter client, agent or server.
+
+   DOIC Endpoint:  A Diameter node that supports the DOIC solution and
+      acts as either a reporting node, a reacting node, or both.
+
+   DOIC Association:  The relationship between a DOIC reacting node and
+      a reporting node.  A pair of associated DOIC endpoints share
+      state, including information such as the fact that the opposite
+      endpoint supports DOIC, the DOIC related capabilities of each
+      endpoint, etc.
+
+   Overload Abatement:  Actions taken by a reacting node to reduce the
+      load offered to an overloaded Diameter node.  The specific actions
+      required to perform overload abatement are described by the DOIC
+      algorithm.  Overload abatement actions may involve local traffic
+      reduction, or delegation of actions towards the client.
+
+   Reacting node:  A DOIC endpoint that can receive overload reports
+      from a reporting node, and perform overload abatement.  A DOIC
+      endpoint can simultaneously be both a reacting node and reporting
+      node.
+
+   Reporting node:  A DOIC endpoint that can send overload reports to a
+      reacting node, requesting the reacting node to perform overload
+      abatement.
+
+3.  DOIC Endpoints
+
+   DOIC endpoints are defined in [DOIC].  A DOIC association is the
+   logical relationship between a pair of Diameter endpoints.  A DOIC
+   endpoint can be a reacting node, a reporting node, or both.  A
+   reporting node is the entity that sends overload reports, requesting
+   a reduction in the amount of Diameter traffic sent to the node.  A
+   reacting node is the entity that receives the overload report, and
+   performs needed overload abatement actions.
+
+
+
+Donovan & Campbell      Expires October 30, 2014                [Page 4]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+      A reacting node is also a DOIC supporting node that originates or
+      relays Diameter requests, while a reporting node responds to or
+      relays Diameter requests.  This is a side effect of the solution
+      choice of imbedding overload reports in Diameter answers, but not
+      Diameter requests.  Since Diameter supports bidirectional
+      transactions, a node may simultaneously be a reacting node for
+      transactions in one direction, and a reporting node for the other.
+
+      This bidirectional nature makes it possible for a Diameter server
+      to be a reacting node and for a Diameter client to be a reporting
+      node.  There are multiple examples of Diameter applications which
+      require Diameter servers to originate requests toward Diameter
+      clients.  There are also examples where the Diameter transactions
+      are between two Diameter servers, further confusing the concept of
+      Diameter clients and servers.
+
+   In the most basic case a reacting node will be a Diameter client and
+   a reporting node will be a Diameter server.  When a Diameter server
+   determines that it is handling too much traffic, it sends on overload
+   report to the reacting node.  The reacting node is responsible for
+   reducing the amount of traffic sent to the reporting node based on
+   the contents of the overload report.
+
+   In the more general case, a Diameter agent can take on the role of a
+   reacting node that receives reports from upstream reporting nodes,
+   and that of a reporting node that sends reports to downstream a
+   reacting nodes.  This can be useful in situations where some or all
+   downstream clients or upstream servers do not support DOIC.
+
+      [DOIC] does not limit agents to only act as DOIC endpoints on
+      behalf of clients or servers that do not support DOIC.  There may
+      be other cases where operators may choose to deploy agents
+      intermediate DOIC associations between clients and servers.  For
+      example, to handle mismatched capabilities, or to reduce the
+      number of DOIC associations maintained by Diameter servers.
+
+   The DOIC endpoint relationship is established during the DOIC
+   capability exchange.  The flow of the message establishes which
+   entity is the reacting node and which is the reporting node for the
+   DOIC association(s) established by the Diameter transaction.  The
+   originator of the request message is not always the reacting node and
+   the entity the originates the answer message is not always the
+   reporting node.  This is due to the need to support a Diameter
+   network that has a mix of node that support the DOIC extension and
+   those that don't.  There are also report types being considered where
+   agents are required to be the reporting node (both realm defined in
+   [DOIC] and peer reports defined in [agent-overload]).
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014                [Page 5]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+4.  Deployment Architecture
+
+   This section outlines the deployment architecture that is used to
+   evaluate the two DOIC endpoint architectures.
+
+   This deployment architecture includes the use of Diameter Agents to
+   route Diameter requests between Diameter Clients and Diameter
+   Servers.  This architecture also assumes that the Diameter servers
+   are partitioned in a fashion that requires Diameter requests to be
+   routed through multiple agents.  All Diameter nodes in this
+   deployment architecture are assumed to support the DOIC solution.
+
+   [ben: Do we need to include scenarios with non-supporting nodes?
+   That could easily force the per-report approach into a full mesh of
+   associations.]
+
+   Note that only two partitions of the Diameter servers are shown.
+   This is bending to the limitations of ascii art for drawing complex
+   deployment scenarios.  It is possible, and even likely, that real
+   world deployments would have many more that two partitions of the
+   servers for a Diameter application.
+
+   Note also that this document does not discuss deployments that do not
+   involve agents, as there is no effective difference between the Per
+   Report endpoint architecture and the Per Node endpoint architecture
+   with this deployment scenario.
+
+
+         +--+                +--+ -\
+         |C1|-----      -----|S1|   |
+         +--+     \+--+/     +--+   |
+                   |A1|              > Server Partition 1
+         +--+     /+--+\     +--+   |
+         |C2|-----  ||  -----|S2|   |
+         +--+       ||       +--+ -/
+                    ||
+         +--+       ||       +--+ -\
+         |C3|-----  ||  -----|S3|   |
+         +--+     \+--+/     +--+   |
+                   |A2|              > Server Partition 2
+         +--+     /+--+\     +--+   |
+         |C4|-----      -----|S4|   |
+         +--+                +--+ -/
+
+
+
+                                 Figure 1
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014                [Page 6]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+5.  Solution Alternatives
+
+5.1.  Per Report Associations
+
+   The per report architecture implies that there is set of a DOIC
+   associations for each report type.  For instance, in the deployment
+   architecture illustrated in Section 4 there would be a DOIC
+   association between each client and each server for the host reports
+   that are generated by the server.
+
+   There would also be a DOIC association between each client and each
+   agent for realm reports, assuming that agents are responsible for
+   sending realm overload reports.
+
+   This discussion also includes the proposed architecture for agent
+   overload.  This is done to further illustrate the per report endpoint
+   architecture, as the agent overload draft proposes the introduction
+   of a new report type.  Further extensions that introduce new report
+   types would also add additional associations with the per report
+   architecture.
+
+   Figure 2 shows the associations that would result from a single
+   transaction between a client, through an agent and to a server.  This
+   diagram shows four associations being created.
+
+   Figure 3 shows the associations that would result from a single
+   transaction between a client and a server when no agent is present.
+   There are no peer associations created as there is no agent involved.
+
+   [ben: previous section said we would not discuss the no-agent cases.]
+
+   NOTE: ADD TABLE SHOWING ALL OF THE DOIC ASSOCIATIONS THAT WILL RESULT
+   FROM THE DEPLOYMENT ARCHITECTURE.
+
+   QUESTION: DO WE DISCUSS THE "COST" OF EACH ASSOCIATION IN TERMS OF
+   THE STATE THAT NEEDS TO BE STORED?  IS THIS REALLY DIFFERENT BETWEEN
+   THE TWO MODELS?  HOW IS SEQUENCE NUMBER AND VALIDITY DURATION MANAGED
+   IN THE PER NODE MODEL?
+
+   [ben: I think we have to consider state.  That will include at least
+   the capabilities for each associated DOIC endpoint.  For stateful
+   abatement algorithms, it may be much more.  For example, with a
+   windowed algorithm, S might have to maintain a window for each client
+   and agent in the entire network.]
+
+
+
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014                [Page 7]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+         +-+                        +-+                        +-+
+         |C|                        |A|                        |S|
+         +-+                        +-+                        +-+
+          |                          |                          |
+          |--------------<DOIC Host Association>----------------|
+          |                          |                          |
+          |-<DOIC Realm Association>-|                          |
+          |                          |                          |
+          |-<DOIC Peer Association>--|-<DOIC Peer Association>--|
+          |                          |                          |
+
+
+                                 Figure 2
+
+
+         +-+                        +-+
+         |C|                        |S|
+         +-+                        +-+
+          |                          |
+          |-<DOIC Host Association>--|
+          |                          |
+          |-<DOIC Realm Association>-|
+          |                          |
+
+
+                                 Figure 3
+
+5.2.  Per Node Associations
+
+   The per node architecture assumes there will be a single association
+   between adjacent nodes that support the DOIC solution.
+
+   The per node architecture is illustrated in Figure 4 for deployments
+   that include agents and in Figure 5 for deployments that do not
+   include agents.
+
+   With this architecture, all reports types are processed by the first
+   reacting node that receives the report.  What the reacting node does
+   with the report depends on the report type combined with local
+   policy.  For instance, an agent that receives a host report from the
+   server could do any of the following:
+
+   o  If the agent determines that there is capacity in other servers
+      that can handle the traffic reduction requested by the server then
+      the agent can consume the report, with the mitigation action being
+      to re-route the requested percentage of traffic to other servers.
+      [ben: This comes perilously close to the RRR vs Realm discussion,
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014                [Page 8]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+      since it would normally be possible only for realm-routed
+      requests.]
+
+   o  If the agent determines that there is no spare capacity in other
+      servers then the agent can generate an equivalent host report and
+      send it to the client.  This report might be functionally
+      identical to that sent by the server, but it is "from" the agent.
+      In effect this could be considered passing the server report
+      through to the client.  Alternately, if there is non-zero spare
+      capacity in other servers, but not enough to re-route all traffic,
+      the agent might calculate a different reduction percentage, and
+      send a different "host" report towards the client. [ben: I'd like
+      to wedgie the concept of "abatement by delegation" in here
+      somewhere.]
+
+   o  If local policy allows then the agent could always "pass-through"
+      the host report without taking any other action.
+
+   o  If the agent has a full view of all servers supporting the
+      application-id then the agent could use the contents of the report
+      to generate a realm report.  In this case it is possible the
+      answer message could contain both a host and a realm report.
+
+
+         +-+                        +-+                        +-+
+         |C|                        |A|                        |S|
+         +-+                        +-+                        +-+
+          |                          |                          |
+          |-<DOIC Peer Association>--|-<DOIC Peer Association>--|
+          |                          |                          |
+
+
+                                 Figure 4
+
+   [ben: I'm afraid calling this a peer association in the diagram will
+   cause confusion with peer reports.]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014                [Page 9]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+         +-+                        +-+
+         |C|                        |S|
+         +-+                        +-+
+          |                          |
+          |-<DOIC Host Association>--|
+          |                          |
+          |-<DOIC Realm Association>-|
+          |                          |
+
+
+                                 Figure 5
+
+6.  Use Cases
+
+   This section outlines example use cases.  Each of the endpoint
+   architectures will then be evaluated against each of these use cases,
+   showing how the use case would be implemented with that architecture
+   and identifying any gaps in the current DOIC specification.
+
+6.1.  Use Case - Basic DOIC Capability Advertisment
+
+   This use case is included to illustrate the basic case resulting from
+   DOIC Capability Advertisement where the servers advertise support for
+   the lost algorithm.
+
+   This use case is meant to illustrate the DOIC associations that are
+   established as a result of the two endpoint architectures.
+
+6.2.  Use Case - Basic Diameter Host Overload
+
+   In this use case, assume that server S1 become overloaded and
+   generates a host overload report.
+
+   This use case raises the question of whether it is desirable for
+   agent A1 to react to the host overload report.  The current DOIC
+   specification assumes that the client always handles throttling of
+   messages in this scenario.  The question is whether to agent should
+   attempt to re-route messages to S2 if only S1 is overloaded.  If S1
+   and S2 are both overloaded then it is clearly appropriate for the
+   clients to handle any throttling that results from the host overload
+   reports.
+
+6.3.  Use Case - Missmatched Client and Agent Capabilities
+
+   In this use case assume that client C1 supports a different set of
+   DOIC capabilities then agent A1.  For instance, assume that client C1
+   does not support the agent overload extension and that agent A1 does
+   support the agent overload extension.
+
+
+
+Donovan & Campbell      Expires October 30, 2014               [Page 10]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+   This use case raises the question of whether agent A1 should insert a
+   second OC-Supported-Features AVP in indicate the capabilities
+   supported by the agent or whether the agent should generate a new OC-
+   Supported-Features AVP that contains the union of the capabilities of
+   the client and the agent.
+
+6.4.  Use Case - Multiple Algorithm Support
+
+   This use case is similar to Section 6.3 in that it is based on
+   differing sets of DOIC capabilities.  However, this use case focuses
+   on the case where the a subset of clients support only the loss
+   algorithm, some clients support both loss and rate, servers support
+   and prefer rate.  This implies that the server will select the rate
+   algorithm any time that it sees a reacting node that supports rate.
+
+   Assume for this case that the following is true:
+
+   o  C1 and C3 only support the loss algorithm.
+
+   o  C2 and C4 support both the loss and rate algorithms.
+
+   o  A1 and A2 support both the loss and the rate algorithms.
+
+   o  S1 and S2 support both the loss and rate algorithms and will
+      select the rate algorithm any time that support is indicated by a
+      reacting node.
+
+6.5.  Use Case - Hidden Failed Server
+
+   This use case, illustrated in Figure 6 explores the impact on the
+   DOIC end point architecture of the case when a server (or more
+   generally, a Diameter endpoint) that sits behind one or more agents
+   fail.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014               [Page 11]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+         +--+                ****
+         |C1|-----      -----*S1* <--- This server is OOS
+         +--+     \+--+/     ****
+                   |A1|
+         +--+     /+--+\     +--+
+         |C2|-----  ||  -----|S2|
+         +--+       ||       +--+
+                    ||
+         +--+       ||       +--+
+         |C3|-----  ||  -----|S3|
+         +--+     \+--+/     +--+
+                   |A2|
+         +--+     /+--+\     +--+
+         |C4|-----      -----|S4|
+         +--+                +--+
+
+
+
+                                 Figure 6
+
+   In this case, other Diameter nodes will not have a direct view of the
+   state of the server.  By default, clients attempting to send requests
+   to a failed server will get an Unable-to-Deliver error response from
+   the agent that sits in front of the failed server.
+
+   It needs to be considered whether the best way to handle this
+   scenario would be for the agent to generate a host overload report
+   requesting a 100% reduction in traffic to the failed server and, if
+   so, how this impacts the DOIC endpoint architecture.
+
+6.6.  Use Case - End-to-End Security
+
+   This use case is the same as Section 6.1 with the addition that it
+   considers the impact of the likely Diameter end-to-end security
+   mechanism.
+
+   The assumption is that the security mechanism specified will specify
+   that groups of AVPs will be signed -- to verify the identity of the
+   originator of the AVPs -- and encrypted -- to ensure the privacy of
+   the contents of the AVPS -- by the Diameter entities that insert the
+   AVPs in to messages.  This will generally be clients and servers but
+   can also be agents.  If this is the case then there are two
+   alternatives that impact the DOIC solution:
+
+      The DOIC AVPs are signed and encrypted.  If this is the case then
+      there are impacts to the solution for Section 6.1 as there would
+      be no means for agents to modify the existing contents of an OC-
+      Supported-Features AVP.
+
+
+
+Donovan & Campbell      Expires October 30, 2014               [Page 12]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+      Note: This is not strictly true if the agent has access to the
+      shared secret keys needed to decrypt the AVPs.  If this is the
+      case then clients and servers would need to understand that agents
+      can change (and thus sign) AVPs if the pre-report architecture is
+      selected.  If the per-node architecture is selected then proxies
+      wuld always be required to be able to decrypt received DOIC AVPs
+      and encrypt DOIC AVPs in messages they forward.
+
+      The DOIC AVPs are not signed and encrypted.  This is a less secure
+      mechanism that does introduce exposure in the general sense as
+      insertion of OLR AVPs by a rouge element is an effective denial of
+      service attack.  Signing of the OLR AVPs is likely to be the the
+      most effective mechanism to address this security risk.
+
+7.  Analysis of Per-Report Endpoint Architecture
+
+7.1.  Handling of Use Cases
+
+7.1.1.  Basic Capability Exchange
+
+   Figure 7 illustrates the message flow associated with this use case
+   when using the per-report endpoint architecture.  This use case
+   assumes that host overload reports will be generated by the server
+   and realm overload report will be generated by the agent.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014               [Page 13]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+         +-+                        +-+                        +-+
+         |C|                        |A|                        |S|
+         +-+                        +-+                        +-+
+          |                          |                          |
+          |-- xxR OC-S-F ----------->|                          |
+          |     loss                 |                          |
+          |                          |                          |
+          |                          |-- xxR OC-S-F ----------->|
+          |                          |     loss                 |
+          |                          |                          |
+          |                          |<----------- xxA OC-S-F --|
+          |                          |               loss       |
+          |                          |                          |
+          |<----------- xxA OC-S-F --|                          |
+          |               loss       |                          |
+          |                          |                          |
+          |--------------<DOIC Host Association>----------------|
+          |                          |                          |
+          |-<DOIC Realm Association>-|                          |
+          |                          |                          |
+          |<-------------------------------------- xxA OC-OLR --|
+          |                          |               host       |
+          |                          |                          |
+          |<----------- xxA OC-OLR --|                          |
+          |               realm      |                          |
+          |                          |                          |
+
+
+                                 Figure 7
+
+7.1.2.  Basic Host Overload
+
+   This use case is illustrated in Figure 7.
+
+   This flow implies that the agent is not able to act on a host
+   overload report.  This is not necessarily a good correct as the agent
+   might be able to route the requested reduction in traffic to an
+   alternative server.
+
+   ISSUE: What is the correct definition of host overload.  The current
+   draft ([DOIC]) defines host overload as any request that contains a
+   Destination-Host AVP that matches the host indicated in the overload
+   report.
+
+
+
+
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014               [Page 14]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+7.1.3.  Mismatched Capabilities
+
+   QUESTION: IS THIS REALLY A ENDPOINT DEFINITION ISSUE OR SHOULD IT BE
+   HANDLED SEPARATELY?
+
+
+         +-+                        +-+                        +-+
+         |C|                        |A|                        |S|
+         +-+                        +-+                        +-+
+          |                          |                          |
+          |-- xxR OC-S-F ----------->|                          |
+          |     feat1                |                          |
+          |                          |                          |
+          |                          |-- xxR OC-S-F ----------->|
+          |                          |     feat1 + feat2        |
+          |                          |         or               |
+          |                          |-- xxR OC-S-F1, OS-S-F2-->|
+          |                          |       client   agent     |
+          |                          |       feat1    feat2     |
+          |                          |                          |
+          |                          |<----------- xxA OC-S-F --|
+          |                          |                 server   |
+          |                          |                 feat3    |
+          |<----------- xxA OC-S-F --|                          |
+          |               feat3      |                          |
+          |                          |                          |
+          |                          |                          |
+
+
+                                 Figure 8
+
+7.1.4.  Multiple Algorithm Support
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014               [Page 15]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+         +-+                        +-+                        +-+
+         |C|                        |A|                        |S|
+         +-+                        +-+                        +-+
+          |                          |                          |
+          |-- xxR OC-S-F ----------->|                          |
+          |     feat1                |                          |
+          |                          |                          |
+          |                          |-- xxR OC-S-F ----------->|
+          |                          |     feat1 + feat2        |
+          |                          |         or               |
+          |                          |-- xxR OC-S-F1, OS-S-F2-->|
+          |                          |       client   agent     |
+          |                          |       loss     loss+rate |
+          |                          |                          |
+          |                          |<----------- xxA OC-S-F --|
+          |                          |               rate       |
+          |                          |                          |
+          |<----------- xxA OC-S-F --|                          |
+          |               loss       |                          |
+          |            or            |                          |
+          |     overload handled     |                          |
+          |         by agent         |                          |
+          |                          |                          |
+          |--------------<DOIC Host Association>----------------|
+          |                          |                          |
+          |-<DOIC Realm Association>-|                          |
+          |                          |                          |
+          |<-------------------------------------- xxA OC-OLR --|
+          |                          |               host       |
+          |                          |                          |
+          |<----------- xxA OC-OLR --|                          |
+          |               realm      |                          |
+          |                          |                          |
+
+
+                                 Figure 9
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014               [Page 16]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+         +-+                        +-+                        +-+
+         |C|                        |A|                        |S|
+         +-+                        +-+                        +-+
+          |                          |                          |
+          |-- xxR OC-S-F ----------->|                          |
+          |     loss                 |                          |
+          |                          |                          |
+          |                          |-- xxR OC-S-F ----------->|
+          |                          |     loss + rate          |
+          |                          |         or               |
+          |                          |-- xxR OC-S-F1, OS-S-F2-->|
+          |                          |       client   agent     |
+          |                          |       loss     loss+rate |
+          |                          |                          |
+          |                          |<----------- xxA OC-S-F --|
+          |                          |               rate       |
+          |                          |                          |
+          |<----------- xxA OC-S-F --|                          |
+          |               loss       |                          |
+          |            or            |                          |
+          |     overload handled     |                          |
+          |         by agent         |                          |
+          |                          |                          |
+          |--------------<DOIC Host Association>----------------|
+          |                          |                          |
+          |-<DOIC Realm Association>-|                          |
+          |                          |                          |
+          |<-------------------------------------- xxA OC-OLR --|
+          |                          |               host       |
+          |                          |                          |
+          |<----------- xxA OC-OLR --|                          |
+          |               realm      |                          |
+          |                          |                          |
+
+
+                                 Figure 10
+
+7.1.5.  Hidden Server
+
+7.1.6.  End-to-End Security
+
+7.2.  Client Impacts
+
+7.3.  Server Impacts
+
+
+
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014               [Page 17]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+7.4.  Agent Impacts
+
+8.  Analysis of Per-Node Endpoint Architecture
+
+8.1.  Handling of Use Cases
+
+8.1.1.  Basic Capability Exchange
+
+
+         +-+                        +-+                        +-+
+         |C|                        |A|                        |S|
+         +-+                        +-+                        +-+
+          |                          |                          |
+          |-- xxR OC-S-F ----------->|                          |
+          |     loss                 |                          |
+          |                          |                          |
+          |                          |-- xxR OC-S-F ----------->|
+          |                          |     loss                 |
+          |                          |                          |
+          |                          |<----------- xxA OC-S-F --|
+          |                          |               loss       |
+          |                          |                          |
+          |<----------- xxA OC-S-F --|                          |
+          |               loss       |                          |
+          |                          |                          |
+          |-<DOIC Realm Association>-|-<DOIC Realm Association>-|
+          |                          |                          |
+          |                          |<----------- xxA OC-OLR --|
+          |                          |               host       |
+          |                          |                          |
+          |<----------- xxA OC-OLR --|                          |
+          |               host       |                          |
+          |                          |                          |
+          |<----------- xxA OC-OLR --|                          |
+          |               realm      |                          |
+          |                          |                          |
+
+
+                                 Figure 11
+
+8.1.2.  Basic Host Overload
+
+8.1.3.  Mismatched Capabilities
+
+
+
+
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014               [Page 18]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+         +-+                        +-+                        +-+
+         |C|                        |A|                        |S|
+         +-+                        +-+                        +-+
+          |                          |                          |
+          |-- xxR OC-S-F ----------->|                          |
+          |     cfeat                |                          |
+          |                          |                          |
+          |                          |-- xxR OC-S-F ----------->|
+          |                          |     afeat                |
+          |                          |                          |
+          |                          |<----------- xxA OC-S-F --|
+          |                          |               sfeat      |
+          |<----------- xxA OC-S-F --|                          |
+          |              afeat       |                          |
+          |                          |                          |
+          |                          |                          |
+
+
+                                 Figure 12
+
+8.1.4.  Multiple Algorithm Support
+
+
+         +-+                        +-+                        +-+
+         |C|                        |A|                        |S|
+         +-+                        +-+                        +-+
+          |                          |                          |
+          |-- xxR OC-S-F ----------->|                          |
+          |     loss                 |                          |
+          |                          |                          |
+          |                          |-- xxR OC-S-F ----------->|
+          |                          |     loss + rate          |
+          |                          |                          |
+          |                          |<----------- xxA OC-S-F --|
+          |                          |               rate       |
+          |                          |                          |
+          |   Agent handled overload |                          |
+          |      mitigation plus     |                          |
+          |       (optionally)       |                          |
+          |                          |                          |
+          |<----------- xxA OC-S-F --|                          |
+          |               loss       |                          |
+          |                          |                          |
+
+
+                                 Figure 13
+
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014               [Page 19]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+8.1.5.  Hidden Server
+
+8.1.6.  End-to-End Security
+
+8.2.  Client Impacts
+
+8.3.  Server Impacts
+
+8.4.  Agent Impacts
+
+9.  Comparison
+
+9.1.  Per-Report Architecture
+
+   Table of pros and cons.
+
+9.2.  Per-Node Architecture
+
+   Table of pros and cons.
+
+10.  Recommendation
+
+   This section is to be completed once the document has been reviewed.
+
+11.  Security Considerations
+
+12.  References
+
+12.1.  Normative References
+
+   [DOIC]     Korhonen, J., "Diameter Overload Indication Conveyance",
+              March 2014.
+
+   [agent-overload]
+              Donovan, S., "Diameter Agent Overload", March 2014.
+
+12.2.  Informative References
+
+   [RFC2629]  Rose, M., "Writing I-Ds and RFCs using XML", RFC 2629,
+              June 1999.
+
+   [RFC3552]  Rescorla, E. and B. Korver, "Guidelines for Writing RFC
+              Text on Security Considerations", BCP 72, RFC 3552, July
+              2003.
+
+
+
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014               [Page 20]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
+
+Appendix A.  Additional Stuff
+
+   This becomes an Appendix.
+
+Authors' Addresses
+
+   Steve Donovan (editor)
+   Oracle
+   Frisco, Texas
+   USA
+
+   Phone: +1
+   Email: srdonovan@usdonovans.com
+
+
+   Ben Campbell
+   Oracle
+   Frisco, Texas
+   USA
+
+   Phone: +1
+   Email: ben@nostrum.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Donovan & Campbell      Expires October 30, 2014               [Page 21]
