@@ -5,7 +5,7 @@
 Internet Engineering Task Force                          S. Donovan, Ed.
 Internet-Draft                                               B. Campbell
 Intended status: Informational                                    Oracle
-Expires: October 30, 2014                                 April 28, 2014
+Expires: October 3, 2014                                      April 2014
 
 
                Analysis of Diameter Endpoint Alternatives
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 30, 2014.
+   This Internet-Draft will expire on October 3, 2014.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Donovan & Campbell      Expires October 30, 2014                [Page 1]
+Donovan & Campbell       Expires October 3, 2014                [Page 1]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -84,46 +84,46 @@ Table of Contents
      6.4.  Use Case - Multiple Algorithm Support . . . . . . . . . .  11
      6.5.  Use Case - Hidden Failed Server . . . . . . . . . . . . .  11
      6.6.  Use Case - End-to-End Security  . . . . . . . . . . . . .  12
-   7.  Analysis of Per-Report Endpoint Architecture  . . . . . . . .  13
+   7.  Analysis of Per-Report-Type Endpoint Architecture . . . . . .  13
      7.1.  Handling of Use Cases . . . . . . . . . . . . . . . . . .  13
        7.1.1.  Basic Capability Exchange . . . . . . . . . . . . . .  13
-       7.1.2.  Basic Host Overload . . . . . . . . . . . . . . . . .  14
+       7.1.2.  Basic Host Overload . . . . . . . . . . . . . . . . .  15
        7.1.3.  Mismatched Capabilities . . . . . . . . . . . . . . .  15
-       7.1.4.  Multiple Algorithm Support  . . . . . . . . . . . . .  15
-       7.1.5.  Hidden Server . . . . . . . . . . . . . . . . . . . .  17
-       7.1.6.  End-to-End Security . . . . . . . . . . . . . . . . .  17
-     7.2.  Client Impacts  . . . . . . . . . . . . . . . . . . . . .  17
-     7.3.  Server Impacts  . . . . . . . . . . . . . . . . . . . . .  17
-     7.4.  Agent Impacts . . . . . . . . . . . . . . . . . . . . . .  18
-   8.  Analysis of Per-Node Endpoint Architecture  . . . . . . . . .  18
-     8.1.  Handling of Use Cases . . . . . . . . . . . . . . . . . .  18
-       8.1.1.  Basic Capability Exchange . . . . . . . . . . . . . .  18
-       8.1.2.  Basic Host Overload . . . . . . . . . . . . . . . . .  18
-       8.1.3.  Mismatched Capabilities . . . . . . . . . . . . . . .  18
-       8.1.4.  Multiple Algorithm Support  . . . . . . . . . . . . .  19
-       8.1.5.  Hidden Server . . . . . . . . . . . . . . . . . . . .  20
-       8.1.6.  End-to-End Security . . . . . . . . . . . . . . . . .  20
-     8.2.  Client Impacts  . . . . . . . . . . . . . . . . . . . . .  20
-     8.3.  Server Impacts  . . . . . . . . . . . . . . . . . . . . .  20
-     8.4.  Agent Impacts . . . . . . . . . . . . . . . . . . . . . .  20
+       7.1.4.  Multiple Algorithm Support  . . . . . . . . . . . . .  16
+       7.1.5.  Hidden Server . . . . . . . . . . . . . . . . . . . .  18
+       7.1.6.  End-to-End Security . . . . . . . . . . . . . . . . .  18
+     7.2.  Client Impacts  . . . . . . . . . . . . . . . . . . . . .  18
+     7.3.  Server Impacts  . . . . . . . . . . . . . . . . . . . . .  18
+     7.4.  Agent Impacts . . . . . . . . . . . . . . . . . . . . . .  19
+   8.  Analysis of Per-Node Endpoint Architecture  . . . . . . . . .  19
+     8.1.  Handling of Use Cases . . . . . . . . . . . . . . . . . .  19
+       8.1.1.  Basic Capability Exchange . . . . . . . . . . . . . .  19
+       8.1.2.  Basic Host Overload . . . . . . . . . . . . . . . . .  19
+       8.1.3.  Mismatched Capabilities . . . . . . . . . . . . . . .  19
+       8.1.4.  Multiple Algorithm Support  . . . . . . . . . . . . .  20
+       8.1.5.  Hidden Server . . . . . . . . . . . . . . . . . . . .  21
+       8.1.6.  End-to-End Security . . . . . . . . . . . . . . . . .  21
+     8.2.  Client Impacts  . . . . . . . . . . . . . . . . . . . . .  21
+     8.3.  Server Impacts  . . . . . . . . . . . . . . . . . . . . .  21
+     8.4.  Agent Impacts . . . . . . . . . . . . . . . . . . . . . .  21
 
 
 
-Donovan & Campbell      Expires October 30, 2014                [Page 2]
+Donovan & Campbell       Expires October 3, 2014                [Page 2]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
 
-   9.  Comparison  . . . . . . . . . . . . . . . . . . . . . . . . .  20
-     9.1.  Per-Report Architecture . . . . . . . . . . . . . . . . .  20
-     9.2.  Per-Node Architecture . . . . . . . . . . . . . . . . . .  20
-   10. Recommendation  . . . . . . . . . . . . . . . . . . . . . . .  20
-   11. Security Considerations . . . . . . . . . . . . . . . . . . .  20
-   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  20
-     12.1.  Normative References . . . . . . . . . . . . . . . . . .  20
-     12.2.  Informative References . . . . . . . . . . . . . . . . .  20
-   Appendix A.  Additional Stuff . . . . . . . . . . . . . . . . . .  21
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  21
+   9.  Comparison  . . . . . . . . . . . . . . . . . . . . . . . . .  21
+     9.1.  Per-Report-Type Architecture  . . . . . . . . . . . . . .  21
+     9.2.  Per-Node Architecture . . . . . . . . . . . . . . . . . .  21
+   10. Recommendation  . . . . . . . . . . . . . . . . . . . . . . .  21
+   11. Security Considerations . . . . . . . . . . . . . . . . . . .  21
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  21
+     12.1.  Normative References . . . . . . . . . . . . . . . . . .  21
+     12.2.  Informative References . . . . . . . . . . . . . . . . .  21
+   Appendix A.  Additional Stuff . . . . . . . . . . . . . . . . . .  22
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  22
 
 1.  Introduction
 
@@ -165,7 +165,7 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-Donovan & Campbell      Expires October 30, 2014                [Page 3]
+Donovan & Campbell       Expires October 3, 2014                [Page 3]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -173,9 +173,9 @@ Internet-Draft              Abbreviated Title                 April 2014
       transaction (typically a Diameter Server).  See Section 5.2 for
       more information on this model.
 
-   The current DOIC specification [DOIC] does not fully specify the the
-   semantics associated with the DOIC endpoint concept.  It is also
-   possible that additional syntax will be required.
+   The current DOIC specification [I-D.ietf-dime-ovli] does not fully
+   specify the the semantics associated with the DOIC endpoint concept.
+   It is also possible that additional syntax will be required.
 
    This document outlines an example deployment and multiple use cases
    that can be used to evaluate how those use cases would be implemented
@@ -211,17 +211,17 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 3.  DOIC Endpoints
 
-   DOIC endpoints are defined in [DOIC].  A DOIC association is the
-   logical relationship between a pair of Diameter endpoints.  A DOIC
-   endpoint can be a reacting node, a reporting node, or both.  A
-   reporting node is the entity that sends overload reports, requesting
-   a reduction in the amount of Diameter traffic sent to the node.  A
-   reacting node is the entity that receives the overload report, and
-   performs needed overload abatement actions.
+   DOIC endpoints are defined in [I-D.ietf-dime-ovli].  A DOIC
+   association is the logical relationship between a pair of Diameter
+   endpoints.  A DOIC endpoint can be a reacting node, a reporting node,
+   or both.  A reporting node is the entity that sends overload reports,
+   requesting a reduction in the amount of Diameter traffic sent to the
+   node.  A reacting node is the entity that receives the overload
+   report, and performs needed overload abatement actions.
 
 
 
-Donovan & Campbell      Expires October 30, 2014                [Page 4]
+Donovan & Campbell       Expires October 3, 2014                [Page 4]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -255,12 +255,13 @@ Internet-Draft              Abbreviated Title                 April 2014
    reacting nodes.  This can be useful in situations where some or all
    downstream clients or upstream servers do not support DOIC.
 
-      [DOIC] does not limit agents to only act as DOIC endpoints on
-      behalf of clients or servers that do not support DOIC.  There may
-      be other cases where operators may choose to deploy agents
-      intermediate DOIC associations between clients and servers.  For
-      example, to handle mismatched capabilities, or to reduce the
-      number of DOIC associations maintained by Diameter servers.
+      [I-D.ietf-dime-ovli] does not limit agents to only act as DOIC
+      endpoints on behalf of clients or servers that do not support
+      DOIC.  There may be other cases where operators may choose to
+      deploy agents intermediate DOIC associations between clients and
+      servers.  For example, to handle mismatched capabilities, or to
+      reduce the number of DOIC associations maintained by Diameter
+      servers.
 
    The DOIC endpoint relationship is established during the DOIC
    capability exchange.  The flow of the message establishes which
@@ -272,12 +273,11 @@ Internet-Draft              Abbreviated Title                 April 2014
    network that has a mix of node that support the DOIC extension and
    those that don't.  There are also report types being considered where
    agents are required to be the reporting node (both realm defined in
-   [DOIC] and peer reports defined in [agent-overload]).
+   [I-D.ietf-dime-ovli] and peer reports defined in [agent-overload]).
 
 
 
-
-Donovan & Campbell      Expires October 30, 2014                [Page 5]
+Donovan & Campbell       Expires October 3, 2014                [Page 5]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -295,8 +295,8 @@ Internet-Draft              Abbreviated Title                 April 2014
    deployment architecture are assumed to support the DOIC solution.
 
    [ben: Do we need to include scenarios with non-supporting nodes?
-   That could easily force the per-report approach into a full mesh of
-   associations.]
+   That could easily force the per-report-type approach into a full mesh
+   of associations.]
 
    Note that only two partitions of the Diameter servers are shown.
    This is bending to the limitations of ascii art for drawing complex
@@ -333,7 +333,7 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-Donovan & Campbell      Expires October 30, 2014                [Page 6]
+Donovan & Campbell       Expires October 3, 2014                [Page 6]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -389,7 +389,7 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-Donovan & Campbell      Expires October 30, 2014                [Page 7]
+Donovan & Campbell       Expires October 3, 2014                [Page 7]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -445,7 +445,7 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-Donovan & Campbell      Expires October 30, 2014                [Page 8]
+Donovan & Campbell       Expires October 3, 2014                [Page 8]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -501,7 +501,7 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-Donovan & Campbell      Expires October 30, 2014                [Page 9]
+Donovan & Campbell       Expires October 3, 2014                [Page 9]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -557,7 +557,7 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-Donovan & Campbell      Expires October 30, 2014               [Page 10]
+Donovan & Campbell       Expires October 3, 2014               [Page 10]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -613,7 +613,7 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-Donovan & Campbell      Expires October 30, 2014               [Page 11]
+Donovan & Campbell       Expires October 3, 2014               [Page 11]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -669,7 +669,7 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-Donovan & Campbell      Expires October 30, 2014               [Page 12]
+Donovan & Campbell       Expires October 3, 2014               [Page 12]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -688,14 +688,14 @@ Internet-Draft              Abbreviated Title                 April 2014
       service attack.  Signing of the OLR AVPs is likely to be the the
       most effective mechanism to address this security risk.
 
-7.  Analysis of Per-Report Endpoint Architecture
+7.  Analysis of Per-Report-Type Endpoint Architecture
 
 7.1.  Handling of Use Cases
 
 7.1.1.  Basic Capability Exchange
 
    Figure 7 illustrates the message flow associated with this use case
-   when using the per-report endpoint architecture.  This use case
+   when using the per-report-type endpoint architecture.  This use case
    assumes that host overload reports will be generated by the server
    and realm overload report will be generated by the agent.
 
@@ -725,71 +725,121 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-Donovan & Campbell      Expires October 30, 2014               [Page 13]
+Donovan & Campbell       Expires October 3, 2014               [Page 13]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
 
-         +-+                        +-+                        +-+
-         |C|                        |A|                        |S|
-         +-+                        +-+                        +-+
-          |                          |                          |
-          |-- xxR OC-S-F ----------->|                          |
-          |     loss                 |                          |
-          |                          |                          |
-          |                          |-- xxR OC-S-F ----------->|
-          |                          |     loss                 |
-          |                          |                          |
-          |                          |<----------- xxA OC-S-F --|
-          |                          |               loss       |
-          |                          |                          |
-          |<----------- xxA OC-S-F --|                          |
-          |               loss       |                          |
-          |                          |                          |
-          |--------------<DOIC Host Association>----------------|
-          |                          |                          |
-          |-<DOIC Realm Association>-|                          |
-          |                          |                          |
-          |<-------------------------------------- xxA OC-OLR --|
-          |                          |               host       |
-          |                          |                          |
-          |<----------- xxA OC-OLR --|                          |
-          |               realm      |                          |
-          |                          |                          |
+               +-+                        +-+                        +-+
+               |C|                        |A|                        |S|
+               +-+                        +-+                        +-+
+                |                          |                          |
+                |-- xxR OC-S-F:C---------->|                          |
+                |                          |                          |
+                |                          |                          |
+                |                          |-- xxR OC-S-F:C---------->|
+                |                          |       OC-S-F:A           |
+                |                          |                          |
+                |                          |<----------- xxA OC-S-F:S-|
+                |                          |                          |
+                |                          |                          |
+                |<--------- xxA OC-S-F:S --|                          |
+                |               OC-S-F:A   |                          |
+                |                          |                          |
+                |==============<DOIC Host Association>================|
+                |                          |                          |
+                |=<DOIC Realm Association>=|                          |
+                |                          |                          |
+                |<-------------------------------------- xxA OC-OLR --|
+                |                          |               host       |
+                |                          |                          |
+                |<----------- xxA OC-OLR --|                          |
+                |               realm      |                          |
+                |                          |                          |
 
 
                                  Figure 7
+
+   The per-report-type architecture implies that each DOIC aware node
+   must learn the capabilities of each node with which it shares an
+   association.  That is, S must learn the capabilities of C and A, C
+   must learn of A and S, and A must learn of C and S. Since DOIC
+   [I-D.ietf-dime-ovli] requires each endpoint to insert its
+   capabilities into every Diameter message, A must insert its own OC-
+   Supported-Features AVP into the messages that traverse it, while
+   preserving that sent by C or S. This further implies that C and S
+   must be prepared to receive multiple OC-Supported-Feature values, and
+   be able to determine the identity of the source of each one.
+
+   Additionally, each DOIC endpoint must keep state to remember the
+   capabilities of each endpoint with which it shares a DOIC
+   association.  In this example, those associations are fully meshed.
+   While this example shows a trivial network, the number of
+   associations can become very large in larger networks.
+
+
+
+
+
+Donovan & Campbell       Expires October 3, 2014               [Page 14]
+
+Internet-Draft              Abbreviated Title                 April 2014
+
 
 7.1.2.  Basic Host Overload
 
    This use case is illustrated in Figure 7.
 
-   This flow implies that the agent is not able to act on a host
-   overload report.  This is not necessarily a good correct as the agent
-   might be able to route the requested reduction in traffic to an
-   alternative server.
+   The per-report-type architecture assumes that all "host" overload
+   reports are handled by clients, except in cases where agents handle
+   host reports on behalf of clients that do not support DOIC.  There is
+   no DOIC association between A and S.
+
+   [Issue: That doesn't seem right--are we beating a straw man here?  Is
+   there really no association between A and S?]
+
+   This brings up a question about how agents might learn of server
+   overload conditions in order to generate "realm" reports.  One
+   possibility is that they inspect host reports in passing, and use
+   those reports in combination with their local knowledge of server
+   topology to infer the state of the realm as a whole.  But since the
+   server has an host-report association with each client, the agent
+   cannot assume that a host-report destined for any one client is valid
+   for any other client.  This makes it much more difficult for an agent
+   to draw inferences about the state of the realm as a whole.
 
    ISSUE: What is the correct definition of host overload.  The current
-   draft ([DOIC]) defines host overload as any request that contains a
-   Destination-Host AVP that matches the host indicated in the overload
-   report.
-
-
-
-
-
-
-
-
-Donovan & Campbell      Expires October 30, 2014               [Page 14]
-
-Internet-Draft              Abbreviated Title                 April 2014
-
+   draft ([I-D.ietf-dime-ovli]) defines host overload as any request
+   that contains a Destination-Host AVP that matches the host indicated
+   in the overload report.  [Ben: Isn't that what we landed on?]
 
 7.1.3.  Mismatched Capabilities
 
    QUESTION: IS THIS REALLY A ENDPOINT DEFINITION ISSUE OR SHOULD IT BE
-   HANDLED SEPARATELY?
+   HANDLED SEPARATELY?  [Ben: I think we need discussion about whether
+   the per-report-type model has any A-S association.  I think we may be
+   dividing the models along the wrong dimension.]  [Ben: Is this any
+   different that a less-painful version of the mixed algorithm
+   problem?]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Donovan & Campbell       Expires October 3, 2014               [Page 15]
+
+Internet-Draft              Abbreviated Title                 April 2014
 
 
          +-+                        +-+                        +-+
@@ -797,20 +847,15 @@ Internet-Draft              Abbreviated Title                 April 2014
          +-+                        +-+                        +-+
           |                          |                          |
           |-- xxR OC-S-F ----------->|                          |
-          |     feat1                |                          |
+          |     featC                |                          |
           |                          |                          |
           |                          |-- xxR OC-S-F ----------->|
-          |                          |     feat1 + feat2        |
-          |                          |         or               |
-          |                          |-- xxR OC-S-F1, OS-S-F2-->|
-          |                          |       client   agent     |
-          |                          |       feat1    feat2     |
+          |                          |     featA + featC        |
           |                          |                          |
           |                          |<----------- xxA OC-S-F --|
-          |                          |                 server   |
-          |                          |                 feat3    |
+          |                          |                 featS    |
           |<----------- xxA OC-S-F --|                          |
-          |               feat3      |                          |
+          |           featS + featA  |                          |
           |                          |                          |
           |                          |                          |
 
@@ -837,7 +882,18 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-Donovan & Campbell      Expires October 30, 2014               [Page 15]
+
+
+
+
+
+
+
+
+
+
+
+Donovan & Campbell       Expires October 3, 2014               [Page 16]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -893,7 +949,7 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-Donovan & Campbell      Expires October 30, 2014               [Page 16]
+Donovan & Campbell       Expires October 3, 2014               [Page 17]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -949,7 +1005,7 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-Donovan & Campbell      Expires October 30, 2014               [Page 17]
+Donovan & Campbell       Expires October 3, 2014               [Page 18]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -1005,7 +1061,7 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-Donovan & Campbell      Expires October 30, 2014               [Page 18]
+Donovan & Campbell       Expires October 3, 2014               [Page 19]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -1061,7 +1117,7 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-Donovan & Campbell      Expires October 30, 2014               [Page 19]
+Donovan & Campbell       Expires October 3, 2014               [Page 20]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -1078,7 +1134,7 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 9.  Comparison
 
-9.1.  Per-Report Architecture
+9.1.  Per-Report-Type Architecture
 
    Table of pros and cons.
 
@@ -1096,8 +1152,10 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 12.1.  Normative References
 
-   [DOIC]     Korhonen, J., "Diameter Overload Indication Conveyance",
-              March 2014.
+   [I-D.ietf-dime-ovli]
+              Korhonen, J., Donovan, S., Campbell, B., and L. Morand,
+              "Diameter Overload Indication Conveyance", draft-ietf-
+              dime-ovli-02 (work in progress), March 2014.
 
    [agent-overload]
               Donovan, S., "Diameter Agent Overload", March 2014.
@@ -1115,9 +1173,7 @@ Internet-Draft              Abbreviated Title                 April 2014
 
 
 
-
-
-Donovan & Campbell      Expires October 30, 2014               [Page 20]
+Donovan & Campbell       Expires October 3, 2014               [Page 21]
 
 Internet-Draft              Abbreviated Title                 April 2014
 
@@ -1173,4 +1229,4 @@ Authors' Addresses
 
 
 
-Donovan & Campbell      Expires October 30, 2014               [Page 21]
+Donovan & Campbell       Expires October 3, 2014               [Page 22]
