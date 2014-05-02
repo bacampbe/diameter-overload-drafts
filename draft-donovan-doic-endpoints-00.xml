@@ -191,7 +191,7 @@
             information on this model.
           </t>
           <t hangText="Per Node">
-            The node model implies that there is a DOIC association between each pair
+            The per node model implies that there is a DOIC association between each pair
             of Diameter nodes that support the DOIC solution.  With this model a 
             transaction can only create a single association between any two Diameter
             nodes, but there can be a chain of 
@@ -291,9 +291,9 @@
        the reporting node for the DOIC association(s) established by the Diameter 
        transaction.  The originator of the request message is not always the reacting node 
        and the entity the originates the answer message is not always the reporting node.  
-       This is due to the need to support a Diameter network that has a mix of node that 
+       This is due to the need to support a Diameter network that has a mix of nodes that 
        support the DOIC extension and those that don't.  There are also report types being
-       considered where agents are required to be the reporting node (both realm defined 
+       considered where agents are required to be the reporting node (both realm reports defined 
        in <xref target="DOIC"/> and peer reports defined in <xref target="agent-overload"/>).
      </t>     
    </section>
@@ -305,8 +305,8 @@
        DOIC endpoint architectures.
      </t>
      <t>
-       This deployment architecture includes the use of Diameter Agents to route Diameter requests 
-       between Diameter Clients and Diameter Servers.  This architecture also assumes that the 
+       This deployment architecture includes the use of Diameter agents to route Diameter requests 
+       between Diameter clients and Diameter servers.  This architecture also assumes that the 
        Diameter servers are partitioned in a fashion that requires Diameter requests to be routed 
        through multiple agents.  All Diameter nodes in this deployment 
        architecture are assumed to support the DOIC solution.
@@ -315,16 +315,20 @@
 		[ben: Do we need to include scenarios with non-supporting nodes? That could easily
 		force the per-report approach into a full mesh of associations.]
 	</t>
+	<t>
+	  [steve: Maybe we change the last sentence to "This deployment architecture needs to be evaluated 
+	  when all nodes support DOIC and when there is a mix of supporting and non-supporting nodes.]
+	</t>
      <t>
        Note that only two partitions of the Diameter servers are shown.  This is bending to the 
        limitations of ascii art for drawing complex deployment scenarios.  It is possible, and 
-       even likely, that real world deployments would have many more that two partitions of the 
+       even likely, that real world deployments will have many more that two partitions of the 
        servers for a Diameter application.
      </t>
      <t>
        Note also that this document does not discuss deployments that do not involve agents, 
        as there is no effective difference between the Per Report endpoint architecture and 
-       the Per Node endpoint architecture with this deployment scenario.
+       the Per Node endpoint architecture with an agentless deployment scenario.
      </t>
      
      <figure anchor="deploy-arch">
@@ -377,18 +381,15 @@
          transaction between a client, through an agent and to a server.  This diagram shows four 
          associations being created.
        </t>
-       <t>
+<!--       <t>
          <xref target="per-report-noagent"/> shows the associations that would result from a 
          single transaction between a client and a server when no agent is present.  There are no peer
          associations created as there is no agent involved.
        </t>
+-->
 	   <t>
 	   	[ben: previous section said we would not discuss the no-agent cases.]
 	   </t>
-       <t>
-          NOTE: ADD TABLE SHOWING ALL OF THE DOIC ASSOCIATIONS THAT WILL RESULT FROM 
-          THE DEPLOYMENT ARCHITECTURE.
-       </t>
        <t>
          QUESTION: DO WE DISCUSS THE "COST" OF EACH ASSOCIATION IN TERMS OF THE STATE THAT NEEDS 
          TO BE STORED?  IS THIS REALLY DIFFERENT BETWEEN THE TWO MODELS?  HOW IS SEQUENCE NUMBER 
@@ -419,7 +420,7 @@
      ]]></artwork>
      </figure>
      
-       <figure anchor="per-report-noagent">
+<!--       <figure anchor="per-report-noagent">
 
        <artwork><![CDATA[
 
@@ -427,13 +428,62 @@
       |C|                        |S|
       +-+                        +-+
        |                          |
-       |-<DOIC Host Association>--|
+       |-<DOIC Host Association> -|
        |                          |
        |-<DOIC Realm Association>-|
        |                          |
 
      ]]></artwork>
      </figure>
+-->     
+       <t>
+         Table <xref target="perReportAssoc1"/> contains a list of all DOIC associations that result 
+         from the the deployment shown in <xref target="deploy-arch"/>, assuming that all nodes support 
+         DOIC.  The table shows the associations for one of the clients, one of the agents and one of 
+         servers.  The number of associations will be the other clients, agents and servers.  
+       </t>
+       <t><list><t>
+         Note that this analysis assumes that all nodes support DOIC and that all clients at some point
+         initiate transactions with all servers and vice versa.
+       </t></list></t>
+       <texttable anchor="perReportAssoc1" title="Per Report Associations">
+         <ttcol align="center">Node</ttcol>
+         <ttcol align="center">Report Type</ttcol>
+         <ttcol align="center">Associations</ttcol>
+         
+         <c>C1</c><c>Host</c><c>C1S1</c>
+         <c></c><c></c><c>C1S2</c>
+         <c></c><c></c><c>C1S3</c>
+         <c></c><c></c><c>C1S4</c>         
+         <c></c><c>RRR</c><c>C1A1</c> 
+         <c></c><c></c><c>C1A2</c> 
+         <c></c><c>Peer</c><c>C1A1</c> 
+
+         <c>S1</c><c>Host</c><c>S1C1</c>
+         <c></c><c></c><c>S1C2</c>
+         <c></c><c></c><c>S1C3</c>
+         <c></c><c></c><c>S1C4</c>         
+         <c></c><c>RRR</c><c>S1A1</c> 
+         <c></c><c></c><c>S1A2</c> 
+         <c></c><c>Peer</c><c>S1A1</c> 
+
+         <c>A1</c><c>Host</c><c>N/A</c>
+         <c></c><c>RRR</c><c>A1C1</c> 
+         <c></c><c></c><c>A1C2</c> 
+         <c></c><c></c><c>A1C3</c> 
+         <c></c><c></c><c>A1C4</c> 
+         <c></c><c></c><c>A1S1</c> 
+         <c></c><c></c><c>A1S2</c> 
+         <c></c><c></c><c>A1S3</c> 
+         <c></c><c></c><c>A1S4</c> 
+         <c></c><c>Peer</c><c>A1C1</c> 
+         <c></c><c></c><c>A1C2</c> 
+         <c></c><c></c><c>A1S1</c> 
+         <c></c><c></c><c>A1S2</c> 
+         <c></c><c></c><c>A1A2</c> 
+         
+       </texttable>
+
         
      </section>
      
@@ -445,8 +495,7 @@
        </t>
        <t>
          The per node architecture is illustrated in <xref target="per-node-agent"/> for 
-         deployments that include agents and in <xref target="per-node-noagent"/> for deployments 
-         that do not include agents.
+         deployments that include agents.
        </t>
        <t>
          With this architecture, all reports types are 
@@ -464,13 +513,19 @@
              would normally be possible only for realm-routed requests.]
            </t>
            <t>
+             The agent can use the contents of the host report as input into routing decisions
+             on realm-routed requests.  The agent can then include a semantically equivalent 
+             host report in the answer.
+           </t>
+           <t>
              If the agent determines that there is no spare capacity in other servers then the agent
              can generate an equivalent host report and send it to the client. This report might be
              functionally identical to that sent by the server, but it is "from" the agent. In effect
 			 this could be considered passing the server report through to the client. Alternately, if
 			 there is non-zero spare capacity in other servers, but not enough to re-route all traffic,
 			 the agent might calculate a different reduction percentage, and send a different "host"
-			 report towards the client. [ben: I'd like to wedgie the concept of "abatement by delegation" in here somewhere.]
+			 report towards the client. [ben: I'd like to wedgie the concept of "abatement by 
+			 delegation" in here somewhere.]
            </t> 
            <t>
              If local policy allows then the agent could always "pass-through" the host report without
@@ -492,7 +547,7 @@
       |C|                        |A|                        |S|
       +-+                        +-+                        +-+
        |                          |                          |
-       |-<DOIC Peer Association>--|-<DOIC Peer Association>--|
+       |-<DOIC DOIC Association>--|-<DOIC DOIC Association>--|
        |                          |                          |
 
      ]]></artwork>
@@ -501,6 +556,11 @@
      	[ben: I'm afraid calling this a peer association in the diagram will cause confusion with
 		peer reports.]
      </t>
+     <t>
+      [steve: Agreed, I changed it to DOIC Association.]
+     </t>
+     
+<!--
      <figure anchor="per-node-noagent">
 
        <artwork><![CDATA[
@@ -509,14 +569,14 @@
       |C|                        |S|
       +-+                        +-+
        |                          |
-       |-<DOIC Host Association>--|
+       |-<DOIC Host Association> -|
        |                          |
        |-<DOIC Realm Association>-|
        |                          |
 
      ]]></artwork>
      </figure>
-   
+-->   
      
      </section>
 
@@ -555,6 +615,21 @@
          whether to agent should attempt to re-route messages to S2 if only S1 is overloaded.  
          If S1 and S2 are both overloaded then it is clearly appropriate for the clients 
          to handle any throttling that results from the host overload reports.
+       </t>
+       <t>
+         [steve: propose changing about text to the following:]
+       </t>
+       <t>
+         This use case evaulates the impact of an agent reacting to the host overload report.  Any
+         action taken by the agent must stay consistent with the requirement that throttling of
+         Diameter transactions must happen as close to the originator of the transaction as possible.  
+         In the case of a host report, this generally means that DOIC clients must do all throttling.
+       </t>
+       <t>
+         There are, however, actions that an agent can and should take.  First, in the case when 
+         a client does not support DOIC, an agent that does support DOIC must do the throttling 
+         that would have been done by the client.  The second action that can be taken by the agent
+         is to use the contents of the host report as input to the routing of realm-routed requests.
        </t>
      
      </section>
@@ -640,6 +715,18 @@
          server and, if so, how this impacts the DOIC endpoint architecture.
        </t>
      
+     </section>
+     <section title="Use Case - PCC">
+       <t>
+         This use case illustrates the PCC architecture where the PCC defined DRA creates bindings
+         for a user and uses that binding to route new policy sessions associated with that binding. 
+       </t>
+       <t>
+         This use case is unique in that a Diameter overload report on one application can impact the
+         DRAs handling of requests for another application.  For instance, if an overload report is received 
+         as a result of a GX CCR request, that could result in the DRA throtting Rx requests from a 
+         completely different Diameter client.
+       </t>
      </section>
      
      <section title="Use Case - End-to-End Security">
@@ -895,17 +982,13 @@
        |                          |                          |
        |-- xxR OC-S-F ----------->|                          |
        |     loss                 |                          |
-       |                          |                          |
        |                          |-- xxR OC-S-F ----------->|
        |                          |     loss                 |
        |                          |                          |
        |                          |<----------- xxA OC-S-F --|
        |                          |               loss       |
-       |                          |                          |
        |<----------- xxA OC-S-F --|                          |
        |               loss       |                          |
-       |                          |                          |
-       |-<DOIC Realm Association>-|-<DOIC Realm Association>-|
        |                          |                          |
        |                          |<----------- xxA OC-OLR --|
        |                          |               host       |
