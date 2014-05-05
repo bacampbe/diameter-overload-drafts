@@ -673,6 +673,7 @@
          <t>
            [Steve: I'm not convinced this section is needed anymore as it can be addressed in the 
            previous section.]
+		 </t>
 	       <t>
 	         In this use case assume that client C1 supports a different set of DOIC capabilities then
 	         agent A1.  For instance, assume that client C1 does not support the agent overload
@@ -780,7 +781,7 @@
 	       <t>
 	         There are, however, actions that an agent can and should take.  First, in the case when 
 	         a client does not support DOIC, an agent that does support DOIC must do the throttling 
-	         that would have been done by the client.  This scenario is addressed in <xref target="us-non"/>.
+	         that would have been done by the client.  This scenario is addressed in <xref target="uc-non"/>.
 	       </t>
 	       <t>
 	         The second action that can be taken by the agent
@@ -789,6 +790,7 @@
 	       <t>
 	         Finally, the agent will also need to be able to throttle realm-routed requests when there is 
 	         not sufficient server capacity to handle 100% of realm-routed traffic.
+		   </t>
        </section>
        <section title="PRTA Handling">
          <t>
@@ -841,7 +843,7 @@
            The per-DOIC-node architecture assumes there is a single association between adjacent DOIC nodes. 
            This is illustrated in <xref target="pdnaAssoc"/>.
          </t>
-		         <figure anchor="ptraAssoc">
+		         <figure anchor="pdnaAssoc">
 		         <artwork><![CDATA[
 
 		      +-+                        +-+                        +-+
