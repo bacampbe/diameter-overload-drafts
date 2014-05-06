@@ -647,6 +647,10 @@
 				OC-Supported-Feature values, and be able to determine the identity of the source of
 				each one.
 			</t>
+			<t><list><t>
+			  QUESTION: WHAT IF THERE IS A CHAIN OF AGENTS.  DOES EACH AGENT INSERT ITS OWN
+			  OC-SUPPORTED-FEATURES AVP?
+			</t></list></t>
 			<t>
 			 	Additionally, each DOIC endpoint must keep state to remember the capabilities of
 			    each endpoint with which it shares a DOIC association. In this example, those associations
@@ -683,7 +687,7 @@
          <t>
            [Steve: I'm not convinced this section is needed anymore as it can be addressed in the 
            previous section.]
-		 </t>
+         </t>
 	       <t>
 	         In this use case assume that client C1 supports a different set of DOIC capabilities then
 	         agent A1.  For instance, assume that client C1 does not support the agent overload
@@ -800,7 +804,7 @@
 	       <t>
 	         Finally, the agent will also need to be able to throttle realm-routed requests when there is 
 	         not sufficient server capacity to handle 100% of realm-routed traffic.
-		   </t>
+	       </t>
        </section>
        <section title="PRTA Handling">
          <t>
@@ -836,7 +840,49 @@
 
 		]]>      </artwork>
 		         </figure>
+         <t>
+           Figure <xref target="ptraAssoc2"/> illustrates the associations and behavior for requests that travel
+           through two agents.
+         </t>
+		         <figure anchor="ptraAssoc2">
+		         <artwork><![CDATA[
 
+		      +-+                        +--+                       +--+                       +-+
+		      |C|                        |A1|                       |A2|                       |S|
+		      +-+                        +--+                       +--+                       +-+
+		       |                          |                          |                          |
+		       |-- xxR OC-S-F:C---------->|                          |                          |
+		       |                          |                          |                          |
+		       |                          |-- xxR OC-S-F:C---------->|                          |
+		       |                          |       OC-S-F:A           |                          |
+		       |                          |                          |-- xxR OC-S-F:C---------->|
+             |                          |                          |       OC-S-F:A2          |
+		       |                          |                          |                          |
+		       |                          |                          |<----- xxR OC-S-F:C------>|
+             |                          |                          |           OC-S-F:SA2     |
+             |                          |                          |           OLR:Loss       |
+		       |                          |                          |==<DOIC Host Association>=|
+             |                          |                          |                          |
+		       |                          |<--------- xxA OC-S-F:SC -|                          |
+		       |                          |               OC-S-F:A2A1|                          |
+		       |                          |               OLR:Loss   |                          |
+		       |                          |                          |                          |
+		       |                          |                          |                          |
+		       |<-------- xxA OC-S-F:SC --|                          |                          |
+		       |              OC-S-F:AC   |                          |                          |
+		       |              OLR:Loss    |                          |                          |
+		       |=============================<DOIC Host Association>============================|
+		       |                          |                          |                          |
+		       | Client abates host-      |                          | Agent 2 abates realm-    |
+		       | routed traffic           |                          | routed traffic           |
+		       |                          |                          |
+
+		]]>      </artwork>
+		         </figure>
+
+			<t>
+			  [steve: I'm not sure the next paragraph belongs here.]
+			</t>
 			<t>
 			   	This brings up a question about
 				how agents might learn of server overload conditions in order to generate "realm"
@@ -851,9 +897,9 @@
        <section title="PDNA Handling">
          <t>
            The per-DOIC-node architecture assumes there is a single association between adjacent DOIC nodes. 
-           This is illustrated in <xref target="pdnaAssoc"/>.
+           This is illustrated in <xref target="pdnaAssoc3"/>.
          </t>
-		         <figure anchor="pdnaAssoc">
+		         <figure anchor="pdnaAssoc3">
 		         <artwork><![CDATA[
 
 		      +-+                        +-+                        +-+
