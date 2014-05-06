@@ -602,36 +602,40 @@
          <t><list><t>
            Question: How is the Realm association advertised?  There is currently nothing in the OC-Supported-Features
            AVP to indicate that the agent will be sending Realm overload reports.  Should this be added?
-         </t></list></t>
+         </t>
+		<t>[ben: From an OC-Supported-Features perspective, we only need to put it in if it needs to be
+			negotiated. Right now, I think the client has to assume that any reporting node can send host and/or
+			realm reports. This makes me even more skeptical if per-report-type is really what we are talking about.
+			Theoretically, nothing prevents S from sending realm reports to C, either. I think we are
+			really talking about e2e vs p2p vs a combination. e2e is not sufficiently expressive, 
+			combo is really complicated, doic-peer2doic-peer seems to work.]</t></list></t>
               
 		         <figure anchor="pr-uc-basic">
 		         <artwork><![CDATA[
 
-
-		      +-+                        +-+                        +-+
-		      |C|                        |A|                        |S|
-		      +-+                        +-+                        +-+
-		       |                          |                          |
-		       |-- xxR OC-S-F:C---------->|                          |
-		       |                          |                          |
-		       |                          |-- xxR OC-S-F:C---------->|
-		       |                          |       OC-S-F:A           |
-		       |                          |                          |
-		       |                          |<---------- xxA OC-S-F:SC-|
-		       |                          |                OC-S-F:SA |
-   			   |                          |                          |
-		       |                          |==<DOIC Host Association>=|
-		       |                          |==<DOIC Peer Association>=|
-		       |                          |                          |
-		       |<-------- xxA OC-S-F:SC --|                          |
-		       |              OC-S-F:AC   |                          |
-   			   |                          |                          |
-		       |==============<DOIC Host Association>================|
-   			   |                          |                          |
-		       |=<DOIC Realm Association>=|                          |
-		       |=<DOIC Peer Association>==|                          |
-		       |                          |                          |
-
+     +-+                        +-+                        +-+
+     |C|                        |A|                        |S|
+     +-+                        +-+                        +-+
+      |                          |                          |
+      |-- xxR OC-S-F:C---------->|                          |
+      |                          |                          |
+      |                          |-- xxR OC-S-F:C---------->|
+      |                          |       OC-S-F:A           |
+      |                          |                          |
+      |                          |<---------- xxA OC-S-F:SC-|
+      |                          |                OC-S-F:SA |
+      |                          |                          |
+      |                          |==<DOIC Host Association>=|
+      |                          |==<DOIC Peer Association>=|
+      |                          |                          |
+      |<-------- xxA OC-S-F:SC --|                          |
+      |              OC-S-F:AC   |                          |
+      |                          |                          |
+      |==============<DOIC Host Association>================|
+      |                          |                          |
+      |=<DOIC Realm Association>=|                          |
+      |=<DOIC Peer Association>==|                          |
+      |                          |                          |
 
 		]]>      </artwork>
 		         </figure>
