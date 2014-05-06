@@ -877,9 +877,6 @@
 			  [steve: I'm not sure the next paragraph belongs here.]
 			</t>
 			<t>
-			  [steve: I'm not sure the next paragraph belongs here.]
-			</t>
-			<t>
 			   	This brings up a question about
 				how agents might learn of server overload conditions in order to generate "realm"
 				reports. One possibility is that they inspect host reports in passing, and use those
