@@ -545,9 +545,7 @@
      ]]></artwork>
      </figure>
      </section>
-
    </section>
-
    <section title="Use Cases">
      <t>
        This section outlines example use cases.  Each of the endpoint architectures will 
@@ -573,7 +571,7 @@
        <t>PCC style cross application dependencies</t>
      </list></t>
      
-     <section anchor="uc-basic" title="Use Case - Basic DOIC Capability Advertisment">
+     <section anchor="uc-basic" title="Use Case - Basic DOIC Capability Advertisement">
        <section title="Description">
 	       <t>
 	         This use case is included to illustrate the basic case resulting from 
@@ -602,39 +600,46 @@
          <t><list><t>
            Question: How is the Realm association advertised?  There is currently nothing in the OC-Supported-Features
            AVP to indicate that the agent will be sending Realm overload reports.  Should this be added?
-         </t></list></t>
+         </t>
+		<t>[ben: From an OC-Supported-Features perspective, we only need to put it in if it needs to be
+			negotiated. Right now, I think the client has to assume that any reporting node can send host and/or
+			realm reports. This makes me even more skeptical if per-report-type is really what we are talking about.
+			Theoretically, nothing prevents S from sending realm reports to C, either. I think we are
+			really talking about e2e vs p2p vs a combination. e2e is not sufficiently flexible, 
+			combo is really complicated, doic-peer2doic-peer seems to work.]</t></list></t>
               
 		         <figure anchor="pr-uc-basic">
 		         <artwork><![CDATA[
 
-
-		      +-+                        +-+                        +-+
-		      |C|                        |A|                        |S|
-		      +-+                        +-+                        +-+
-		       |                          |                          |
-		       |-- xxR OC-S-F:C---------->|                          |
-		       |                          |                          |
-		       |                          |-- xxR OC-S-F:C---------->|
-		       |                          |       OC-S-F:A           |
-		       |                          |                          |
-		       |                          |<---------- xxA OC-S-F:SC-|
-		       |                          |                OC-S-F:SA |
-   			   |                          |                          |
-		       |                          |==<DOIC Host Association>=|
-		       |                          |==<DOIC Peer Association>=|
-		       |                          |                          |
-		       |<-------- xxA OC-S-F:SC --|                          |
-		       |              OC-S-F:AC   |                          |
-   			   |                          |                          |
-		       |==============<DOIC Host Association>================|
-   			   |                          |                          |
-		       |=<DOIC Realm Association>=|                          |
-		       |=<DOIC Peer Association>==|                          |
-		       |                          |                          |
-
+     +-+                        +-+                        +-+
+     |C|                        |A|                        |S|
+     +-+                        +-+                        +-+
+      |                          |                          |
+      |-- xxR OC-S-F:C---------->|                          |
+      |                          |                          |
+      |                          |-- xxR OC-S-F:C---------->|
+      |                          |       OC-S-F:A           |
+      |                          |                          |
+      |                          |<---------- xxA OC-S-F:SC-|
+      |                          |                OC-S-F:SA |
+      |                          |                          |
+      |                          |==<DOIC Host Association>=|
+      |                          |==<DOIC Peer Association>=|
+      |                          |                          |
+      |<-------- xxA OC-S-F:SC --|                          |
+      |              OC-S-F:AC   |                          |
+      |                          |                          |
+      |==============<DOIC Host Association>================|
+      |                          |                          |
+      |=<DOIC Realm Association>=|                          |
+      |=<DOIC Peer Association>==|                          |
+      |                          |                          |
 
 		]]>      </artwork>
 		         </figure>
+		    <t>
+		    	[ben: why do we need both a peer and host association between A and S?]
+		    </t>
 			<t>
 				Each DOIC endpoint must learn the
 				capabilities of each endpoint with which it shares an association. In the per-report-type
@@ -643,121 +648,140 @@
 				<xref target="I-D.ietf-dime-ovli">DOIC</xref> requires each endpoint to insert
 				its capabilities into every Diameter message, A must insert its own
 				OC-Supported-Features AVP into the messages that traverse it, while preserving that sent
-				by C or S. This further implies that C and S must be prepared to receive multiple
+				by C or S. It further must remove the AVP that S sends in response to the one it inserted
+				before it reaches the client. This implies that C and S must be prepared to receive multiple
 				OC-Supported-Feature values, and be able to determine the identity of the source of
 				each one.
 			</t>
 			<t><list><t>
+				Note: <xref target="I-D.ietf-dime-ovli">DOIC</xref> does not currently support attribution
+				of OC-Supported-AVPs to the node that originated it.
+			</t>
+				<t>
 			  QUESTION: WHAT IF THERE IS A CHAIN OF AGENTS.  DOES EACH AGENT INSERT ITS OWN
-			  OC-SUPPORTED-FEATURES AVP?
+			  OC-SUPPORTED-FEATURES AVP? [Ben: Each agent needs to insert it's own. The question is,
+			  whether it also passes through one from a downstream agent. I think it does, or it 
+			  least MAY. Otherwise, 
+			  we would have to require an agent to determine whether a received OC-Feature-Vector came
+			from an agent or a client.]
 			</t></list></t>
 			<t>
 			 	Additionally, each DOIC endpoint must keep state to remember the capabilities of
 			    each endpoint with which it shares a DOIC association. In this example, those associations
 				are fully meshed. While this example shows a trivial network, the number of associations
 				can become very large in larger networks.
-			</t>                  
+			</t>
+			<t>The need for a full capabilities mesh becomes more apparent if the selected capabilities
+				are different between C and A than between A and S. <xref target="pr-uc-mixed"/>
+				illustrates this scenario</t>                  
+			         <figure anchor="pr-uc-mixed">
+			         <artwork><![CDATA[
+
+	     +-+                        +-+                        +-+
+	     |C|                        |A|                        |S|
+	     +-+                        +-+                        +-+
+	      |                          |                          |
+	      |-- xxR C:loss ----------->|                          |
+	      |                          |                          |
+	      |                          |-- xxR C:loss ----------->|
+	      |                          |       A:loss,rate        |
+	      |                          |                          |
+	      |                          |<---------- xxA SC:loss --|
+	      |                          |                SA:rate   |
+	      |                          |                          |
+	      |                          |=====<Rate Algorithm>=====|
+	      |                          |                          |
+	      |<-------- xxA SC:loss ----|                          |
+	      |              AC:loss     |                          |
+	      |                          |                          |
+	      |=================<Loss Algorithm>====================|
+	      |                          |                          |
+	      |====<Loss Algorithm>======|                          |
+	      |                          |                          |
+
+			]]>      </artwork>
+			         </figure>
+		<t>
+			In this example, C supports only the "loss" abatement algorithm. A supports "loss", and also an
+			algorithm called "rate". S supports both, but prefers to use "rate" whenever possible. C includes
+			the loss algorithm in its OC-Supported-Features AVP (C). A passes C's capabilities through to S, but also
+			inserts its own OC-Supported-Features AVP (A) indicating support for both loss and rate. S has no option but
+			to use loss for OLRs sent to C, so it includes the loss algorithm in the corresponding OC-Supported-Features
+			AVP (SC). Since A also supports the rate algorithm, S selects rate in the OC-Supported-Features AVP (SA) it sends
+			in response to that sent by A.
+		</t>
+		<t>A can now send OLRs using the loss algorithm to C, and OLRs using the rate algorithm to A. A can only send send OLRs using
+			the loss algorithm to C, (likely as needed to fulfill its obligations to S under the rate algorithm.)</t>
        </section>
        <section title="PDNA Handling">
-         <figure anchor="pn-uc-basic">
+ 		<t><xref target="pn-uc-basic"/> shows a similar capabilities exchange using the per-endpoint model. Each DOIC endpoint
+		has a single DOIC association with its peer endpoint. The peer endpoint is not necessarily the Diameter peer; rather it's
+		the nearest Diameter node that supports DOIC along a given path.</t>
+        <figure anchor="pn-uc-basic">
          <artwork><![CDATA[
 
-		      +-+                        +-+                        +-+
-		      |C|                        |A|                        |S|
-		      +-+                        +-+                        +-+
-		       |                          |                          |
-		       |-- xxR OC-S-F:C---------->|                          |
-		       |                          |                          |
-		       |                          |-- xxR OC-S-F ----------->|
-		       |                          |                          |
-		       |                          |<---------- xxA OC-S-F:S -|
-		       |                          |====<DOIC Association>====|
-		       |                          |                          |
-		       |<-------- xxA OC-S-F:A ---|                          |
-		       |====<DOIC Association>====|
-		       |                          |                          |
+              +-+                        +-+                        +-+
+              |C|                        |A|                        |S|
+              +-+                        +-+                        +-+
+               |                          |                          |
+               |-- xxR OC-S-F:C---------->|                          |
+               |                          |                          |
+               |                          |-- xxR OC-S-F ----------->|
+               |                          |                          |
+               |                          |<---------- xxA OC-S-F:S -|
+               |                          |====<DOIC Association>====|
+               |                          |                          |
+               |<-------- xxA OC-S-F:A ---|                          |
+               |====<DOIC Association>====|                          |
+               |                          |                          |
 
 ]]>      </artwork>
          </figure>
-       </section>
-     </section>
+		<t>In this example, there are exactly two DOIC associations; one between C and A, and one between A and S. 
+			The selected features for each association are independent of the other. A acts as a back-to-back DOIC endpoint,
+			that is, it becomes the reporting node to C, and the reacting node to S.
+		</t>
+		<t><xref target="pn-uc-mixed"/> illustrates a per-node capabilities exchange where different
+			algorithms are selected for each association. As in <xref target="pr-uc-mixed"/>, C
+			supports the loss algorithm, A supports loss and rate, and S prefers rate. </t>
+		        <figure anchor="pn-uc-mixed">
+		         <artwork><![CDATA[
 
+                      +-+                        +-+                        +-+
+                      |C|                        |A|                        |S|
+                      +-+                        +-+                        +-+
+                       |                          |                          |
+                       |-- xxR C:loss------------>|                          |
+                       |                          |                          |
+                       |                          |-- xxR A:loss,rate ------>|
+                       |                          |                          |
+                       |                          |<---------- xxA S:rate ---|
+                       |                          |====<Rate Algorithm>======|
+                       |                          |                          |
+                       |<-------- xxA A:loss-- ---|                          |
+                       |====<Loss Algorithm>======|                          |
+                       |                          |                          |
+
+		]]>      </artwork>
+		         </figure>
+		<t>
+			C only includes "loss" in its OC-Supported-Features AVP. A removes C's AVP, and inserts
+			its own, including both loss and rate. S selects the rate algorithm in its response to A.
+			A removes S's AVP, and inserts its own, selecting the loss algorithm.
+		</t>
+		<t>
+			As a result, S only sends OLRs using the rate algorithm. A can then send OLRs back towards the client,
+			if needed to honor the rate limit it received from S.
+		</t>			
+     </section>
+</section>
      <section anchor="uc-mismatch" title="Use Case - Missmatched Client and Agent Capabilities">
-       <section title="Description">
          <t>
            [Steve: I'm not convinced this section is needed anymore as it can be addressed in the 
-           previous section.]
+           previous section.] [Ben: I agree. There's no assumption you _don't_ have mixed capabilities
+			in the previous section. But we do need to make sure we talk about it there--I added some text
+			and examples.]
          </t>
-	       <t>
-	         In this use case assume that client C1 supports a different set of DOIC capabilities then
-	         agent A1.  For instance, assume that client C1 does not support the agent overload
-	         extension and that agent A1 does support the agent overload extension.
-	       </t>
-	       <t>
-	         This use case raises the question of whether agent A1 should insert a second 
-	         OC-Supported-Features AVP in indicate the capabilities supported by the agent or
-	         whether the agent should generate a new OC-Supported-Features AVP that contains
-	         the union of the capabilities of the client and the agent.
-	       </t>
-	     </section>
-       <section title="PRTA Handling">
-         <t>
-           QUESTION: IS THIS REALLY A ENDPOINT DEFINITION ISSUE OR SHOULD IT BE HANDLED SEPARATELY?
-			[Ben: I think we need discussion about whether the per-report-type model has
-			any A-S association. I think we may be dividing the models along the wrong dimension.]
-			[Ben: Is this any different that a less-painful version of the mixed algorithm problem?]
-         </t>
-         
-         <figure anchor="pr-uc-mm1">
-         <artwork><![CDATA[
-
-      +-+                        +-+                        +-+
-      |C|                        |A|                        |S|
-      +-+                        +-+                        +-+
-       |                          |                          |
-       |-- xxR OC-S-F ----------->|                          |
-       |     featC                |                          |
-       |                          |                          |
-       |                          |-- xxR OC-S-F ----------->|
-       |                          |     featA + featC        |
-       |                          |                          |
-       |                          |<----------- xxA OC-S-F --|
-       |                          |                 featS    |
-       |<----------- xxA OC-S-F --|                          |
-       |           featS + featA  |                          |
-       |                          |                          |
-       |                          |                          |
-
-]]>      </artwork>
-         </figure>
-       </section>
-       <section title="PDNA Handling">
-         <t>
-         <figure anchor="pn-uc-mm1">
-         <artwork><![CDATA[
-
-      +-+                        +-+                        +-+
-      |C|                        |A|                        |S|
-      +-+                        +-+                        +-+
-       |                          |                          |
-       |-- xxR OC-S-F ----------->|                          |
-       |     cfeat                |                          |
-       |                          |                          |
-       |                          |-- xxR OC-S-F ----------->|
-       |                          |     afeat                |
-       |                          |                          |
-       |                          |<----------- xxA OC-S-F --|
-       |                          |               sfeat      |
-       |<----------- xxA OC-S-F --|                          |
-       |              afeat       |                          |
-       |                          |                          |
-       |                          |                          |
-
-]]>      </artwork>
-         </figure>
-         
-         </t>
-       </section>
      </section>
 
      <section anchor="uc-host" title="Use Case - DOIC Host Overload Report Handling">
@@ -879,7 +903,9 @@
 
 		]]>      </artwork>
 		         </figure>
-
+			<t>
+				[ben: Does that figure belong here, or in the capabilities exchange section?]
+			</t>
 			<t>
 			  [steve: I'm not sure the next paragraph belongs here.]
 			</t>
