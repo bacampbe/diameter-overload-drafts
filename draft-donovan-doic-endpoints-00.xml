@@ -164,7 +164,7 @@
         The Diameter Overload Information Conveyance (DOIC) solution describes a mechanism 
 		for exchanging information about Diameter Overload among Diameter nodes.
 		DOIC defines the concept of DOIC endpoints.  A DOIC endpoint is
-        a Diameter node that acts as either a reporting node are a reacting node.  A reporting 
+        a Diameter node that acts as either a reporting node or a reacting node.  A reporting 
         node originates overload reports, requesting reacting nodes to reduce the amount of 
         traffic sent.  The type of overload report determines the scope of the request for 
         traffic reduction.  The current definition of DOIC endpoints is ambiguous, resulting 
@@ -186,13 +186,13 @@
       </t>
       <t>
         <list style="symbols">
-          <t hangText="Per Report">
-            The per report model implies there is a DOIC association per report that 
+          <t hangText="Per-Report-type">
+            The per report model implies there is a DOIC association per report-type that 
             can be originated. With this model there can be multiple associations generated
             as a result of a single Diameter transaction.  See <xref target="perReport"/> for more 
             information on this model.
           </t>
-          <t hangText="Per Node">
+          <t hangText="Per DOIC Node">
             The per node model implies that there is a DOIC association between each pair
             of Diameter nodes that support the DOIC solution.  With this model a 
             transaction can only create a single association between any two Diameter
@@ -201,6 +201,9 @@
             Diameter Client) and the responder to the Diameter transaction (typically a Diameter 
             Server).  See <xref target="perNode"/> for more information on this model.
           </t>
+		<t>
+			[ben: Add the model acronyms here if we stick with them.]
+		</t>
        </list>
       </t>
       <t>
@@ -224,7 +227,8 @@
    	<t hangText="DOIC Association:"> 
 	The relationship between a DOIC reacting node and a reporting node. A pair of
 	associated DOIC endpoints share state, including information such as the fact that the opposite
-	endpoint supports DOIC, the DOIC related capabilities of each endpoint, etc.</t>
+	endpoint supports DOIC, the DOIC related capabilities of each endpoint, current overload state of the reporting node, etc. Certain
+	abatement algorithms may require DOIC nodes to store algorithm-specific state.</t>
 	<t hangText="Overload Abatement:">
 		Actions taken by a reacting node to reduce the load offered to an 
 		overloaded Diameter node. The specific actions required to perform overload abatement
@@ -268,7 +272,7 @@
      <t>
        In the most basic case a reacting node will be a Diameter client and a reporting node will 
        be a Diameter server.  When a Diameter server determines that it is handling too much 
-       traffic, it sends on overload report to the reacting node.  The reacting node is responsible 
+       traffic, it sends an overload report to the reacting node.  The reacting node is responsible 
        for reducing the amount of traffic sent to the reporting node based on the contents of the 
        overload report.
      </t>
@@ -615,23 +619,26 @@
 		       |                          |                          |
 		       |                          |<---------- xxA OC-S-F:SC-|
 		       |                          |                OC-S-F:SA |
+   			   |                          |                          |
 		       |                          |==<DOIC Host Association>=|
 		       |                          |==<DOIC Peer Association>=|
 		       |                          |                          |
 		       |<-------- xxA OC-S-F:SC --|                          |
 		       |              OC-S-F:AC   |                          |
+   			   |                          |                          |
 		       |==============<DOIC Host Association>================|
-		       |=<DOIC Realm Association>=|
-		       |=<DOIC Peer Association>==|
-		       |                          |                          |
+   			   |                          |                          |
+		       |=<DOIC Realm Association>=|                          |
+		       |=<DOIC Peer Association>==|                          |
 		       |                          |                          |
 
 
 		]]>      </artwork>
 		         </figure>
 			<t>
-				The per-report-type architecture implies that each DOIC aware node must learn the
-				capabilities of each node with which it shares an association. That is, S must learn
+				Each DOIC endpoint must learn the
+				capabilities of each endpoint with which it shares an association. In the per-report-type
+				architecture, S must learn
 				the capabilities of C and A, C must learn of A and S, and A must learn of C and S. Since 
 				<xref target="I-D.ietf-dime-ovli">DOIC</xref> requires each endpoint to insert
 				its capabilities into every Diameter message, A must insert its own
