@@ -672,6 +672,7 @@
 	           For instance, the client might support just the loss algorithm while the agent
 	           supports both the loss and rate algorithms.  
 	         </t>
+	       </list>
 	       </t>
           <t>
            This use case is meant to illustrate the DOIC associations that are
