@@ -204,6 +204,11 @@
           overload state of the reporting node, etc. Certain abatement
           algorithms may require DOIC nodes to store algorithm-specific state.
          </t>
+         <t>
+           [steve: the overload state of the reporting node isn't necessarily 
+           part of the association state.  maybe overload state received over the 
+           association is the more general way of saying this.]
+         </t>
          <t hangText="Overload Abatement:">
           Actions taken by a reacting node to reduce the load offered to an
           overloaded Diameter node. The specific actions required to perform
@@ -425,14 +430,18 @@
        |                          |                          |
        |--------------<DOIC Host Association>----------------|
        |                          |                          |
+       |                          |-<DOIC Host Association>--|
+       |                          |                          |
        |-<DOIC Realm Association>-|                          |
        |                          |                          |
        |-<DOIC Peer Association>--|-<DOIC Peer Association>--|
        |                          |                          |
-
      ]]>
           </artwork>
         </figure>
+        <t>
+          [steve: need a figure that shows two agents]
+        </t>
         <t>
          Table <xref target="perReportAssoc1"/> contains a list of all DOIC
          associations that result from the the deployment shown in
@@ -605,11 +614,13 @@
        |                          |                          |
        |----<DOIC Association>----|----<DOIC Association>----|
        |                          |                          |
-
-
      ]]>
           </artwork>
         </figure>
+        <t>
+          [steve: need a figure that shows two agents]
+        </t>
+
       </section>
     </section>
     <section title="Use Cases">
@@ -629,9 +640,6 @@
        <list style="symbols">
          <t>
           Basic DOIC capability exchange
-         </t>
-         <t>
-          Mismatched client and agent capabilies
          </t>
          <t>
           DOIC host overload report handling
@@ -924,15 +932,7 @@
           </t>
         </section>
       </section>
-      <section anchor="uc-mismatch" title="Use Case - Missmatched Client and Agent Capabilities">
-        <t>
-         [Steve: I'm not convinced this section is needed anymore as it can be
-         addressed in the previous section.] [Ben: I agree. There's no
-         assumption you _don't_ have mixed capabilities in the previous
-         section. But we do need to make sure we talk about it there--I added
-         some text and examples.]
-        </t>
-      </section>
+
       <section anchor="uc-host" title="Use Case - DOIC Host Overload Report Handling">
         <section title="Description">
           <t>
@@ -1213,21 +1213,144 @@
           </t>
           <t>
            In this case, it is the responsibility of the agents to act on
-           behalf of the non supporting clients.
+           behalf of the non-supporting clients.
+          </t>  
+          <t>
+           Agent A1 is responsible for handling
+           overload abatement for requests originating from client C2.  
+          </t>
+          <t>
+           Agent A2 is responsible for handling overload abagtement for requests originating from 
+           client C3 and C4.
+          </t>
+          <t>
+            Note that client C1 is responsible for handling overload abatement for 
+            requests it originates.
           </t>
         </section>
         <section title="PRTA Handling">
-          <t></t>
+          <t>
+            <xref target="ucnonPRTA1"/> shows the host report DOIC associations that will result 
+            from this scenario.  Other report types associations are not addressed in this analysis.
+            Associations from the server toward agents and clients are also not addressed in this analysis.
+          </t>
+        <texttable anchor="ucnonPRTA1" title="Non supporting clients - Per Report Associations">
+          <ttcol align="center">Node</ttcol>
+          <ttcol align="center">Report Type</ttcol>
+          <ttcol align="center">Assoc</ttcol>
+          <ttcol align="center">Behavior</ttcol>
+          <c>C1</c><c>Host</c><c>C1S1</c>
+          <c>For host reports received on the C1S1 association, C1 is responsible for abatement 
+             of all request traffic that would be routed to server S1.</c>
+          <c></c><c></c><c></c><c></c>
+          <c></c><c></c><c>C1S2</c>
+          <c>For host reports received on the C1S2 association, C1 is responsible for abatement 
+             of all request traffic that would be routed to server S2</c>
+          <c></c><c></c><c></c><c></c>
+          <c></c><c></c><c>C1S3</c>
+          <c>For host reports received on the C1S3 association, C1 is responsible for abatement 
+             of all request traffic that would be routed to server S3</c>
+          <c></c><c></c><c></c><c></c>
+          <c></c><c></c><c>C1S4</c>
+          <c>For host reports received on the C1S4 association, C1 is responsible for abatement 
+             of all request traffic that would be routed to server S4</c>
+          <c></c><c></c><c></c><c></c>
+          <c>A1</c><c>Host</c><c>A1S1</c>
+          <c>For host reports received on the A1S1 association, A1 is responsible for abatement
+             of all request traffic from C2 that would be routed to server S1.  A1 is responsible
+             for abatement of realm-routed requests from all clients that would be routed to server
+             S1.</c>
+          <c></c><c></c><c></c><c></c>
+          <c></c><c></c><c>A1S2</c>
+          <c>For host reports received on the A1S2 association, A1 is responsible for abatement
+             of all request traffic from C2 that would be routed to server S2.  A1 is responsible
+             for abatement of realm-routed requests from all clients that would be routed to server
+             S2.</c>
+          <c></c><c></c><c></c><c></c>
+          <c></c><c></c><c>A1S3</c>
+          <c>For host reports received on the A1S3 association, A1 is responsible for abatement
+             of all request traffic from C2 that would be routed to server S3.</c>
+          <c></c><c></c><c></c><c></c>
+          <c></c><c></c><c>A1S4</c>
+          <c>For host reports received on the A1S4 association, A1 is responsible for abatement
+             of all request traffic from C2 that would be routed to server S4.</c>
+          <c></c><c></c><c></c><c></c>
+          <c>A2</c><c>Host</c><c>A2S1</c>
+          <c>For host reports received on the A2S1 association, A1 is responsible for abatement
+             of all request traffic from C3 and C4 that would be routed to server S1.</c>
+          <c></c><c></c><c></c><c></c>
+          <c></c><c></c><c>A2S2</c>
+          <c>For host reports received on the A2S2 association, A1 is responsible for abatement
+             of all request traffic from C3 and C4 that would be routed to server S2.</c>
+          <c></c><c></c><c></c><c></c>
+          <c></c><c></c><c>A2S3</c>
+          <c>For host reports received on the A2S3 association, A1 is responsible for abatement
+             of all request traffic from C3 and C4 that would be routed to server S3.  A2 is responsible
+             for abatement of realm-routed requests from all clients that would be routed to server
+             S3.</c>
+          <c></c><c></c><c></c><c></c>
+          <c></c><c></c><c>A2S4</c>
+          <c>For host reports received on the A2S4 association, A1 is responsible for abatement
+             of all request traffic from C3 and C4 that would be routed to server S4.  A2 is responsible
+             for abatement of realm-routed requests from all clients that would be routed to server
+             S4.</c>
+        </texttable>
+        <t>
+        
+        </t>
+
+          
         </section>
         <section title="PDNA Handling">
-          <t></t>
+          <t>
+            <xref target="ucnonPDNA1"/> shows the host report DOIC associations that will result 
+            from this scenario.  Other report types associations are not addressed in this analysis.
+            Associations from the server toward agents and clients are also not addressed in this analysis.
+          </t>
+        <texttable anchor="ucnonPDNA1" title="Non supporting clients - Per Node Associations">
+          <ttcol align="center">Node</ttcol>
+          <ttcol align="center">Assoc</ttcol>
+          <ttcol align="center">Behavior</ttcol>
+          <c>C1</c><c>C1A1</c>
+          <c>For host reports received on the C1S1 association, C1 is responsible for abatement 
+             of all request traffic that would be routed to the server indicated in the report.</c>
+          <c></c><c></c><c></c>
+          <c>A1</c><c>A1A2</c>
+          <c>For host reports received on the A1A2 association, A1 is responsible for abatement 
+             of all request traffic from C2 that would be routed to the server indicated in the report.
+             A1 is also responsible for passing the host report over the C1A1 association.</c>
+          <c></c><c></c><c></c>
+          <c></c><c>A1S1</c>
+          <c>For host reports received on the A1S1 association, A1 is responsible for abatement 
+             of all request traffic from C2 that would be routed to S1.  A1 is also responsible for 
+             passing the host report over the C1A1 association.</c>
+          <c></c><c></c><c></c>
+          <c></c><c>A1S2</c>
+          <c>For host reports received on the A1S2 association, A1 is responsible for abatement 
+             of all request traffic from C2 that would be routed to S2.  A1 is also responsible for 
+             passing the host report over the C1A1 association.</c>
+          <c></c><c></c><c></c>
+          <c>A2</c><c>A2A1</c>
+          <c>For host reports received on the A2A1 association, A2 is responsible for abatement 
+             of all request traffic from C3 and C4 that would be routed to the server indicated 
+             in the report.</c>
+          <c></c><c></c><c></c>
+          <c></c><c>A2S3</c>
+          <c>For host reports received on the A2S3 association, A1 is responsible for abatement 
+             of all request traffic from C3 and C4 that would be routed to S2.  A1 is also responsible for 
+             passing the host report over the A1A2 association.</c>
+          <c></c><c></c><c></c>
+          <c></c><c>A2S4</c>
+          <c>For host reports received on the A2S4 association, A1 is responsible for abatement 
+             of all request traffic from C3 and C4 that would be routed to S4.  A1 is also responsible for 
+             passing the host report over the A1A2 association.</c>
+        </texttable>
         </section>
       </section>
       <section anchor="uc-alg" title="Use Case - Multiple and Mixed Abatement Algorithm Support">
         <section title="Description">
           <t>
-           This use case is similar to <xref target="uc-mismatch"/> in that it
-           is based on differing sets of DOIC capabilities. However, this use
+           This use
            case focuses on the case where the a subset of clients support only
            the loss algorithm, some clients support both loss and rate,
            servers support and prefer rate. This implies that the server will
@@ -1407,6 +1530,14 @@
       </section>
       <section title="Use Case - Cross Application Dependencies">
         <section title="Description">
+          <t>
+            [steve: after thinking about pcc i'm not convinced this is a separate 
+            scenarios.  The cross application dependencies is nothing more that a change
+            in the way that a route is selected.  overload abatement treatment needs to 
+            happen after a route is selected and applied if the selected route matches an
+            active overload report.  overload abatement should not care about how the 
+            route is selected.]
+          </t>
           <t>
            This use case illustrates the PCC architecture where the PCC
            defined DRA creates bindings for a user and uses that binding to
