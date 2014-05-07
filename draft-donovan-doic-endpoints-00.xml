@@ -41,7 +41,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
-<rfc category="info" docName="DOIC-Endpoints-01" ipr="trust200902">
+<rfc category="info" docName="DOIC-Endpoints-00" ipr="trust200902">
 <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
      you can add the attributes updates="NNNN" and obsoletes="NNNN" 
@@ -53,7 +53,7 @@
     <title abbrev="Abbreviated Title">Analysis of Diameter Endpoint Alternatives</title>
 <!-- add 'role="editor"' below for the editors if appropriate -->
 <!-- Another author who claims to be an editor -->
-    <author fullname="Steve Donovan" initials="S.R." role="editor"
+    <author fullname="Steve Donovan" initials="S.R." 
      surname="Donovan">
       <organization>Oracle</organization>
       <address>
@@ -313,18 +313,11 @@
        route Diameter requests between Diameter clients and Diameter servers.
        This architecture also assumes that the Diameter servers are
        partitioned in a fashion that requires Diameter requests to be routed
-       through multiple agents. All Diameter nodes in this deployment
-       architecture are assumed to support the DOIC solution.
+       through multiple agents. 
       </t>
       <t>
-       [ben: Do we need to include scenarios with non-supporting nodes? That
-       could easily force the per-report-type approach into a full mesh of
-       associations.]
-      </t>
-      <t>
-       [steve: Maybe we change the last sentence to "This deployment
-       architecture needs to be evaluated when all nodes support DOIC and when
-       there is a mix of supporting and non-supporting nodes.]
+       [steve: I removed "All Diameter nodes in this deployment
+       architecture are assumed to support the DOIC solution."]
       </t>
       <t>
        Note that only two partitions of the Diameter servers are shown. This
@@ -377,6 +370,9 @@
          necessary.]
         </t>
         <t>
+         [steve: I'm ok with model.]
+        </t>
+        <t>
          [ben: I'm going to get lost in the PRTA vs PDNA language. The
          acronyms are two similar. Can we just spell it out, or come up with
          shorter mnemonic names? I'm also not confident that we've captured
@@ -388,7 +384,13 @@
          term--but it may still be the best term.]
         </t>
         <t>
-         There would also be a DOIC association between each client and each
+         [steve: I don't see e2e as being in play and don't see the need to complicate
+         the process by discussing it.  I also think we can put too much into the name,
+         the descriptions are what matter.  How about the Per Report Model (PRM) and
+         the DOIC Node Model (DNM).  Or how about model 1 (M1) and model 2 (m2).]
+        </t>
+        <t>
+         There will also be a DOIC association between each client and each
          agent for realm reports, assuming that agents are responsible for
          sending realm overload reports.
         </t>
@@ -406,9 +408,6 @@
          and to a server. This diagram shows four associations being created.
         </t>
         <t>
-         [ben: previous section said we would not discuss the no-agent cases.]
-        </t>
-        <t>
          QUESTION: DO WE DISCUSS THE "COST" OF EACH ASSOCIATION IN TERMS OF
          THE STATE THAT NEEDS TO BE STORED? IS THIS REALLY DIFFERENT BETWEEN
          THE TWO MODELS? HOW IS SEQUENCE NUMBER AND VALIDITY DURATION MANAGED
@@ -420,6 +419,10 @@
          abatement algorithms, it may be much more. For example, with a
          windowed algorithm, S might have to maintain a window for each client
          and agent in the entire network.]
+        </t>
+        <t>
+          [steve: I've been thinking we need a "why does it matter" section.  State
+          handling would be one of the reasons it matters.]
         </t>
         <figure anchor="per-report-agent">
           <artwork><![CDATA[
@@ -440,8 +443,32 @@
           </artwork>
         </figure>
         <t>
-          [steve: need a figure that shows two agents]
+          <xref target="per-report-agent2"/> shows the associations that would
+         result from a single transaction between a client, through two agents
+         and to a server.  This results in eight associations.
         </t>
+        <figure anchor="per-report-agent2">
+          <artwork><![CDATA[
+
+      +-+             +--+            +--+           +-+
+      |C|             |A1|            |A1|           |S|
+      +-+             +--+            +--+           +-+
+       |               |               |               |
+       |-----------------<Host Assoc>------------------|
+       |               |               |               |
+       |               |---------<Host Assoc>----------|
+       |               |               |               |
+       |               |               |-<HOST Assoc>--|
+       |               |               |               |
+       |-<Realm Assoc>-|               |               |
+       |               |               |               |
+       |--------<Realm Assoc>----------|               |
+       |               |               |               |
+       |-<Peer Assoc>--|-<Peer Assoc>--|-<Peer Assoc>--|
+       |               |               |               |
+     ]]>
+          </artwork>
+        </figure>
         <t>
          Table <xref target="perReportAssoc1"/> contains a list of all DOIC
          associations that result from the the deployment shown in
@@ -449,6 +476,11 @@
          The table shows the associations for one of the clients, one of the
          agents and one of servers. The number of associations will be the
          other clients, agents and servers.
+        </t>
+        <t>
+          [steve: probably need a table for the two agent case as will as this 
+          will show that the number of associations increase significantly with
+          each agent involved.]
         </t>
         <t>
          <list>
@@ -556,7 +588,10 @@
         </t>
         <t>
          The per node architecture is illustrated in
-         <xref target="per-node-agent"/> for deployments that include agents.
+         <xref target="per-node-agent"/> for deployments that include a
+         single agent.  This shows the associations that result from a 
+         single transaction that traverses one agent.  This model results in 
+         two associations.
         </t>
         <t>
          With this architecture, all reports types are processed by the first
@@ -618,8 +653,67 @@
           </artwork>
         </figure>
         <t>
-          [steve: need a figure that shows two agents]
+         <xref target="per-node-agent2"/> shows the associations that result from a 
+         single transaction that traverses one agent.  This model results in 
+         three associations.
         </t>
+        <t><list><t>
+          Note that one advantage of this model is that the number of DOIC associations
+          managed by any Diameter node is constrained by the number of DOIC supporting Diameter nodes 
+          with which it communicates.  The addition of additional agents in the path between
+          the client and server does not result in additional associations as is the case
+          with the per report model.
+        </t></list></t>
+        <figure anchor="per-node-agent2">
+          <artwork><![CDATA[
+
+      +-+             +--+            +--+           +-+
+      |C|             |A1|            |A1|           |S|
+      +-+             +--+            +--+           +-+
+       |               |               |               |
+       |-<DOIC Assoc>--|-<DOIC Assoc>--|-<DOIC Assoc>--|
+       |               |               |               |
+     ]]>
+          </artwork>
+        </figure>
+        <t>
+         Table <xref target="perNodeAssoc1"/> contains a list of all DOIC
+         associations that result from the the deployment shown in
+         <xref target="deploy-arch"/>, assuming that all nodes support DOIC.
+         The table shows the associations for one of the clients, one of the
+         agents and one of servers. The number of associations will be the
+         other clients, agents and servers.
+        </t>
+        <t>
+          [steve; this table is a better way of showing the associations by showing which nodes are 
+          reacting and reporting nodes for the association.  need to update the previous table to show
+          the same.]
+        </t>
+        <texttable anchor="perNodeAssoc1" title="Per Report Associations">
+          <ttcol align="center">Reacting Node</ttcol>
+          <ttcol align="center">Associations</ttcol>
+          <ttcol align="center">Reporting Node</ttcol>
+          <c>C1</c><c>C1A1</c><c>A1</c>
+          <c>A1</c><c>A1S1</c><c>S1</c>
+          <c>S1</c><c>S1A1</c><c>A1</c>
+          <c>A1</c><c>A1C1</c><c>C1</c>
+        </texttable>
+        <t>
+          <xref target="perNodeAssoc2"/> contains a list of all DOIC asssociations
+          generated by transactions between clients and servers when the transactions
+          traverse two agents.
+        </t>
+        <texttable anchor="perNodeAssoc2" title="Per Report Associations">
+          <ttcol align="center">Reacting Node</ttcol>
+          <ttcol align="center">Associations</ttcol>
+          <ttcol align="center">Reporting Node</ttcol>
+          <c>C1</c><c>C1A1</c><c>A2</c>
+          <c>A1</c><c>A1A2</c><c>A2</c>
+          <c>A2</c><c>A2S1</c><c>S1</c>
+          <c>S1</c><c>S1A2</c><c>A2</c>
+          <c>A2</c><c>A2A1</c><c>A1</c>
+          <c>A1</c><c>A1C1</c><c>C1</c>
+       </texttable>
 
       </section>
     </section>
@@ -728,6 +822,13 @@
               combination. e2e is not sufficiently flexible, combo is really
               complicated, doic-peer2doic-peer seems to work.]
              </t>
+             <t>
+               [steve: i can see an advantage of reporting nodes advertising which
+               types of reports they will send.  this can help a reacting node to 
+               know which associations to listen to for realm and rrr reports.  i don't 
+               think we are talking about e2e.  the report model says there needs to be
+               an association per report type that can be sent over the association.]
+             </t>
            </list>
           </t>
           <figure anchor="pr-uc-basic">
@@ -763,6 +864,9 @@
           <t>
            [ben: why do we need both a peer and host association between A and
            S?]
+          </t>
+          <t>
+           [steve: because this is the per report type model.  its there by definition.]
           </t>
           <t>
            Each DOIC endpoint must learn the capabilities of each endpoint
