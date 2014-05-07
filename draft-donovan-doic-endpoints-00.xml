@@ -567,6 +567,16 @@
 	         the lost algorithm.
 	       </t>
 	       <t>
+	         This use case must support the following sub-cases:
+	       </t>
+	       <t><list style="symbols">
+	         <t>
+	           Clients and agents advertising separate and potentially different capabilities.  
+	           For instance, the client might support just the loss algorithm while the agent
+	           supports both the loss and rate algorithms.  
+	         </t>
+	       </t>
+	       <t>
 	         This use case is meant to illustrate the DOIC associations that are 
 	         established as a result of the two endpoint architectures.
 	       </t>
@@ -839,13 +849,13 @@
 		       |                          |-- xxR OC-S-F:C---------->|                          |
 		       |                          |       OC-S-F:A           |                          |
 		       |                          |                          |-- xxR OC-S-F:C---------->|
-             |                          |                          |       OC-S-F:A2          |
+		       |                          |                          |       OC-S-F:A2          |
 		       |                          |                          |                          |
 		       |                          |                          |<----- xxR OC-S-F:C------>|
-             |                          |                          |           OC-S-F:SA2     |
-             |                          |                          |           OLR:Loss       |
+		       |                          |                          |           OC-S-F:SA2     |
+		       |                          |                          |           OLR:Loss       |
 		       |                          |                          |==<DOIC Host Association>=|
-             |                          |                          |                          |
+		       |                          |                          |                          |
 		       |                          |<--------- xxA OC-S-F:SC -|                          |
 		       |                          |               OC-S-F:A2A1|                          |
 		       |                          |               OLR:Loss   |                          |
