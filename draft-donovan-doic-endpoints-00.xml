@@ -42,298 +42,300 @@
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
 <rfc category="info" docName="DOIC-Endpoints-01" ipr="trust200902">
-  <!-- category values: std, bcp, info, exp, and historic
+<!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
      you can add the attributes updates="NNNN" and obsoletes="NNNN" 
      they will automatically be output with "(if approved)" -->
-
-  <!-- ***** FRONT MATTER ***** -->
-
+<!-- ***** FRONT MATTER ***** -->
   <front>
-    <!-- The abbreviated title is used in the page header - it is only necessary if the 
+<!-- The abbreviated title is used in the page header - it is only necessary if the 
   full title is longer than 39 characters -->
-
     <title abbrev="Abbreviated Title">Analysis of Diameter Endpoint Alternatives</title>
-
-    <!-- add 'role="editor"' below for the editors if appropriate -->
-
-    <!-- Another author who claims to be an editor -->
-
+<!-- add 'role="editor"' below for the editors if appropriate -->
+<!-- Another author who claims to be an editor -->
     <author fullname="Steve Donovan" initials="S.R." role="editor"
      surname="Donovan">
       <organization>Oracle</organization>
-
       <address>
- <postal>
-   <street></street>
-
-   <!-- Reorder these if your country does things differently -->
-
-   <city>Frisco</city>
-
-   <region>Texas</region>
-
-   <code></code>
-
-   <country>USA</country>
- </postal>
-
- <phone>+1</phone>
-
- <email>srdonovan@usdonovans.com</email>
-
- <!-- uri and facsimile elements may also be added -->
+        <postal>
+          <street></street>
+<!-- Reorder these if your country does things differently -->
+          <city>Frisco</city>
+          <region>Texas</region>
+          <code></code>
+          <country>USA</country>
+        </postal>
+        <phone>+1</phone>
+        <email>srdonovan@usdonovans.com</email>
+<!-- uri and facsimile elements may also be added -->
       </address>
     </author>
-
-   <author fullname="Ben Campbell" initials="B." 
+    <author fullname="Ben Campbell" initials="B." 
      surname="Campbell">
       <organization>Oracle</organization>
-
       <address>
- <postal>
-   <street></street>
-
-   <!-- Reorder these if your country does things differently -->
-
-   <city>Frisco</city>
-
-   <region>Texas</region>
-
-   <code></code>
-
-   <country>USA</country>
- </postal>
-
- <phone>+1</phone>
-
- <email>ben@nostrum.com</email>
-
- <!-- uri and facsimile elements may also be added -->
+        <postal>
+          <street></street>
+<!-- Reorder these if your country does things differently -->
+          <city>Frisco</city>
+          <region>Texas</region>
+          <code></code>
+          <country>USA</country>
+        </postal>
+        <phone>+1</phone>
+        <email>ben@nostrum.com</email>
+<!-- uri and facsimile elements may also be added -->
       </address>
     </author>
-
-
     <date month="April" year="2014" />
-
-    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
+<!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
   in the current day for you. If only the current year is specified, xml2rfc will fill 
     in the current day and month for you. If the year is not the current one, it is 
     necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the 
     purpose of calculating the expiry date).  With drafts it is normally sufficient to 
     specify just the year. -->
-
-    <!-- Meta-data Declarations -->
-
+<!-- Meta-data Declarations -->
     <area>General</area>
-
     <workgroup>Internet Engineering Task Force</workgroup>
-
-    <!-- WG name at the upperleft corner of the doc,
+<!-- WG name at the upperleft corner of the doc,
   IETF is fine for individual submissions.  
     If this element is not present, the default is "Network Working Group",
   which is used by the RFC Editor as a nod to the history of the IETF. -->
-
     <keyword>template</keyword>
-
-    <!-- Keywords will be incorporated into HTML output
+<!-- Keywords will be incorporated into HTML output
   files in a meta tag but they have no effect on text or nroff
   output. If you submit your draft to the RFC Editor, the
   keywords will be used for the search engine. -->
-
     <abstract>
       <t>
-        The Diameter Overload Information Conveyance (DOIC) solution describes a mechanism 
-		for exchanging information about Diameter Overload among Diameter nodes.
-		DOIC defines the concept of DOIC endpoints.  A DOIC endpoint is
-        a Diameter node that acts as either a reporting node are a reacting node.  A reporting 
-        node originates overload reports, requesting reacting nodes to reduce the amount of 
-        traffic sent.  The type of overload report determines the scope of the request for 
-        traffic reduction.  The current definition of DOIC endpoints is ambiguous, resulting 
-        in differing assumptions about the implementation of the DOIC solution.  This document 
-        describes two common interpretations of DOIC endpoints and analyzes how the two approaches 
-        address various Diameter overload use cases and deployment scenarios.
+       The Diameter Overload Information Conveyance (DOIC) solution describes
+       a mechanism for exchanging information about Diameter Overload among
+       Diameter nodes. DOIC defines the concept of DOIC endpoints. A DOIC
+       endpoint is a Diameter node that acts as either a reporting node are a
+       reacting node. A reporting node originates overload reports, requesting
+       reacting nodes to reduce the amount of traffic sent. The type of
+       overload report determines the scope of the request for traffic
+       reduction. The current definition of DOIC endpoints is ambiguous,
+       resulting in differing assumptions about the implementation of the DOIC
+       solution. This document describes two common interpretations of DOIC
+       endpoints and analyzes how the two approaches address various Diameter
+       overload use cases and deployment scenarios.
       </t>
     </abstract>
   </front>
-
   <middle>
-  
     <section anchor="intro" title="Introduction">
-       <t>
-        The Diameter Overload Information Conveyance (DOIC) solution describes a mechanism 
-		for exchanging information about Diameter Overload among Diameter nodes.
-		DOIC defines the concept of DOIC endpoints.  A DOIC endpoint is
-        a Diameter node that acts as either a reporting node are a reacting node.  A reporting 
-        node originates overload reports, requesting reacting nodes to reduce the amount of 
-        traffic sent.  The type of overload report determines the scope of the request for 
-        traffic reduction.  The current definition of DOIC endpoints is ambiguous, resulting 
-        in differing assumptions about the implementation of the DOIC solution.  This document 
-        describes two common interpretations of DOIC endpoints and analyzes how the two approaches 
-        address various Diameter overload use cases and deployment scenarios.
-      </t>
-	  <t>
-	  	DOIC endpoints do not necessarily correspond to Diameter clients and servers. 
-		Any Diameter node that supports DOIC can be a DOIC endpoint. This includes Diameter
-	    agents, as well as Diameter clients and servers. A pair of DOIC endpoints that 
-	    exchange overload information, as well as information about DOIC support, can
-		be said to share a DOIC association.
-	  </t>
-	
       <t>
-        The two interpretations of DOIC endpoints and the resulting associations are 
-        summarized as follows:
+       The Diameter Overload Information Conveyance (DOIC) solution describes
+       a mechanism for exchanging information about Diameter Overload among
+       Diameter nodes. DOIC defines the concept of DOIC endpoints. A DOIC
+       endpoint is a Diameter node that acts as either a reporting node or a
+       reacting node. A reporting node originates overload reports, requesting
+       reacting nodes to reduce the amount of traffic sent. The type of
+       overload report determines the scope of the request for traffic
+       reduction. The current definition of DOIC endpoints is ambiguous,
+       resulting in differing assumptions about the implementation of the DOIC
+       solution. This document describes two common interpretations of DOIC
+       endpoints and analyzes how the two approaches address various Diameter
+       overload use cases and deployment scenarios.
       </t>
       <t>
-        <list style="symbols">
-          <t hangText="Per Report">
-            The per report model implies there is a DOIC association per report that 
-            can be originated. With this model there can be multiple associations generated
-            as a result of a single Diameter transaction.  See <xref target="perReport"/> for more 
-            information on this model.
-          </t>
-          <t hangText="Per Node">
-            The per node model implies that there is a DOIC association between each pair
-            of Diameter nodes that support the DOIC solution.  With this model a 
-            transaction can only create a single association between any two Diameter
-            nodes, but there can be a chain of 
-            associations between the originator of the Diameter transaction (typically a 
-            Diameter Client) and the responder to the Diameter transaction (typically a Diameter 
-            Server).  See <xref target="perNode"/> for more information on this model.
-          </t>
+       DOIC endpoints do not necessarily correspond to Diameter clients and
+       servers. Any Diameter node that supports DOIC can be a DOIC endpoint.
+       This includes Diameter agents, as well as Diameter clients and servers.
+       A pair of DOIC endpoints that exchange overload information, as well as
+       information about DOIC support, can be said to share a DOIC
+       association.
+      </t>
+      <t>
+       The two interpretations of DOIC endpoints and the resulting
+       associations are summarized as follows:
+      </t>
+      <t>
+       <list style="symbols">
+         <t hangText="Per-Report-type">
+          The per report model implies there is a DOIC association per
+          report-type that can be originated. With this model there can be
+          multiple associations generated as a result of a single Diameter
+          transaction. See <xref target="perReport"/> for more information on
+          this model.
+         </t>
+         <t hangText="Per DOIC Node">
+          The per node model implies that there is a DOIC association between
+          each pair of Diameter nodes that support the DOIC solution. With
+          this model a transaction can only create a single association
+          between any two Diameter nodes, but there can be a chain of
+          associations between the originator of the Diameter transaction
+          (typically a Diameter Client) and the responder to the Diameter
+          transaction (typically a Diameter Server). See
+          <xref target="perNode"/> for more information on this model.
+         </t>
+         <t>
+          [ben: Add the model acronyms here if we stick with them.]
+         </t>
        </list>
       </t>
       <t>
-        The current DOIC specification <xref target="I-D.ietf-dime-ovli"/> does not fully specify the 
-        the semantics associated with the DOIC endpoint concept.  It is also possible that 
-        additional syntax will be required.
+       The current DOIC specification <xref target="I-D.ietf-dime-ovli"/> does
+       not fully specify the the semantics associated with the DOIC endpoint
+       concept. It is also possible that additional syntax will be required.
       </t>
       <t>
-        This document outlines an example deployment and multiple use cases that can be used to 
-        evaluate how those use cases would be implemented using the two assumed endpoint architectures.
+       This document outlines an example deployment and multiple use cases
+       that can be used to evaluate how those use cases would be implemented
+       using the two assumed endpoint architectures.
       </t>
-   </section>
-   
-   <section title="Terminology and Abbreviations">
-   <t><list style="hanging">
-   	<t hangText="Diameter Node:">
-	A Diameter client, agent or server.</t>
-   	<t hangText="DOIC Endpoint:"> 
-	A Diameter node that supports the DOIC solution and acts as either a reporting 
-   	   node, a reacting node, or both.</t>
-   	<t hangText="DOIC Association:"> 
-	The relationship between a DOIC reacting node and a reporting node. A pair of
-	associated DOIC endpoints share state, including information such as the fact that the opposite
-	endpoint supports DOIC, the DOIC related capabilities of each endpoint, etc.</t>
-	<t hangText="Overload Abatement:">
-		Actions taken by a reacting node to reduce the load offered to an 
-		overloaded Diameter node. The specific actions required to perform overload abatement
-		are described by the DOIC algorithm. Overload abatement actions may involve local
-		traffic reduction, or delegation of actions towards the client. 
-	</t>
-   	<t hangText="Reacting node:">
-	A DOIC endpoint that can receive overload reports from a reporting node,
-	   and perform overload abatement. A DOIC endpoint can simultaneously
-	   be both a reacting node and reporting node.</t>
-   	<t hangText="Reporting node:">
-	A DOIC endpoint that can send overload reports to a reacting node, requesting
-	   the reacting node to perform overload abatement. </t>
-   </list></t>
-   </section>
-   
-   <section anchor="end" title="DOIC Endpoints">
-   
-     <t>
-       DOIC endpoints are defined in <xref target="I-D.ietf-dime-ovli"/>.  A DOIC association is the
-       logical relationship between a pair of Diameter endpoints.  A DOIC endpoint can
-       be a reacting node, a reporting node, or both. A reporting node is 
-       the entity that sends overload reports, requesting a reduction in the amount
-       of Diameter traffic sent to the node. A reacting node is the entity that receives the
-       overload report, and performs needed overload abatement actions.</t>
-
-     <t><list><t> 
-	   A reacting node is also a DOIC supporting node that originates or relays Diameter requests,
-	   while a reporting node responds to or relays Diameter requests. This is a side effect of the
-	   solution choice of imbedding overload reports in Diameter answers, but not Diameter requests.
-	   Since Diameter supports bidirectional transactions, a node may simultaneously be a 
-	   reacting node for transactions in one direction, and a reporting node for the other.
-     </t>
-     <t>
-       This bidirectional nature makes it possible for a Diameter server to be a reacting node
-       and for a Diameter client to be a reporting node.  There are multiple examples of 
-       Diameter applications which require Diameter servers to originate requests toward 
-       Diameter clients.  There are also examples where the Diameter transactions are 
-       between two Diameter servers, further confusing the concept of Diameter clients and servers.
-     </t></list></t>
-     <t>
-       In the most basic case a reacting node will be a Diameter client and a reporting node will 
-       be a Diameter server.  When a Diameter server determines that it is handling too much 
-       traffic, it sends on overload report to the reacting node.  The reacting node is responsible 
-       for reducing the amount of traffic sent to the reporting node based on the contents of the 
-       overload report.
-     </t>
-     <t>       
-       In the more general case, a Diameter agent can take on the role of a reacting 
-       node that receives reports from upstream reporting nodes, and that of a reporting
-  	   node that sends reports to downstream a reacting nodes. This can be useful in situations
-       where some or all downstream clients or upstream servers do not support DOIC.
-     </t>
-	 <t><list><t>
-		<xref target="I-D.ietf-dime-ovli"/> does not limit agents to only act as DOIC endpoints
-		on behalf of clients or servers that do not support DOIC. There may be other
-		cases where operators may choose to deploy agents intermediate DOIC associations
-		between clients and servers. For example, to handle mismatched capabilities, or
-		to reduce the number of DOIC associations maintained by Diameter servers.
-     </t></list></t>
-     <t>
-       The DOIC endpoint relationship is established during the DOIC capability exchange.  
-       The flow of the message establishes which entity is the reacting node and which is 
-       the reporting node for the DOIC association(s) established by the Diameter 
-       transaction.  The originator of the request message is not always the reacting node 
-       and the entity the originates the answer message is not always the reporting node.  
-       This is due to the need to support a Diameter network that has a mix of nodes that 
-       support the DOIC extension and those that don't.  There are also report types being
-       considered where agents are required to be the reporting node (both realm reports defined 
-       in <xref target="I-D.ietf-dime-ovli"/> and peer reports defined in <xref target="agent-overload"/>).
-     </t>     
-   </section>
-   
-   <section anchor="deploy" title="Deployment Architecture">
-   
-     <t>
-       This section outlines the deployment architecture that is used to evaluate the two 
-       DOIC endpoint architectures.
-     </t>
-     <t>
-       This deployment architecture includes the use of Diameter agents to route Diameter requests 
-       between Diameter clients and Diameter servers.  This architecture also assumes that the 
-       Diameter servers are partitioned in a fashion that requires Diameter requests to be routed 
-       through multiple agents.  All Diameter nodes in this deployment 
+    </section>
+    <section title="Terminology and Abbreviations">
+      <t>
+       <list style="hanging">
+         <t hangText="Diameter Node:">
+          A Diameter client, agent or server.
+         </t>
+         <t hangText="DOIC Endpoint:">
+          A Diameter node that supports the DOIC solution and acts as either a
+          reporting node, a reacting node, or both.
+         </t>
+         <t hangText="DOIC Association:">
+          The relationship between a DOIC reacting node and a reporting node.
+          A pair of associated DOIC endpoints share state, including
+          information such as the fact that the opposite endpoint supports
+          DOIC, the DOIC related capabilities of each endpoint, current
+          overload state of the reporting node, etc. Certain abatement
+          algorithms may require DOIC nodes to store algorithm-specific state.
+         </t>
+         <t hangText="Overload Abatement:">
+          Actions taken by a reacting node to reduce the load offered to an
+          overloaded Diameter node. The specific actions required to perform
+          overload abatement are described by the DOIC algorithm. Overload
+          abatement actions may involve local traffic reduction, or delegation
+          of actions towards the client.
+         </t>
+         <t hangText="Reacting node:">
+          A DOIC endpoint that can receive overload reports from a reporting
+          node, and perform overload abatement. A DOIC endpoint can
+          simultaneously be both a reacting node and reporting node.
+         </t>
+         <t hangText="Reporting node:">
+          A DOIC endpoint that can send overload reports to a reacting node,
+          requesting the reacting node to perform overload abatement.
+         </t>
+       </list>
+      </t>
+    </section>
+    <section anchor="end" title="DOIC Endpoints">
+      <t>
+       DOIC endpoints are defined in <xref target="I-D.ietf-dime-ovli"/>. A
+       DOIC association is the logical relationship between a pair of Diameter
+       endpoints. A DOIC endpoint can be a reacting node, a reporting node, or
+       both. A reporting node is the entity that sends overload reports,
+       requesting a reduction in the amount of Diameter traffic sent to the
+       node. A reacting node is the entity that receives the overload report,
+       and performs needed overload abatement actions.
+      </t>
+      <t>
+       <list>
+         <t>
+          A reacting node is also a DOIC supporting node that originates or
+          relays Diameter requests, while a reporting node responds to or
+          relays Diameter requests. This is a side effect of the solution
+          choice of imbedding overload reports in Diameter answers, but not
+          Diameter requests. Since Diameter supports bidirectional
+          transactions, a node may simultaneously be a reacting node for
+          transactions in one direction, and a reporting node for the other.
+         </t>
+         <t>
+          This bidirectional nature makes it possible for a Diameter server to
+          be a reacting node and for a Diameter client to be a reporting node.
+          There are multiple examples of Diameter applications which require
+          Diameter servers to originate requests toward Diameter clients.
+          There are also examples where the Diameter transactions are between
+          two Diameter servers, further confusing the concept of Diameter
+          clients and servers.
+         </t>
+       </list>
+      </t>
+      <t>
+       In the most basic case a reacting node will be a Diameter client and a
+       reporting node will be a Diameter server. When a Diameter server
+       determines that it is handling too much traffic, it sends an overload
+       report to the reacting node. The reacting node is responsible for
+       reducing the amount of traffic sent to the reporting node based on the
+       contents of the overload report.
+      </t>
+      <t>
+       In the more general case, a Diameter agent can take on the role of a
+       reacting node that receives reports from upstream reporting nodes, and
+       that of a reporting node that sends reports to downstream a reacting
+       nodes. This can be useful in situations where some or all downstream
+       clients or upstream servers do not support DOIC.
+      </t>
+      <t>
+       <list>
+         <t>
+          <xref target="I-D.ietf-dime-ovli"/> does not limit agents to only
+          act as DOIC endpoints on behalf of clients or servers that do not
+          support DOIC. There may be other cases where operators may choose to
+          deploy agents intermediate DOIC associations between clients and
+          servers. For example, to handle mismatched capabilities, or to
+          reduce the number of DOIC associations maintained by Diameter
+          servers.
+         </t>
+       </list>
+      </t>
+      <t>
+       The DOIC endpoint relationship is established during the DOIC
+       capability exchange. The flow of the message establishes which entity
+       is the reacting node and which is the reporting node for the DOIC
+       association(s) established by the Diameter transaction. The originator
+       of the request message is not always the reacting node and the entity
+       the originates the answer message is not always the reporting node.
+       This is due to the need to support a Diameter network that has a mix of
+       nodes that support the DOIC extension and those that don't. There are
+       also report types being considered where agents are required to be the
+       reporting node (both realm reports defined in
+       <xref target="I-D.ietf-dime-ovli"/> and peer reports defined in
+       <xref target="agent-overload"/>).
+      </t>
+    </section>
+    <section anchor="deploy" title="Deployment Architecture">
+      <t>
+       This section outlines the deployment architecture that is used to
+       evaluate the two DOIC endpoint architectures.
+      </t>
+      <t>
+       This deployment architecture includes the use of Diameter agents to
+       route Diameter requests between Diameter clients and Diameter servers.
+       This architecture also assumes that the Diameter servers are
+       partitioned in a fashion that requires Diameter requests to be routed
+       through multiple agents. All Diameter nodes in this deployment
        architecture are assumed to support the DOIC solution.
-     </t>
-		<t>
-			[ben: Do we need to include scenarios with non-supporting nodes? That could easily
-			force the per-report-type approach into a full mesh of associations.]
-		</t>
-		<t>
-		  [steve: Maybe we change the last sentence to "This deployment architecture needs to be evaluated 
-		  when all nodes support DOIC and when there is a mix of supporting and non-supporting nodes.]
-		</t>
-     <t>
-       Note that only two partitions of the Diameter servers are shown.  This is bending to the 
-       limitations of ascii art for drawing complex deployment scenarios.  It is possible, and 
-       even likely, that real world deployments will have many more that two partitions of the 
-       servers for a Diameter application.
-     </t>
-     <t>
-       Note also that this document does not discuss deployments that do not involve agents, 
-       as there is no effective difference between the Per Report endpoint architecture and 
-       the Per Node endpoint architecture with an agentless deployment scenario.
-     </t>
-     
-     <figure anchor="deploy-arch">
-
-       <artwork><![CDATA[
+      </t>
+      <t>
+       [ben: Do we need to include scenarios with non-supporting nodes? That
+       could easily force the per-report-type approach into a full mesh of
+       associations.]
+      </t>
+      <t>
+       [steve: Maybe we change the last sentence to "This deployment
+       architecture needs to be evaluated when all nodes support DOIC and when
+       there is a mix of supporting and non-supporting nodes.]
+      </t>
+      <t>
+       Note that only two partitions of the Diameter servers are shown. This
+       is bending to the limitations of ascii art for drawing complex
+       deployment scenarios. It is possible, and even likely, that real world
+       deployments will have many more that two partitions of the servers for
+       a Diameter application.
+      </t>
+      <t>
+       Note also that this document does not discuss deployments that do not
+       involve agents, as there is no effective difference between the Per
+       Report endpoint architecture and the Per Node endpoint architecture
+       with an agentless deployment scenario.
+      </t>
+      <figure anchor="deploy-arch">
+        <artwork><![CDATA[
 
       +--+                +--+ -\
       |C1|-----      -----|S1|   |
@@ -352,54 +354,70 @@
       +--+                +--+ -/
 
 
-     ]]></artwork>
-     </figure>
-   
-   </section>
-
-   <section title="Solution Alternatives">
-     <section anchor="perReport" title="Per Report Type Associations">
-     
-       <t>
-         The Per Report Type Architecture (PRTA) implies that there is set of a DOIC associations for each 
-         report type.  For instance, in the deployment architecture illustrated in 
-         <xref target="deploy"/> there would be a DOIC association between
-         each client and each server for the host reports that are generated by the server.
-       </t>
-       <t>
-         There would also be a DOIC association between each client and each agent for
-         realm reports, assuming that agents are responsible for sending realm overload reports.
-       </t>
-       <t>
-         This discussion also includes the proposed architecture for agent overload.  This is done
-         to further illustrate the per report endpoint architecture, as the agent overload draft 
-         proposes the introduction of a new report type.  Further extensions that introduce new
-         report types would also add additional associations with the per report architecture.
-       </t>
-       <t>
-         <xref target="per-report-agent"/> shows the associations that would result from a single
-         transaction between a client, through an agent and to a server.  This diagram shows four 
-         associations being created.
-       </t>
-
-	   <t>
-	   	[ben: previous section said we would not discuss the no-agent cases.]
-	   </t>
-       <t>
-         QUESTION: DO WE DISCUSS THE "COST" OF EACH ASSOCIATION IN TERMS OF THE STATE THAT NEEDS 
-         TO BE STORED?  IS THIS REALLY DIFFERENT BETWEEN THE TWO MODELS?  HOW IS SEQUENCE NUMBER 
-         AND VALIDITY DURATION MANAGED IN THE PER NODE MODEL?
-       </t>
-	   <t>
-	   	[ben: I think we have to consider state. That will include at least the capabilities for each
-	    associated DOIC endpoint. For stateful abatement algorithms, it may be much more. For
-	    example, with a windowed algorithm, S might have to maintain a window for each client
-        and agent in the entire network.]
-	   </t>
-       
-       <figure anchor="per-report-agent">
-
-       <artwork><![CDATA[
+     ]]>
+        </artwork>
+      </figure>
+    </section>
+    <section title="Solution Alternatives">
+      <section anchor="perReport" title="Per Report Type Associations">
+        <t>
+         The Per Report Type Architecture (PRTA) implies that there is set of
+         a DOIC associations for each report type. For instance, in the
+         deployment architecture illustrated in <xref target="deploy"/> there
+         would be a DOIC association between each client and each server for
+         the host reports that are generated by the server.
+        </t>
+        <t>
+         [ben: I propose s/architecture/model. Architecture is heavier than
+         necessary.]
+        </t>
+        <t>
+         [ben: I'm going to get lost in the PRTA vs PDNA language. The
+         acronyms are two similar. Can we just spell it out, or come up with
+         shorter mnemonic names? I'm also not confident that we've captured
+         the real essence of the two models. I think we really have 3, that
+         could be described as e2e, hbh, and hybrid or mixed. PDNA is hbh.
+         PRTA is hybrid, where a given report type can be e2e or hbh. (I don't
+         think anyone still believes in a strictly e2e model, although the
+         recent CT3 contribs may prove otherwise.) I know hbh is a loaded
+         term--but it may still be the best term.]
+        </t>
+        <t>
+         There would also be a DOIC association between each client and each
+         agent for realm reports, assuming that agents are responsible for
+         sending realm overload reports.
+        </t>
+        <t>
+         This discussion also includes the proposed architecture for agent
+         overload. This is done to further illustrate the per report endpoint
+         architecture, as the agent overload draft proposes the introduction
+         of a new report type. Further extensions that introduce new report
+         types would also add additional associations with the per report
+         architecture.
+        </t>
+        <t>
+         <xref target="per-report-agent"/> shows the associations that would
+         result from a single transaction between a client, through an agent
+         and to a server. This diagram shows four associations being created.
+        </t>
+        <t>
+         [ben: previous section said we would not discuss the no-agent cases.]
+        </t>
+        <t>
+         QUESTION: DO WE DISCUSS THE "COST" OF EACH ASSOCIATION IN TERMS OF
+         THE STATE THAT NEEDS TO BE STORED? IS THIS REALLY DIFFERENT BETWEEN
+         THE TWO MODELS? HOW IS SEQUENCE NUMBER AND VALIDITY DURATION MANAGED
+         IN THE PER NODE MODEL?
+        </t>
+        <t>
+         [ben: I think we have to consider state. That will include at least
+         the capabilities for each associated DOIC endpoint. For stateful
+         abatement algorithms, it may be much more. For example, with a
+         windowed algorithm, S might have to maintain a window for each client
+         and agent in the entire network.]
+        </t>
+        <figure anchor="per-report-agent">
+          <artwork><![CDATA[
 
       +-+                        +-+                        +-+
       |C|                        |A|                        |S|
@@ -412,114 +430,174 @@
        |-<DOIC Peer Association>--|-<DOIC Peer Association>--|
        |                          |                          |
 
-     ]]></artwork>
-     </figure>
-   
-       <t>
-         Table <xref target="perReportAssoc1"/> contains a list of all DOIC associations that result 
-         from the the deployment shown in <xref target="deploy-arch"/>, assuming that all nodes support 
-         DOIC.  The table shows the associations for one of the clients, one of the agents and one of 
-         servers.  The number of associations will be the other clients, agents and servers.  
-       </t>
-       <t><list><t>
-         Note that this analysis assumes that all nodes support DOIC and that all clients at some point
-         initiate transactions with all servers and vice versa.
-       </t></list></t>
-       <texttable anchor="perReportAssoc1" title="Per Report Associations">
-         <ttcol align="center">Node</ttcol>
-         <ttcol align="center">Report Type</ttcol>
-         <ttcol align="center">Associations</ttcol>
-         
-         <c>C1</c><c>Host</c><c>C1S1</c>
-         <c></c><c></c><c>C1S2</c>
-         <c></c><c></c><c>C1S3</c>
-         <c></c><c></c><c>C1S4</c>         
-         <c></c><c>RRR</c><c>C1A1</c> 
-         <c></c><c></c><c>C1A2</c> 
-         <c></c><c>Peer</c><c>C1A1</c> 
-
-         <c>S1</c><c>Host</c><c>S1C1</c>
-         <c></c><c></c><c>S1C2</c>
-         <c></c><c></c><c>S1C3</c>
-         <c></c><c></c><c>S1C4</c>         
-         <c></c><c>RRR</c><c>S1A1</c> 
-         <c></c><c></c><c>S1A2</c> 
-         <c></c><c>Peer</c><c>S1A1</c> 
-
-         <c>A1</c><c>Host</c><c>N/A</c>
-         <c></c><c>RRR</c><c>A1C1</c> 
-         <c></c><c></c><c>A1C2</c> 
-         <c></c><c></c><c>A1C3</c> 
-         <c></c><c></c><c>A1C4</c> 
-         <c></c><c></c><c>A1S1</c> 
-         <c></c><c></c><c>A1S2</c> 
-         <c></c><c></c><c>A1S3</c> 
-         <c></c><c></c><c>A1S4</c> 
-         <c></c><c>Peer</c><c>A1C1</c> 
-         <c></c><c></c><c>A1C2</c> 
-         <c></c><c></c><c>A1S1</c> 
-         <c></c><c></c><c>A1S2</c> 
-         <c></c><c></c><c>A1A2</c> 
-         
-       </texttable>
-       
-     </section>
-     
-     <section anchor="perNode" title="Per DOIC Node Associations">
-     
-       <t>
-         The Per DOIC Node Architecture (PDNA) assumes there will be a single association between adjacent nodes
-         that support the DOIC solution.  
-       </t>
-       <t>
-         The per node architecture is illustrated in <xref target="per-node-agent"/> for 
-         deployments that include agents.
-       </t>
-       <t>
-         With this architecture, all reports types are 
-         processed by the first reacting node that receives the report.  What the reacting node
-         does with the report depends on the report type combined with local policy.  For instance, 
-         an agent that receives a host report from the server could do any of the following:
-       </t>
-       <t>
-         <list style="symbols">
+     ]]>
+          </artwork>
+        </figure>
+        <t>
+         Table <xref target="perReportAssoc1"/> contains a list of all DOIC
+         associations that result from the the deployment shown in
+         <xref target="deploy-arch"/>, assuming that all nodes support DOIC.
+         The table shows the associations for one of the clients, one of the
+         agents and one of servers. The number of associations will be the
+         other clients, agents and servers.
+        </t>
+        <t>
+         <list>
            <t>
-             If the agent determines that there is capacity in other servers that can handle the 
-             traffic reduction requested by the server then the agent can consume the report, with 
-             the mitigation action being to re-route the requested percentage of traffic to other 
-             servers. [ben: This comes perilously close to the RRR vs Realm discussion, since it
-             would normally be possible only for realm-routed requests.]
-           </t>
-           <t>
-             The agent can use the contents of the host report as input into routing decisions
-             on realm-routed requests.  The agent can then include a semantically equivalent 
-             host report in the answer.
-           </t>
-           <t>
-             If the agent determines that there is no spare capacity in other servers then the agent
-             can generate an equivalent host report and send it to the client. This report might be
-             functionally identical to that sent by the server, but it is "from" the agent. In effect
-				 this could be considered passing the server report through to the client. Alternately, if
-				 there is non-zero spare capacity in other servers, but not enough to re-route all traffic,
-				 the agent might calculate a different reduction percentage, and send a different "host"
-				 report towards the client. [ben: I'd like to wedgie the concept of "abatement by 
-				 delegation" in here somewhere.]
-           </t> 
-           <t>
-             If local policy allows then the agent could always "pass-through" the host report without
-             taking any other action.
-           </t>
-           <t>
-             If the agent has a full view of all servers supporting the application-id then the agent
-             could use the contents of the report to generate a realm report.  In this case it is possible
-             the answer message could contain both a host and a realm report.
+            Note that this analysis assumes that all nodes support DOIC and
+            that all clients at some point initiate transactions with all
+            servers and vice versa.
            </t>
          </list>
-       </t>
-   
-       <figure anchor="per-node-agent">
-
-       <artwork><![CDATA[
+        </t>
+        <texttable anchor="perReportAssoc1" title="Per Report Associations">
+          <ttcol align="center">Node</ttcol>
+          <ttcol align="center">Report Type</ttcol>
+          <ttcol align="center">Associations</ttcol>
+          <c>C1</c>
+          <c>Host</c>
+          <c>C1S1</c>
+          <c></c>
+          <c></c>
+          <c>C1S2</c>
+          <c></c>
+          <c></c>
+          <c>C1S3</c>
+          <c></c>
+          <c></c>
+          <c>C1S4</c>
+          <c></c>
+          <c>RRR</c>
+          <c>C1A1</c>
+          <c></c>
+          <c></c>
+          <c>C1A2</c>
+          <c></c>
+          <c>Peer</c>
+          <c>C1A1</c>
+          <c>S1</c>
+          <c>Host</c>
+          <c>S1C1</c>
+          <c></c>
+          <c></c>
+          <c>S1C2</c>
+          <c></c>
+          <c></c>
+          <c>S1C3</c>
+          <c></c>
+          <c></c>
+          <c>S1C4</c>
+          <c></c>
+          <c>RRR</c>
+          <c>S1A1</c>
+          <c></c>
+          <c></c>
+          <c>S1A2</c>
+          <c></c>
+          <c>Peer</c>
+          <c>S1A1</c>
+          <c>A1</c>
+          <c>Host</c>
+          <c>N/A</c>
+          <c></c>
+          <c>RRR</c>
+          <c>A1C1</c>
+          <c></c>
+          <c></c>
+          <c>A1C2</c>
+          <c></c>
+          <c></c>
+          <c>A1C3</c>
+          <c></c>
+          <c></c>
+          <c>A1C4</c>
+          <c></c>
+          <c></c>
+          <c>A1S1</c>
+          <c></c>
+          <c></c>
+          <c>A1S2</c>
+          <c></c>
+          <c></c>
+          <c>A1S3</c>
+          <c></c>
+          <c></c>
+          <c>A1S4</c>
+          <c></c>
+          <c>Peer</c>
+          <c>A1C1</c>
+          <c></c>
+          <c></c>
+          <c>A1C2</c>
+          <c></c>
+          <c></c>
+          <c>A1S1</c>
+          <c></c>
+          <c></c>
+          <c>A1S2</c>
+          <c></c>
+          <c></c>
+          <c>A1A2</c>
+        </texttable>
+      </section>
+      <section anchor="perNode" title="Per DOIC Node Associations">
+        <t>
+         The Per DOIC Node Architecture (PDNA) assumes there will be a single
+         association between adjacent nodes that support the DOIC solution.
+        </t>
+        <t>
+         The per node architecture is illustrated in
+         <xref target="per-node-agent"/> for deployments that include agents.
+        </t>
+        <t>
+         With this architecture, all reports types are processed by the first
+         reacting node that receives the report. What the reacting node does
+         with the report depends on the report type combined with local
+         policy. For instance, an agent that receives a host report from the
+         server could do any of the following:
+        </t>
+        <t>
+         <list style="symbols">
+           <t>
+            If the agent determines that there is capacity in other servers
+            that can handle the traffic reduction requested by the server then
+            the agent can consume the report, with the mitigation action being
+            to re-route the requested percentage of traffic to other servers.
+            [ben: This comes perilously close to the RRR vs Realm discussion,
+            since it would normally be possible only for realm-routed
+            requests.]
+           </t>
+           <t>
+            The agent can use the contents of the host report as input into
+            routing decisions on realm-routed requests. The agent can then
+            include a semantically equivalent host report in the answer.
+           </t>
+           <t>
+            If the agent determines that there is no spare capacity in other
+            servers then the agent can generate an equivalent host report and
+            send it to the client. This report might be functionally identical
+            to that sent by the server, but it is "from" the agent. In effect
+            this could be considered passing the server report through to the
+            client. Alternately, if there is non-zero spare capacity in other
+            servers, but not enough to re-route all traffic, the agent might
+            calculate a different reduction percentage, and send a different
+            "host" report towards the client. [ben: I'd like to wedgie the
+            concept of "abatement by delegation" in here somewhere.]
+           </t>
+           <t>
+            If local policy allows then the agent could always "pass-through"
+            the host report without taking any other action.
+           </t>
+           <t>
+            If the agent has a full view of all servers supporting the
+            application-id then the agent could use the contents of the report
+            to generate a realm report. In this case it is possible the answer
+            message could contain both a host and a realm report.
+           </t>
+         </list>
+        </t>
+        <figure anchor="per-node-agent">
+          <artwork><![CDATA[
 
       +-+                        +-+                        +-+
       |C|                        |A|                        |S|
@@ -528,47 +606,66 @@
        |----<DOIC Association>----|----<DOIC Association>----|
        |                          |                          |
 
-     ]]></artwork>
-     </figure>
-     </section>
 
-   </section>
-
-   <section title="Use Cases">
-     <t>
-       This section outlines example use cases.  Each of the endpoint architectures will 
-       then be evaluated against each of these use cases, showing how the use case would 
-       be implemented with that architecture and identifying any gaps in the current 
-       DOIC specification.
-     </t>
-     <t>
-       The following is the list of use cases considered.  This is not an exhaustive list of DOIC
-       use cases but is rather a list of use cases identified as being impacted by the definition
-       of the definition of DOIC endpoints and DOIC associations.
-     </t>
-     <t><list style="symbols">
-       <t>Basic DOIC capability exchange</t>
-       <t>Mismatched client and agent capabilies</t>
-       <t>DOIC host overload report handling</t>
-       <t>DOIC end-to-end security</t>
-       <t>Non supporting Diameter nodes</t>
-       <t>Multiple and mixed abatement algorithm support</t>
-       <t>Support for rate and other stateful abatement algorithms</t>
-       <t>Support for targeted overload reports</t>
-       <t>Support for a chain of agents</t>
-       <t>PCC style cross application dependencies</t>
-     </list></t>
-     
-     <section anchor="uc-basic" title="Use Case - Basic DOIC Capability Advertisment">
-       <section title="Description">
-	       <t>
-	         This use case is included to illustrate the basic case resulting from 
-	         DOIC Capability Advertisement where the servers advertise support for 
-	         the lost algorithm.
-	       </t>
-	       <t>
-	         This use case must support the following sub-cases:
-	       </t>
+     ]]>
+          </artwork>
+        </figure>
+      </section>
+    </section>
+    <section title="Use Cases">
+      <t>
+       This section outlines example use cases. Each of the endpoint
+       architectures will then be evaluated against each of these use cases,
+       showing how the use case would be implemented with that architecture
+       and identifying any gaps in the current DOIC specification.
+      </t>
+      <t>
+       The following is the list of use cases considered. This is not an
+       exhaustive list of DOIC use cases but is rather a list of use cases
+       identified as being impacted by the definition of the definition of
+       DOIC endpoints and DOIC associations.
+      </t>
+      <t>
+       <list style="symbols">
+         <t>
+          Basic DOIC capability exchange
+         </t>
+         <t>
+          Mismatched client and agent capabilies
+         </t>
+         <t>
+          DOIC host overload report handling
+         </t>
+         <t>
+          DOIC end-to-end security
+         </t>
+         <t>
+          Non supporting Diameter nodes
+         </t>
+         <t>
+          Multiple and mixed abatement algorithm support
+         </t>
+         <t>
+          Support for rate and other stateful abatement algorithms
+         </t>
+         <t>
+          Support for targeted overload reports
+         </t>
+         <t>
+          Support for a chain of agents
+         </t>
+         <t>
+          PCC style cross application dependencies
+         </t>
+       </list>
+      </t>
+      <section anchor="uc-basic" title="Use Case - Basic DOIC Capability Advertisement">
+        <section title="Description">
+          <t>
+           This use case is included to illustrate the basic case resulting
+           from DOIC Capability Advertisement where the servers advertise
+           support for the lost algorithm.
+          </t>
 	       <t><list style="symbols">
 	         <t>
 	           Clients and agents advertising separate and potentially different capabilities.  
@@ -576,237 +673,331 @@
 	           supports both the loss and rate algorithms.  
 	         </t>
 	       </t>
-	       <t>
-	         This use case is meant to illustrate the DOIC associations that are 
-	         established as a result of the two endpoint architectures.
-	       </t>
-	     </section>
-       <section title="PRTA Handling">
-         <t>
-           <xref target="pr-uc-basic"/> illustrates the message flow associated with this use 
-           case when using the per-report-type endpoint architecture.  This use case assumes that host overload 
-           reports will be generated by the server and realm overload report will be generated
-           by the agent.  This also assumes that the client, server and agent have advertised support 
-           for the peer overload report, as proposed in the agent overload draft.
-         </t>     
-         <t><list><t>
-           Note: This assumes that two separate OC-Supported-Features AVPs are included, one for the client 
-           OC capabilities and a second for the agent OC capabilities.  At the time of this writing this syntax has 
-           not been agreed.  The information could also be included in one OC-Supported-Features AVP but the 
-           behavior required is independent of the syntax.
-         </t></list></t>
-         <t><list><t>
-           Question: How is the Realm association advertised?  There is currently nothing in the OC-Supported-Features
-           AVP to indicate that the agent will be sending Realm overload reports.  Should this be added?
-         </t></list></t>
-              
-		         <figure anchor="pr-uc-basic">
-		         <artwork><![CDATA[
+          <t>
+           This use case is meant to illustrate the DOIC associations that are
+           established as a result of the two endpoint architectures.
+          </t>
+        </section>
+        <section title="PRTA Handling">
+          <t>
+           <xref target="pr-uc-basic"/> illustrates the message flow
+           associated with this use case when using the per-report-type
+           endpoint architecture. This use case assumes that host overload
+           reports will be generated by the server and realm overload report
+           will be generated by the agent. This also assumes that the client,
+           server and agent have advertised support for the peer overload
+           report, as proposed in the agent overload draft.
+          </t>
+          <t>
+           <list>
+             <t>
+              Note: This assumes that two separate OC-Supported-Features AVPs
+              are included, one for the client OC capabilities and a second
+              for the agent OC capabilities. At the time of this writing this
+              syntax has not been agreed. The information could also be
+              included in one OC-Supported-Features AVP but the behavior
+              required is independent of the syntax.
+             </t>
+           </list>
+          </t>
+          <t>
+           <list>
+             <t>
+              Question: How is the Realm association advertised? There is
+              currently nothing in the OC-Supported-Features AVP to indicate
+              that the agent will be sending Realm overload reports. Should
+              this be added?
+             </t>
+             <t>
+              [ben: From an OC-Supported-Features perspective, we only need to
+              put it in if it needs to be negotiated. Right now, I think the
+              client has to assume that any reporting node can send host
+              and/or realm reports. This makes me even more skeptical if
+              per-report-type is really what we are talking about.
+              Theoretically, nothing prevents S from sending realm reports to
+              C, either. I think we are really talking about e2e vs p2p vs a
+              combination. e2e is not sufficiently flexible, combo is really
+              complicated, doic-peer2doic-peer seems to work.]
+             </t>
+           </list>
+          </t>
+          <figure anchor="pr-uc-basic">
+            <artwork><![CDATA[
 
+     +-+                        +-+                        +-+
+     |C|                        |A|                        |S|
+     +-+                        +-+                        +-+
+      |                          |                          |
+      |-- xxR OC-S-F:C---------->|                          |
+      |                          |                          |
+      |                          |-- xxR OC-S-F:C---------->|
+      |                          |       OC-S-F:A           |
+      |                          |                          |
+      |                          |<---------- xxA OC-S-F:SC-|
+      |                          |                OC-S-F:SA |
+      |                          |                          |
+      |                          |==<DOIC Host Association>=|
+      |                          |==<DOIC Peer Association>=|
+      |                          |                          |
+      |<-------- xxA OC-S-F:SC --|                          |
+      |              OC-S-F:AC   |                          |
+      |                          |                          |
+      |==============<DOIC Host Association>================|
+      |                          |                          |
+      |=<DOIC Realm Association>=|                          |
+      |=<DOIC Peer Association>==|                          |
+      |                          |                          |
 
-		      +-+                        +-+                        +-+
-		      |C|                        |A|                        |S|
-		      +-+                        +-+                        +-+
-		       |                          |                          |
-		       |-- xxR OC-S-F:C---------->|                          |
-		       |                          |                          |
-		       |                          |-- xxR OC-S-F:C---------->|
-		       |                          |       OC-S-F:A           |
-		       |                          |                          |
-		       |                          |<---------- xxA OC-S-F:SC-|
-		       |                          |                OC-S-F:SA |
-		       |                          |==<DOIC Host Association>=|
-		       |                          |==<DOIC Peer Association>=|
-		       |                          |                          |
-		       |<-------- xxA OC-S-F:SC --|                          |
-		       |              OC-S-F:AC   |                          |
-		       |==============<DOIC Host Association>================|
-		       |=<DOIC Realm Association>=|
-		       |=<DOIC Peer Association>==|
-		       |                          |                          |
-		       |                          |                          |
+		]]>
+            </artwork>
+          </figure>
+          <t>
+           [ben: why do we need both a peer and host association between A and
+           S?]
+          </t>
+          <t>
+           Each DOIC endpoint must learn the capabilities of each endpoint
+           with which it shares an association. In the per-report-type
+           architecture, S must learn the capabilities of C and A, C must
+           learn of A and S, and A must learn of C and S. Since
+           <xref target="I-D.ietf-dime-ovli">DOIC</xref> requires each
+           endpoint to insert its capabilities into every Diameter message, A
+           must insert its own OC-Supported-Features AVP into the messages
+           that traverse it, while preserving that sent by C or S. It further
+           must remove the AVP that S sends in response to the one it inserted
+           before it reaches the client. This implies that C and S must be
+           prepared to receive multiple OC-Supported-Feature values, and be
+           able to determine the identity of the source of each one.
+          </t>
+          <t>
+           <list>
+             <t>
+              Note: <xref target="I-D.ietf-dime-ovli">DOIC</xref> does not
+              currently support attribution of OC-Supported-AVPs to the node
+              that originated it.
+             </t>
+             <t>
+              QUESTION: WHAT IF THERE IS A CHAIN OF AGENTS. DOES EACH AGENT
+              INSERT ITS OWN OC-SUPPORTED-FEATURES AVP? [Ben: Each agent needs
+              to insert it's own. The question is, whether it also passes
+              through one from a downstream agent. I think it does, or it
+              least MAY. Otherwise, we would have to require an agent to
+              determine whether a received OC-Feature-Vector came from an
+              agent or a client.]
+             </t>
+           </list>
+          </t>
+          <t>
+           Additionally, each DOIC endpoint must keep state to remember the
+           capabilities of each endpoint with which it shares a DOIC
+           association. In this example, those associations are fully meshed.
+           While this example shows a trivial network, the number of
+           associations can become very large in larger networks.
+          </t>
+          <t>
+           The need for a full capabilities mesh becomes more apparent if the
+           selected capabilities are different between C and A than between A
+           and S. <xref target="pr-uc-mixed"/> illustrates this scenario
+          </t>
+          <figure anchor="pr-uc-mixed">
+            <artwork><![CDATA[
 
+	     +-+                        +-+                        +-+
+	     |C|                        |A|                        |S|
+	     +-+                        +-+                        +-+
+	      |                          |                          |
+	      |-- xxR C:loss ----------->|                          |
+	      |                          |                          |
+	      |                          |-- xxR C:loss ----------->|
+	      |                          |       A:loss,rate        |
+	      |                          |                          |
+	      |                          |<---------- xxA SC:loss --|
+	      |                          |                SA:rate   |
+	      |                          |                          |
+	      |                          |=====<Rate Algorithm>=====|
+	      |                          |                          |
+	      |<-------- xxA SC:loss ----|                          |
+	      |              AC:loss     |                          |
+	      |                          |                          |
+	      |=================<Loss Algorithm>====================|
+	      |                          |                          |
+	      |====<Loss Algorithm>======|                          |
+	      |                          |                          |
 
-		]]>      </artwork>
-		         </figure>
-			<t>
-				The per-report-type architecture implies that each DOIC aware node must learn the
-				capabilities of each node with which it shares an association. That is, S must learn
-				the capabilities of C and A, C must learn of A and S, and A must learn of C and S. Since 
-				<xref target="I-D.ietf-dime-ovli">DOIC</xref> requires each endpoint to insert
-				its capabilities into every Diameter message, A must insert its own
-				OC-Supported-Features AVP into the messages that traverse it, while preserving that sent
-				by C or S. This further implies that C and S must be prepared to receive multiple
-				OC-Supported-Feature values, and be able to determine the identity of the source of
-				each one.
-			</t>
-			<t><list><t>
-			  QUESTION: WHAT IF THERE IS A CHAIN OF AGENTS.  DOES EACH AGENT INSERT ITS OWN
-			  OC-SUPPORTED-FEATURES AVP?
-			</t></list></t>
-			<t>
-			 	Additionally, each DOIC endpoint must keep state to remember the capabilities of
-			    each endpoint with which it shares a DOIC association. In this example, those associations
-				are fully meshed. While this example shows a trivial network, the number of associations
-				can become very large in larger networks.
-			</t>                  
-       </section>
-       <section title="PDNA Handling">
-         <figure anchor="pn-uc-basic">
-         <artwork><![CDATA[
+			]]>
+            </artwork>
+          </figure>
+          <t>
+           In this example, C supports only the "loss" abatement algorithm. A
+           supports "loss", and also an algorithm called "rate". S supports
+           both, but prefers to use "rate" whenever possible. C includes the
+           loss algorithm in its OC-Supported-Features AVP (C). A passes C's
+           capabilities through to S, but also inserts its own
+           OC-Supported-Features AVP (A) indicating support for both loss and
+           rate. S has no option but to use loss for OLRs sent to C, so it
+           includes the loss algorithm in the corresponding
+           OC-Supported-Features AVP (SC). Since A also supports the rate
+           algorithm, S selects rate in the OC-Supported-Features AVP (SA) it
+           sends in response to that sent by A.
+          </t>
+          <t>
+           A can now send OLRs using the loss algorithm to C, and OLRs using
+           the rate algorithm to A. A can only send send OLRs using the loss
+           algorithm to C, (likely as needed to fulfill its obligations to S
+           under the rate algorithm.)
+          </t>
+        </section>
+        <section title="PDNA Handling">
+          <t>
+           <xref target="pn-uc-basic"/> shows a similar capabilities exchange
+           using the per-endpoint model. Each DOIC endpoint has a single DOIC
+           association with its peer endpoint. The peer endpoint is not
+           necessarily the Diameter peer; rather it's the nearest Diameter
+           node that supports DOIC along a given path.
+          </t>
+          <figure anchor="pn-uc-basic">
+            <artwork><![CDATA[
 
-		      +-+                        +-+                        +-+
-		      |C|                        |A|                        |S|
-		      +-+                        +-+                        +-+
-		       |                          |                          |
-		       |-- xxR OC-S-F:C---------->|                          |
-		       |                          |                          |
-		       |                          |-- xxR OC-S-F ----------->|
-		       |                          |                          |
-		       |                          |<---------- xxA OC-S-F:S -|
-		       |                          |====<DOIC Association>====|
-		       |                          |                          |
-		       |<-------- xxA OC-S-F:A ---|                          |
-		       |====<DOIC Association>====|
-		       |                          |                          |
+         +-+                        +-+                        +-+
+         |C|                        |A|                        |S|
+         +-+                        +-+                        +-+
+          |                          |                          |
+          |-- xxR OC-S-F:C---------->|                          |
+          |                          |                          |
+          |                          |-- xxR OC-S-F ----------->|
+          |                          |                          |
+          |                          |<---------- xxA OC-S-F:S -|
+          |                          |====<DOIC Association>====|
+          |                          |                          |
+          |<-------- xxA OC-S-F:A ---|                          |
+          |====<DOIC Association>====|                          |
+          |                          |                          |
 
-]]>      </artwork>
-         </figure>
-       </section>
-     </section>
+]]>
+            </artwork>
+          </figure>
+          <t>
+           In this example, there are exactly two DOIC associations; one
+           between C and A, and one between A and S. The selected features for
+           each association are independent of the other. A acts as a
+           back-to-back DOIC endpoint, that is, it becomes the reporting node
+           to C, and the reacting node to S.
+          </t>
+          <t>
+           <xref target="pn-uc-mixed"/> illustrates a per-node capabilities
+           exchange where different algorithms are selected for each
+           association. As in <xref target="pr-uc-mixed"/>, C supports the
+           loss algorithm, A supports loss and rate, and S prefers rate.
+          </t>
+          <figure anchor="pn-uc-mixed">
+            <artwork><![CDATA[
 
-     <section anchor="uc-mismatch" title="Use Case - Missmatched Client and Agent Capabilities">
-       <section title="Description">
-         <t>
-           [Steve: I'm not convinced this section is needed anymore as it can be addressed in the 
-           previous section.]
-         </t>
-	       <t>
-	         In this use case assume that client C1 supports a different set of DOIC capabilities then
-	         agent A1.  For instance, assume that client C1 does not support the agent overload
-	         extension and that agent A1 does support the agent overload extension.
-	       </t>
-	       <t>
-	         This use case raises the question of whether agent A1 should insert a second 
-	         OC-Supported-Features AVP in indicate the capabilities supported by the agent or
-	         whether the agent should generate a new OC-Supported-Features AVP that contains
-	         the union of the capabilities of the client and the agent.
-	       </t>
-	     </section>
-       <section title="PRTA Handling">
-         <t>
-           QUESTION: IS THIS REALLY A ENDPOINT DEFINITION ISSUE OR SHOULD IT BE HANDLED SEPARATELY?
-			[Ben: I think we need discussion about whether the per-report-type model has
-			any A-S association. I think we may be dividing the models along the wrong dimension.]
-			[Ben: Is this any different that a less-painful version of the mixed algorithm problem?]
-         </t>
-         
-         <figure anchor="pr-uc-mm1">
-         <artwork><![CDATA[
+          +-+                        +-+                        +-+
+          |C|                        |A|                        |S|
+          +-+                        +-+                        +-+
+           |                          |                          |
+           |-- xxR C:loss------------>|                          |
+           |                          |                          |
+           |                          |-- xxR A:loss,rate ------>|
+           |                          |                          |
+           |                          |<---------- xxA S:rate ---|
+           |                          |====<Rate Algorithm>======|
+           |                          |                          |
+           |<-------- xxA A:loss-- ---|                          |
+           |====<Loss Algorithm>======|                          |
+           |                          |                          |
 
-      +-+                        +-+                        +-+
-      |C|                        |A|                        |S|
-      +-+                        +-+                        +-+
-       |                          |                          |
-       |-- xxR OC-S-F ----------->|                          |
-       |     featC                |                          |
-       |                          |                          |
-       |                          |-- xxR OC-S-F ----------->|
-       |                          |     featA + featC        |
-       |                          |                          |
-       |                          |<----------- xxA OC-S-F --|
-       |                          |                 featS    |
-       |<----------- xxA OC-S-F --|                          |
-       |           featS + featA  |                          |
-       |                          |                          |
-       |                          |                          |
-
-]]>      </artwork>
-         </figure>
-       </section>
-       <section title="PDNA Handling">
-         <t>
-         <figure anchor="pn-uc-mm1">
-         <artwork><![CDATA[
-
-      +-+                        +-+                        +-+
-      |C|                        |A|                        |S|
-      +-+                        +-+                        +-+
-       |                          |                          |
-       |-- xxR OC-S-F ----------->|                          |
-       |     cfeat                |                          |
-       |                          |                          |
-       |                          |-- xxR OC-S-F ----------->|
-       |                          |     afeat                |
-       |                          |                          |
-       |                          |<----------- xxA OC-S-F --|
-       |                          |               sfeat      |
-       |<----------- xxA OC-S-F --|                          |
-       |              afeat       |                          |
-       |                          |                          |
-       |                          |                          |
-
-]]>      </artwork>
-         </figure>
-         
-         </t>
-       </section>
-     </section>
-
-     <section anchor="uc-host" title="Use Case - DOIC Host Overload Report Handling">
-       <section title="Description">
-     
-	       <t>
-	         In this use case, assume that server S1 becomes overloaded and generates a host
-	         overload report.  Assume for this case that the loss abatement algorithm is the 
-	         only supported algorithm or that it was selected by the reporting node (S1) in 
-	         the capabilities exchange.
-	       </t>
-	       <t>
-	         As a result of the host report, DOIC supporting clients are called on to reduce 
-	         traffic by the percentage requested for requests that the client knows will be 
-	         routed to the overloaded server.
-	       </t>
-	       <t>
-	         This use case also presumes that it is the responsibility of DOIC supporting agents
-	         to reduce the amount of realm-routed traffic to the overloaded reporting node.
-	       </t>
-	       <t><list>
-	         <t>
-		         Note that at the time of writing this is an open issue in the DOIC specification 
-		         but it is expected that there will be agreement that DOIC supporting agents need to
-		         react to host reports.  As such, this use case assume clients will abate overload for  
-		         host-routed requests and agents will abate overload for realm-routed requests.
-	         </t>
-	       </list></t>
-	       <t>
-	         Any action taken by the agent must stay consistent with the requirement that throttling of
-	         Diameter transactions must happen as close to the originator of the transaction as possible.  
-	         In the case of a host report, this generally means that DOIC clients should do most of the
-	         abatement that results in throttling.  This is especially the case for host-routed requests.
-	       </t>
-	       <t>
-	         There are, however, actions that an agent can and should take.  First, in the case when 
-	         a client does not support DOIC, an agent that does support DOIC must do the throttling 
-	         that would have been done by the client.  This scenario is addressed in <xref target="uc-non"/>.
-	       </t>
-	       <t>
-	         The second action that can be taken by the agent
-	         is to use the contents of the host report as input to the routing of realm-routed requests.
-	       </t>
-	       <t>
-	         Finally, the agent will also need to be able to throttle realm-routed requests when there is 
-	         not sufficient server capacity to handle 100% of realm-routed traffic.
-	       </t>
-       </section>
-       <section title="PRTA Handling">
-         <t>
-           For the per-report-type architecture it is assumed that there are two DOIC associations established 
-           for the host report as a result of a single capabilies exchange.  
-           This is illustrated in <xref target="ptraAssoc"/>.
-         </t>
-		         <figure anchor="ptraAssoc">
-		         <artwork><![CDATA[
+		]]>
+            </artwork>
+          </figure>
+          <t>
+           C only includes "loss" in its OC-Supported-Features AVP. A removes
+           C's AVP, and inserts its own, including both loss and rate. S
+           selects the rate algorithm in its response to A. A removes S's AVP,
+           and inserts its own, selecting the loss algorithm.
+          </t>
+          <t>
+           As a result, S only sends OLRs using the rate algorithm. A can then
+           send OLRs back towards the client, if needed to honor the rate
+           limit it received from S.
+          </t>
+        </section>
+      </section>
+      <section anchor="uc-mismatch" title="Use Case - Missmatched Client and Agent Capabilities">
+        <t>
+         [Steve: I'm not convinced this section is needed anymore as it can be
+         addressed in the previous section.] [Ben: I agree. There's no
+         assumption you _don't_ have mixed capabilities in the previous
+         section. But we do need to make sure we talk about it there--I added
+         some text and examples.]
+        </t>
+      </section>
+      <section anchor="uc-host" title="Use Case - DOIC Host Overload Report Handling">
+        <section title="Description">
+          <t>
+           In this use case, assume that server S1 becomes overloaded and
+           generates a host overload report. Assume for this case that the
+           loss abatement algorithm is the only supported algorithm or that it
+           was selected by the reporting node (S1) in the capabilities
+           exchange.
+          </t>
+          <t>
+           As a result of the host report, DOIC supporting clients are called
+           on to reduce traffic by the percentage requested for requests that
+           the client knows will be routed to the overloaded server.
+          </t>
+          <t>
+           This use case also presumes that it is the responsibility of DOIC
+           supporting agents to reduce the amount of realm-routed traffic to
+           the overloaded reporting node.
+          </t>
+          <t>
+           <list>
+             <t>
+              Note that at the time of writing this is an open issue in the
+              DOIC specification but it is expected that there will be
+              agreement that DOIC supporting agents need to react to host
+              reports. As such, this use case assume clients will abate
+              overload for host-routed requests and agents will abate overload
+              for realm-routed requests.
+             </t>
+           </list>
+          </t>
+          <t>
+           Any action taken by the agent must stay consistent with the
+           requirement that throttling of Diameter transactions must happen as
+           close to the originator of the transaction as possible. In the case
+           of a host report, this generally means that DOIC clients should do
+           most of the abatement that results in throttling. This is
+           especially the case for host-routed requests.
+          </t>
+          <t>
+           There are, however, actions that an agent can and should take.
+           First, in the case when a client does not support DOIC, an agent
+           that does support DOIC must do the throttling that would have been
+           done by the client. This scenario is addressed in
+           <xref target="uc-non"/>.
+          </t>
+          <t>
+           The second action that can be taken by the agent is to use the
+           contents of the host report as input to the routing of realm-routed
+           requests.
+          </t>
+          <t>
+           Finally, the agent will also need to be able to throttle
+           realm-routed requests when there is not sufficient server capacity
+           to handle 100% of realm-routed traffic.
+          </t>
+        </section>
+        <section title="PRTA Handling">
+          <t>
+           For the per-report-type architecture it is assumed that there are
+           two DOIC associations established for the host report as a result
+           of a single capabilies exchange. This is illustrated in
+           <xref target="ptraAssoc"/>.
+          </t>
+          <figure anchor="ptraAssoc">
+            <artwork><![CDATA[
 
 		      +-+                        +-+                        +-+
 		      |C|                        |A|                        |S|
@@ -831,14 +1022,15 @@
 		       | routed traffic           | routed traffic           |
 		       |                          |                          |
 
-		]]>      </artwork>
-		         </figure>
-         <t>
-           Figure <xref target="ptraAssoc2"/> illustrates the associations and behavior for requests that travel
-           through two agents.
-         </t>
-		         <figure anchor="ptraAssoc2">
-		         <artwork><![CDATA[
+		]]>
+            </artwork>
+          </figure>
+          <t>
+           Figure <xref target="ptraAssoc2"/> illustrates the associations and
+           behavior for requests that travel through two agents.
+          </t>
+          <figure anchor="ptraAssoc2">
+            <artwork><![CDATA[
 
 		      +-+                        +--+                       +--+                       +-+
 		      |C|                        |A1|                       |A2|                       |S|
@@ -870,30 +1062,37 @@
 		       | routed traffic           |                          | routed traffic           |
 		       |                          |                          |
 
-		]]>      </artwork>
-		         </figure>
-
-			<t>
-			  [steve: I'm not sure the next paragraph belongs here.]
-			</t>
-			<t>
-			   	This brings up a question about
-				how agents might learn of server overload conditions in order to generate "realm"
-				reports. One possibility is that they inspect host reports in passing, and use those
-				reports in combination with their local knowledge of server topology to infer the
-				state of the realm as a whole. But since the server has an host-report association with
-				each client, the agent cannot assume that a host-report destined for any one
-				client is valid for any other client. This makes it much more difficult for an agent
-				to draw inferences about the state of the realm as a whole.
-			</t>	
-       </section>
-       <section title="PDNA Handling">
-         <t>
-           The per-DOIC-node architecture assumes there is a single association between adjacent DOIC nodes. 
-           This is illustrated in <xref target="pdnaAssoc3"/>.
-         </t>
-		         <figure anchor="pdnaAssoc3">
-		         <artwork><![CDATA[
+		]]>
+            </artwork>
+          </figure>
+          <t>
+           [ben: Does that figure belong here, or in the capabilities exchange
+           section?]
+          </t>
+          <t>
+           [steve: I'm not sure the next paragraph belongs here.]
+          </t>
+          <t>
+           This brings up a question about how agents might learn of server
+           overload conditions in order to generate "realm" reports. One
+           possibility is that they inspect host reports in passing, and use
+           those reports in combination with their local knowledge of server
+           topology to infer the state of the realm as a whole. But since the
+           server has an host-report association with each client, the agent
+           cannot assume that a host-report destined for any one client is
+           valid for any other client. This makes it much more difficult for
+           an agent to draw inferences about the state of the realm as a
+           whole.
+          </t>
+        </section>
+        <section title="PDNA Handling">
+          <t>
+           The per-DOIC-node architecture assumes there is a single
+           association between adjacent DOIC nodes. This is illustrated in
+           <xref target="pdnaAssoc3"/>.
+          </t>
+          <figure anchor="pdnaAssoc3">
+            <artwork><![CDATA[
 
 		      +-+                        +-+                        +-+
 		      |C|                        |A|                        |S|
@@ -915,72 +1114,77 @@
 		       | routed traffic           | routed traffic           |
 		       |                          |                          |
 
-		]]>      </artwork>
-		         </figure>
-         <t>
-           
-         </t>
-       </section>
-     </section>
-     
-     <section title="Use Case - End-to-End Security">
-       <section title="Description">
-	       <t>
-	         This use case is the same as <xref target="uc-basic"/> with the addition that
-	         it considers the impact of the likely Diameter end-to-end security mechanism.
-	       </t>
-	       <t>
-	         The assumption is that the security mechanism specified will specify that groups
-	         of AVPs will be signed -- to verify the identity of the originator of the AVPs -- 
-	         and encrypted -- to ensure the privacy of the contents of the AVPS --
-	         by the Diameter entities that insert the AVPs in to messages. 
-	         This will generally be clients and servers but can also be agents.  If this is the case 
-	         then there are two alternatives that impact the DOIC solution:
-	       </t>
-	       <t><list style="symbol">
-	         <t>
-	           The DOIC AVPs are signed and encrypted.  If this is the case then there are impacts to 
-	           the solution for <xref target="uc-basic"/> as there would be no means for agents to modify
-	           the existing contents of an OC-Supported-Features AVP.  
-	         </t>
-	         <t>
-	           Note: This is not strictly true if the agent has access to the shared secret keys needed
-	           to decrypt the AVPs.  If this is the case then clients and servers would need to 
-	           understand that agents can change (and thus sign) AVPs if the pre-report architecture is
-	           selected.  If the per-node architecture is selected then proxies wuld always be required to 
-	           be able to decrypt received DOIC AVPs and encrypt DOIC AVPs in messages they forward.
-	         </t>
-	         <t>
-	           The DOIC AVPs are not signed and encrypted.  This is a less secure mechanism that does 
-	           introduce exposure in the general sense as insertion of OLR AVPs by a rouge element 
-	           is an effective denial of service attack.  Signing of the OLR AVPs is likely to be the
-	           the most effective mechanism to address this security risk.
-	         </t>
-	       </list></t>
+		]]>
+            </artwork>
+          </figure>
+          <t></t>
         </section>
-       <section title="PRTA Handling">
-         <t>
-         </t>
-       </section>
-       <section title="PDNA Handling">
-         <t>
-         </t>
-       </section>
-     </section>
-
-     <section anchor="uc-non" title="Use Case - Non Supporting Diameter Nodes">
-       <section title="Description">
-         <t>
-           This use case deals with deployments that include agents and have a mix of Diameter clients that do
-           not support the DOIC solution.  This use case assumes that all servers and agents in the 
-           deployment do support the DOIC solution.
-         </t>
-         <t>
+      </section>
+      <section title="Use Case - End-to-End Security">
+        <section title="Description">
+          <t>
+           This use case is the same as <xref target="uc-basic"/> with the
+           addition that it considers the impact of the likely Diameter
+           end-to-end security mechanism.
+          </t>
+          <t>
+           The assumption is that the security mechanism specified will
+           specify that groups of AVPs will be signed -- to verify the
+           identity of the originator of the AVPs -- and encrypted -- to
+           ensure the privacy of the contents of the AVPS -- by the Diameter
+           entities that insert the AVPs in to messages. This will generally
+           be clients and servers but can also be agents. If this is the case
+           then there are two alternatives that impact the DOIC solution:
+          </t>
+          <t>
+           <list style="symbol">
+             <t>
+              The DOIC AVPs are signed and encrypted. If this is the case then
+              there are impacts to the solution for <xref target="uc-basic"/>
+              as there would be no means for agents to modify the existing
+              contents of an OC-Supported-Features AVP.
+             </t>
+             <t>
+              Note: This is not strictly true if the agent has access to the
+              shared secret keys needed to decrypt the AVPs. If this is the
+              case then clients and servers would need to understand that
+              agents can change (and thus sign) AVPs if the pre-report
+              architecture is selected. If the per-node architecture is
+              selected then proxies wuld always be required to be able to
+              decrypt received DOIC AVPs and encrypt DOIC AVPs in messages
+              they forward.
+             </t>
+             <t>
+              The DOIC AVPs are not signed and encrypted. This is a less
+              secure mechanism that does introduce exposure in the general
+              sense as insertion of OLR AVPs by a rouge element is an
+              effective denial of service attack. Signing of the OLR AVPs is
+              likely to be the the most effective mechanism to address this
+              security risk.
+             </t>
+           </list>
+          </t>
+        </section>
+        <section title="PRTA Handling">
+          <t></t>
+        </section>
+        <section title="PDNA Handling">
+          <t></t>
+        </section>
+      </section>
+      <section anchor="uc-non" title="Use Case - Non Supporting Diameter Nodes">
+        <section title="Description">
+          <t>
+           This use case deals with deployments that include agents and have a
+           mix of Diameter clients that do not support the DOIC solution. This
+           use case assumes that all servers and agents in the deployment do
+           support the DOIC solution.
+          </t>
+          <t>
            <xref target="nonSupportingClients"/> illustrates this use case.
-         </t>
-         <figure anchor="nonSupportingClients">
-
-       <artwork><![CDATA[
+          </t>
+          <figure anchor="nonSupportingClients">
+            <artwork><![CDATA[
 
       +--+                +--+ -\
       |C1|-----      -----|S1|   |
@@ -998,50 +1202,63 @@
       *C4*-----      -----|S4|   |
       ****                +--+ -/
 
-     ]]></artwork>
-         </figure>
-         <t>
-           For this use case, assume Client C1 supports the DOIC solution and clients C2, C3 and C4 do not suppoort DOIC. 
-           Both agents and all servers also support DOIC.
-         </t>
-         <t>
-           In this case, it is the responsibility of the agents to act on behalf of the non supporting clients.
-         </t>
-       </section>
-       <section title="PRTA Handling">
-         <t>
-         </t>
-       </section>
-       <section title="PDNA Handling">
-         <t>
-         </t>
-       </section>
-     </section>
-
-     <section anchor="uc-alg" title="Use Case - Multiple and Mixed Abatement Algorithm Support">
-       <section title="Description">
-	       <t>
-	         This use case is similar to <xref target="uc-mismatch"/> in that it is based on differing 
-	         sets of DOIC capabilities.  However, this use case focuses on the case where the 
-	         a subset of clients support only the loss algorithm, some clients support both
-	         loss and rate, servers support and prefer rate.  This implies that the server will
-	         select the rate algorithm any time that it sees a reacting node that supports rate.
-	       </t>
-	       <t>
-	         Assume for this case that the following is true:
-	       </t>
-	       <t><list style="symbols">
-	         <t>C1 and C3 only support the loss algorithm.</t>
-	         <t>C2 and C4 support both the loss and rate algorithms.</t>
-	         <t>A1 and A2 support both the loss and the rate algorithms.</t>
-	         <t>S1 and S2 support both the loss and rate algorithms and will select 
-	            the rate algorithm any time that support is indicated by a reacting node.</t>
-	       </list></t>
-	     </section>
-       <section title="PRTA Handling">
-         <t>
-         <figure anchor="pr-uc-ma1">
-         <artwork><![CDATA[
+     ]]>
+            </artwork>
+          </figure>
+          <t>
+           For this use case, assume Client C1 supports the DOIC solution and
+           clients C2, C3 and C4 do not suppoort DOIC. Both agents and all
+           servers also support DOIC.
+          </t>
+          <t>
+           In this case, it is the responsibility of the agents to act on
+           behalf of the non supporting clients.
+          </t>
+        </section>
+        <section title="PRTA Handling">
+          <t></t>
+        </section>
+        <section title="PDNA Handling">
+          <t></t>
+        </section>
+      </section>
+      <section anchor="uc-alg" title="Use Case - Multiple and Mixed Abatement Algorithm Support">
+        <section title="Description">
+          <t>
+           This use case is similar to <xref target="uc-mismatch"/> in that it
+           is based on differing sets of DOIC capabilities. However, this use
+           case focuses on the case where the a subset of clients support only
+           the loss algorithm, some clients support both loss and rate,
+           servers support and prefer rate. This implies that the server will
+           select the rate algorithm any time that it sees a reacting node
+           that supports rate.
+          </t>
+          <t>
+           Assume for this case that the following is true:
+          </t>
+          <t>
+           <list style="symbols">
+             <t>
+              C1 and C3 only support the loss algorithm.
+             </t>
+             <t>
+              C2 and C4 support both the loss and rate algorithms.
+             </t>
+             <t>
+              A1 and A2 support both the loss and the rate algorithms.
+             </t>
+             <t>
+              S1 and S2 support both the loss and rate algorithms and will
+              select the rate algorithm any time that support is indicated by
+              a reacting node.
+             </t>
+           </list>
+          </t>
+        </section>
+        <section title="PRTA Handling">
+          <t>
+           <figure anchor="pr-uc-ma1">
+             <artwork><![CDATA[
 
       +-+                        +-+                        +-+
       |C|                        |A|                        |S|
@@ -1077,10 +1294,11 @@
        |               realm      |                          |
        |                          |                          |
 
-]]>      </artwork>
-         </figure>
-         <figure anchor="pr-uc-ma2">
-         <artwork><![CDATA[
+]]>
+             </artwork>
+           </figure>
+           <figure anchor="pr-uc-ma2">
+             <artwork><![CDATA[
 
       +-+                        +-+                        +-+
       |C|                        |A|                        |S|
@@ -1116,16 +1334,15 @@
        |               realm      |                          |
        |                          |                          |
 
-]]>      </artwork>
-         </figure>
-         
-         </t>
-       </section>
-       <section title="PDNA Handling">
-         <t>
-
-         <figure anchor="pn-uc-ma1">
-         <artwork><![CDATA[
+]]>
+             </artwork>
+           </figure>
+          </t>
+        </section>
+        <section title="PDNA Handling">
+          <t>
+           <figure anchor="pn-uc-ma1">
+             <artwork><![CDATA[
 
       +-+                        +-+                        +-+
       |C|                        |A|                        |S|
@@ -1148,97 +1365,78 @@
        |               loss       |                          |
        |                          |                          |
 
-]]>      </artwork>
-         </figure>
-         
-         
-         </t>
-       </section>
-     </section>
-
-     <section title="Use Case - Stateful Abatement Algorithms">
-       <section title="Description">
-         <t>
-         </t>
-       </section>
-       <section title="PRTA Handling">
-         <t>
-         </t>
-       </section>
-       <section title="PDNA Handling">
-         <t>
-         </t>
-       </section>
-     </section>
-
-     <section title="Use Case - Targeted Overload Reports">
-       <section title="Description">
-         <t>
-         </t>
-       </section>
-       <section title="PRTA Handling">
-         <t>
-         </t>
-       </section>
-       <section title="PDNA Handling">
-         <t>
-         </t>
-       </section>
-     </section>
-
-     <section title="Use Case - Chain of Agents">
-       <section title="Description">
-         <t>
-         </t>
-       </section>
-       <section title="PRTA Handling">
-         <t>
-         </t>
-       </section>
-       <section title="PDNA Handling">
-         <t>
-         </t>
-       </section>
-     </section>
-
-     <section title="Use Case - Cross Application Dependencies">
-       <section title="Description">
-	       <t>
-	         This use case illustrates the PCC architecture where the PCC defined DRA creates bindings
-	         for a user and uses that binding to route new policy sessions associated with that binding. 
-	       </t>
-	       <t>
-	         This use case is unique in that a Diameter overload report on one application can impact the
-	         DRAs handling of requests for another application.  For instance, if an overload report is received 
-	         as a result of a GX CCR request, that could result in the DRA throtting Rx requests from a 
-	         completely different Diameter client.
-	       </t>
-         <t>
-         </t>
-       </section>
-       <section title="PRTA Handling">
-         <t>
-         </t>
-       </section>
-       <section title="PDNA Handling">
-         <t>
-         </t>
-       </section>
-     </section>
-
-     
-     <section title="Use Case - Hidden Failed Server">
-       <section title="Description">
-	       <t>
-	         This use case, illustrated in <xref target="fig-failed"/>
-	         explores the impact on the DOIC end point architecture of the case
-	         when a server (or more generally, a Diameter endpoint) that sits behind one or more
-	         agents fail.
-	       </t>
-	       
-	       <figure anchor="fig-failed">
-	
-	       <artwork><![CDATA[
+]]>
+             </artwork>
+           </figure>
+          </t>
+        </section>
+      </section>
+      <section title="Use Case - Stateful Abatement Algorithms">
+        <section title="Description">
+          <t></t>
+        </section>
+        <section title="PRTA Handling">
+          <t></t>
+        </section>
+        <section title="PDNA Handling">
+          <t></t>
+        </section>
+      </section>
+      <section title="Use Case - Targeted Overload Reports">
+        <section title="Description">
+          <t></t>
+        </section>
+        <section title="PRTA Handling">
+          <t></t>
+        </section>
+        <section title="PDNA Handling">
+          <t></t>
+        </section>
+      </section>
+      <section title="Use Case - Chain of Agents">
+        <section title="Description">
+          <t></t>
+        </section>
+        <section title="PRTA Handling">
+          <t></t>
+        </section>
+        <section title="PDNA Handling">
+          <t></t>
+        </section>
+      </section>
+      <section title="Use Case - Cross Application Dependencies">
+        <section title="Description">
+          <t>
+           This use case illustrates the PCC architecture where the PCC
+           defined DRA creates bindings for a user and uses that binding to
+           route new policy sessions associated with that binding.
+          </t>
+          <t>
+           This use case is unique in that a Diameter overload report on one
+           application can impact the DRAs handling of requests for another
+           application. For instance, if an overload report is received as a
+           result of a GX CCR request, that could result in the DRA throtting
+           Rx requests from a completely different Diameter client.
+          </t>
+          <t></t>
+        </section>
+        <section title="PRTA Handling">
+          <t></t>
+        </section>
+        <section title="PDNA Handling">
+          <t></t>
+        </section>
+      </section>
+      <section title="Use Case - Hidden Failed Server">
+        <section title="Description">
+          <t>
+           This use case, illustrated in <xref target="fig-failed"/> explores
+           the impact on the DOIC end point architecture of the case when a
+           server (or more generally, a Diameter endpoint) that sits behind
+           one or more agents fail.
+          </t>
+          <figure anchor="fig-failed">
+            <artwork><![CDATA[
 	
 	      +--+                **** 
 	      |C1|-----      -----*S1* <--- This server is OOS
@@ -1257,85 +1455,56 @@
 	      +--+                +--+ 
 	       
 	 
-	     ]]></artwork>
-	     </figure>
-	      
-	       <t>
-	         In this case, other Diameter nodes will not have a direct view of the state of the 
-	         server.  By default, clients attempting to send requests to a failed server will get
-	         an Unable-to-Deliver error response from the agent that sits in front of the failed 
-	         server.
-	       </t>
-	       <t>
-	         It needs to be considered whether the best way to handle this scenario would be for the 
-	         agent to generate a host overload report requesting a 100% reduction in traffic to the failed
-	         server and, if so, how this impacts the DOIC endpoint architecture.
-	       </t>
-	     </section>
-     </section>
-          
-   </section>
-
-   <section title="Analysis of Per-Report-Type Endpoint Architecture">
-   
-     <section title="Client Impacts">
-     
-     </section>
-     <section title="Server Impacts">
-     
-     </section>
-     <section title="Agent Impacts">
-     
-     </section>
-
-   </section>
-   <section title="Analysis of Per-Node Endpoint Architecture">
-
-     <section title="Client Impacts">
-     
-     </section>
-     <section title="Server Impacts">
-     
-     </section>
-     <section title="Agent Impacts">
-     
-     </section>
-
-   </section>
-   <section title="Comparison">
+	     ]]>
+            </artwork>
+          </figure>
+          <t>
+           In this case, other Diameter nodes will not have a direct view of
+           the state of the server. By default, clients attempting to send
+           requests to a failed server will get an Unable-to-Deliver error
+           response from the agent that sits in front of the failed server.
+          </t>
+          <t>
+           It needs to be considered whether the best way to handle this
+           scenario would be for the agent to generate a host overload report
+           requesting a 100% reduction in traffic to the failed server and, if
+           so, how this impacts the DOIC endpoint architecture.
+          </t>
+        </section>
+      </section>
+    </section>
+    <section title="Analysis of Per-Report-Type Endpoint Architecture">
+      <section title="Client Impacts"></section>
+      <section title="Server Impacts"></section>
+      <section title="Agent Impacts"></section>
+    </section>
+    <section title="Analysis of Per-Node Endpoint Architecture">
+      <section title="Client Impacts"></section>
+      <section title="Server Impacts"></section>
+      <section title="Agent Impacts"></section>
+    </section>
+    <section title="Comparison">
       <section title="Per-Report-Type Architecture">
-      
         <t>
-          Table of pros and cons.
+         Table of pros and cons.
         </t>
- 
       </section>
       <section title="Per-Node Architecture">
-      
         <t>
-          Table of pros and cons.
+         Table of pros and cons.
         </t>
- 
       </section>
-      
-   </section>
-   <section title="Recommendation">
-   
-     <t>
+    </section>
+    <section title="Recommendation">
+      <t>
        This section is to be completed once the document has been reviewed.
-     </t>
-   </section>
-   <section title="Security Considerations">
-
-
-   </section>
-
+      </t>
+    </section>
+    <section title="Security Considerations"></section>
   </middle>
-  
   <back>
-    <!-- References split into informative and normative -->
-
-    <!-- There are 2 ways to insert reference entries from the citation libraries:
+<!-- References split into informative and normative -->
+<!-- There are 2 ways to insert reference entries from the citation libraries:
      1. define an ENTITY at the top, and use "ampersand character"RFC2629; here (as shown)
      2. simply use a PI "less than character"?rfc include="reference.RFC.2119.xml"?> here
  (for I-Ds: include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")
@@ -1345,29 +1514,24 @@
      directory as the including file. You can also define the XML_LIBRARY environment variable
      with a value containing a set of directories to search.  These can be either in the local
      filing system or remote ones accessed by http (http://domain/dir/... ).-->
-
     <references title="Normative References">
 		&I-D.ietf-dime-ovli;
        <reference anchor='agent-overload'>
         <front>
-            <title>Diameter Agent Overload</title>
-            <author initials='S.' surname='Donovan'>
-                <organization abbrev='Oracle'>
+          <title>Diameter Agent Overload</title>
+          <author initials='S.' surname='Donovan'>
+            <organization abbrev='Oracle'>
                 Oracle
                 </organization>
-            </author>
-
-            <date month='March' year='2014' />
+          </author>
+          <date month='March' year='2014' />
         </front>
         <format type='TXT' octets='94506'
                 target='http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-donovan-dime-agent-overload-01.xml' />
       </reference>
-      
-
     </references>
-
     <references title="Informative References">
-      <!-- Here we use entities that we defined at the beginning. -->
+<!-- Here we use entities that we defined at the beginning. -->
 
       &RFC2629;
 
@@ -1390,11 +1554,10 @@
       
       -->
     </references>
-
     <section anchor="app-additional" title="Additional Stuff">
-      <t>This becomes an Appendix.</t>
+      <t>
+       This becomes an Appendix.
+      </t>
     </section>
-
   </back>
 </rfc>
-
