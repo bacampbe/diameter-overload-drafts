@@ -1251,9 +1251,10 @@
         </section>
         <section title="PRTA Handling">
           <t>
-           For the per-report-type architecture it is assumed that there are
-           two DOIC associations established for the host report as a result
-           of a single capabilies exchange. This is illustrated in
+           Under the per-report-type model there are
+           two DOIC associations established for host reports and one for
+realm reports  as a result
+           of a single capabilities exchange. This is illustrated in
            <xref target="ptraAssoc"/>.
           </t>
           <figure anchor="ptraAssoc">
@@ -1264,18 +1265,21 @@
 		      +-+                        +-+                        +-+
 		       |                          |                          |
 		       |-- xxR OC-S-F:C---------->|                          |
-		       |                          |                          |
 		       |                          |-- xxR OC-S-F:C---------->|
 		       |                          |       OC-S-F:A           |
 		       |                          |                          |
 		       |                          |<---------- xxA OC-S-F:SC-|
 		       |                          |                OC-S-F:SA |
-		       |                          |                OLR:Loss  |
+		       |                          |                H-R:Loss  |
 		       |                          |==<DOIC Host Association>=|
 		       |                          |                          |
 		       |<-------- xxA OC-S-F:SC --|                          |
 		       |              OC-S-F:AC   |                          |
-		       |              OLR:Loss    |                          |
+		       |              H-R:Loss    |                          |
+		       |             [R-R:Loss]   |                          |
+		       |                          |                          |
+		       |=<DOIC Realm Association==|                          |
+		       |                          |                          |
 		       |==============<DOIC Host Association>================|
 		       |                          |                          |
 		       | Client abates host-      | Agent abates realm-      |
@@ -1285,65 +1289,67 @@
 		]]>
             </artwork>
           </figure>
+		<t>
+		S sends a host-report using the loss algorithm. C begins to abate host-routed
+		traffic bound for S. A abates realm-routed traffic to the degree it can do so
+		by routing requests to other servers that support the given realm and application.
+		If the number of realm-routed requests from C (and potentially from other clients) exceed
+		this spare capacity, then A optionally sends a realm report to C. C would then 
+		abate realm-routed traffic.
+		</t>
+        <t><list><t>
+         This brings up a question about how agents might learn of server
+         overload conditions in order to generate "realm" reports. We assume
+that the agent inspects the realm-report prior to forwarding it towards the client.
+This further assumes that the realm-report is generic, that is, that it applies to all clients
+equally. If the working group chooses to make each host-report specific to a particular client,
+then this approach will not work.
+        </t></list></t>
+
+
           <t>
            Figure <xref target="ptraAssoc2"/> illustrates the associations and
            behavior for requests that travel through two agents.
           </t>
+		<t>
+			[ben: Where are we taking this example? Will there be realm reports? Is A1 involved in any associations?]
+		</t>
           <figure anchor="ptraAssoc2">
             <artwork><![CDATA[
 
-		      +-+                        +--+                       +--+                       +-+
-		      |C|                        |A1|                       |A2|                       |S|
-		      +-+                        +--+                       +--+                       +-+
-		       |                          |                          |                          |
-		       |-- xxR OC-S-F:C---------->|                          |                          |
-		       |                          |                          |                          |
-		       |                          |-- xxR OC-S-F:C---------->|                          |
-		       |                          |       OC-S-F:A           |                          |
-		       |                          |                          |-- xxR OC-S-F:C---------->|
-		       |                          |                          |       OC-S-F:A2          |
-		       |                          |                          |                          |
-		       |                          |                          |<----- xxR OC-S-F:C------>|
-		       |                          |                          |           OC-S-F:SA2     |
-		       |                          |                          |           OLR:Loss       |
-		       |                          |                          |==<DOIC Host Association>=|
-		       |                          |                          |                          |
-		       |                          |<--------- xxA OC-S-F:SC -|                          |
-		       |                          |               OC-S-F:A2A1|                          |
-		       |                          |               OLR:Loss   |                          |
-		       |                          |                          |                          |
-		       |                          |                          |                          |
-		       |<-------- xxA OC-S-F:SC --|                          |                          |
-		       |              OC-S-F:AC   |                          |                          |
-		       |              OLR:Loss    |                          |                          |
-		       |=============================<DOIC Host Association>============================|
-		       |                          |                          |                          |
-		       | Client abates host-      |                          | Agent 2 abates realm-    |
-		       | routed traffic           |                          | routed traffic           |
-		       |                          |                          |
+   +-+                        +--+                       +--+                       +-+
+   |C|                        |A1|                       |A2|                       |S|
+   +-+                        +--+                       +--+                       +-+
+    |                          |                          |                          |
+    |-- xxR OC-S-F:C---------->|                          |                          |
+    |                          |                          |                          |
+    |                          |-- xxR OC-S-F:C---------->|                          |
+    |                          |       OC-S-F:A           |                          |
+    |                          |                          |-- xxR OC-S-F:C---------->|
+    |                          |                          |       OC-S-F:A2          |
+    |                          |                          |                          |
+    |                          |                          |<----- xxR OC-S-F:C------>|
+    |                          |                          |           OC-S-F:SA2     |
+    |                          |                          |           OLR:Loss       |
+    |                          |                          |==<DOIC Host Association>=|
+    |                          |                          |                          |
+    |                          |<--------- xxA OC-S-F:SC -|                          |
+    |                          |               OC-S-F:A2A1|                          |
+    |                          |               OLR:Loss   |                          |
+    |                          |                          |                          |
+    |                          |                          |                          |
+    |<-------- xxA OC-S-F:SC --|                          |                          |
+    |              OC-S-F:AC   |                          |                          |
+    |              OLR:Loss    |                          |                          |
+    |=============================<DOIC Host Association>============================|
+    |                          |                          |                          |
+    | Client abates host-      |                          | Agent 2 abates realm-    |
+    | routed traffic           |                          | routed traffic           |
+    |                          |                          |
 
 		]]>
             </artwork>
           </figure>
-          <t>
-           [ben: Does that figure belong here, or in the capabilities exchange
-           section?]
-          </t>
-          <t>
-           [steve: I'm not sure the next paragraph belongs here.]
-          </t>
-          <t>
-           This brings up a question about how agents might learn of server
-           overload conditions in order to generate "realm" reports. One
-           possibility is that they inspect host reports in passing, and use
-           those reports in combination with their local knowledge of server
-           topology to infer the state of the realm as a whole. But since the
-           server has an host-report association with each client, the agent
-           cannot assume that a host-report destined for any one client is
-           valid for any other client. This makes it much more difficult for
-           an agent to draw inferences about the state of the realm as a
-           whole.
-          </t>
         </section>
         <section title="PDNA Handling">
           <t>
