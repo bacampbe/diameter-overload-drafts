@@ -3,13 +3,15 @@
      which is available here: http://xml.resource.org. -->
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
 <!-- One method to get references from the online citation libraries.
-     There has to be one entity for each item to be referenced. 
+     There has to be one entity for each item to be referenced.
      An alternate method (rfc include) is described in the references. -->
 
 <!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
 <!ENTITY RFC2629 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2629.xml">
 <!ENTITY RFC3552 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3552.xml">
-<!ENTITY I-D.narten-iana-considerations-rfc2434bis SYSTEM 
+<!ENTITY RFC4006 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4006.xml">
+<!ENTITY RFC4006 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7068.xml">
+<!ENTITY I-D.narten-iana-considerations-rfc2434bis SYSTEM
 "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.narten-iana-considerations-rfc2434bis.xml">
 <!ENTITY RFC7068 PUBLIC ''
 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.7068.xml'>
@@ -18,7 +20,7 @@
 ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <!-- used by XSLT processors -->
-<!-- For a complete list and description of processing instructions (PIs), 
+<!-- For a complete list and description of processing instructions (PIs),
      please see http://xml.resource.org/authoring/README.html. -->
 <!-- Below are generally applicable Processing Instructions (PIs) that most I-Ds might want to use.
      (Here they are set differently than their defaults in xml2rfc v1.32) -->
@@ -34,7 +36,7 @@
 <!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
 <?rfc sortrefs="yes" ?>
 <!-- sort the reference entries alphabetically -->
-<!-- control vertical white space 
+<!-- control vertical white space
      (using these PIs as follows is recommended by the RFC Editor) -->
 <?rfc compact="yes" ?>
 <!-- do not start each main section on a new page -->
@@ -44,16 +46,16 @@
 <rfc category="info" docName="DOIC-Endpoints-00" ipr="trust200902">
 <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
-     you can add the attributes updates="NNNN" and obsoletes="NNNN" 
+     you can add the attributes updates="NNNN" and obsoletes="NNNN"
      they will automatically be output with "(if approved)" -->
 <!-- ***** FRONT MATTER ***** -->
   <front>
-<!-- The abbreviated title is used in the page header - it is only necessary if the 
+<!-- The abbreviated title is used in the page header - it is only necessary if the
   full title is longer than 39 characters -->
     <title abbrev="Abbreviated Title">Analysis of Diameter Endpoint Alternatives</title>
 <!-- add 'role="editor"' below for the editors if appropriate -->
 <!-- Another author who claims to be an editor -->
-    <author fullname="Steve Donovan" initials="S.R." 
+    <author fullname="Steve Donovan" initials="S.R."
      surname="Donovan">
       <organization>Oracle</organization>
       <address>
@@ -70,7 +72,7 @@
 <!-- uri and facsimile elements may also be added -->
       </address>
     </author>
-    <author fullname="Ben Campbell" initials="B." 
+    <author fullname="Ben Campbell" initials="B."
      surname="Campbell">
       <organization>Oracle</organization>
       <address>
@@ -88,17 +90,17 @@
       </address>
     </author>
     <date month="April" year="2014" />
-<!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
-  in the current day for you. If only the current year is specified, xml2rfc will fill 
-    in the current day and month for you. If the year is not the current one, it is 
-    necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the 
-    purpose of calculating the expiry date).  With drafts it is normally sufficient to 
+<!-- If the month and year are both specified and are the current ones, xml2rfc will fill
+  in the current day for you. If only the current year is specified, xml2rfc will fill
+    in the current day and month for you. If the year is not the current one, it is
+    necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the
+    purpose of calculating the expiry date).  With drafts it is normally sufficient to
     specify just the year. -->
 <!-- Meta-data Declarations -->
     <area>General</area>
     <workgroup>Internet Engineering Task Force</workgroup>
 <!-- WG name at the upperleft corner of the doc,
-  IETF is fine for individual submissions.  
+  IETF is fine for individual submissions.
     If this element is not present, the default is "Network Working Group",
   which is used by the RFC Editor as a nod to the history of the IETF. -->
     <keyword>template</keyword>
@@ -205,8 +207,8 @@
           algorithms may require DOIC nodes to store algorithm-specific state.
          </t>
          <t>
-           [steve: the overload state of the reporting node isn't necessarily 
-           part of the association state.  maybe overload state received over the 
+           [steve: the overload state of the reporting node isn't necessarily
+           part of the association state.  maybe overload state received over the
            association is the more general way of saying this.]
          </t>
          <t hangText="Overload Abatement:">
@@ -230,13 +232,24 @@
     </section>
     <section anchor="end" title="DOIC Endpoints">
       <t>
+        [steve: we might want to divide this into a section defining reacting
+        nodes and a section defining reporting nodes.]
+      </t>
+      <t>
        DOIC endpoints are defined in <xref target="I-D.ietf-dime-ovli"/>. A
        DOIC association is the logical relationship between a pair of Diameter
-       endpoints. A DOIC endpoint can be a reacting node, a reporting node, or
-       both. A reporting node is the entity that sends overload reports,
-       requesting a reduction in the amount of Diameter traffic sent to the
-       node. A reacting node is the entity that receives the overload report,
-       and performs needed overload abatement actions.
+       endpoints. A DOIC endpoint can be a reacting node or a reporting node.
+        The same Diameter node can be a reporting node for a set of associations and
+        a reacting node for a different set of associations.
+      </t>
+      <t>
+        A reporting node is the entity that sends overload reports,
+        requesting a reduction in the amount of Diameter traffic sent to the
+        node.
+      </t>
+      <t>
+        A reacting node is the entity that receives the overload report,
+        and performs needed overload abatement actions.
       </t>
       <t>
        <list>
@@ -302,6 +315,82 @@
        <xref target="I-D.ietf-dime-ovli"/> and peer reports defined in
        <xref target="agent-overload"/>).
       </t>
+      <section title="Host Reports">
+        <t>
+          Host reports are sent to decrease the amount of
+          traffic targeted for a particular Diameter node.  The Diameter
+          node to which the report applies is identified by the Destination-Host
+          AVP of the request carrying the overload report.
+        </t>
+        <t><list><t>
+          Note: Diameter Clients and Diameter servers can originate host reports.
+          For example, for the Diameter application defined in <xref target="RFC4006"/>,
+          a Diameter server sending a host report will control the amount of CCR
+          traffic routed to the server.  An RFC4006 client sending a host report
+          will control the amount of RAR traffic routed to the client.
+        </t></list></t>
+        <t>
+          Diamter supports two primary methods for routing requests to a reporting
+          node.  The first is routing based on the Destination-Host AVP and the
+          second is routing based on the Destination-Realm AVP.  In order to achieve
+          the desired reduction in traffic indicated in a host report, there must
+          be a reduction in requests routed using both mechanisms.
+        </t>
+        <t>
+          In a basic deployment involving only Diameter clients and Diamter servers,
+          the node sending requests can limit both types of requests.  The abatement
+          in this case includes requests with a Destination-Host AVP that matches
+          an active and relevant overload report plus requests that do not contain
+          a Destination-Host AVP and that would be routed on a connection to
+          the server that advertised the Diameter ID that is contained in the overlaod
+          report.
+        </t>
+        <t>
+          In deployments that involve agents, the node sending requests cannot
+          limit both types of requests.  It can still abate traffic that includes
+          a Destination-Host AVP, as it knows which requests of that type will be
+          routed to the reporting node.  The originator of the request does not,
+          however, have any way of knowing which of the realm-routed requests
+          will be routed to the reporting node.  This is the job of the agent
+          sitting one hop before the reporting node.  In this case the agent
+          must be the reacting node for realm-routed requests that would be routed
+          to a node that sent a host report.
+        </t>
+        <t>
+          In deployments such as that outlined in <xref target="deploy"/>, there
+          can be three types of reacting nodes for a single host report.
+        </t>
+        <t>
+          Consider the case where server S3 sends a host report to all requests
+          received for a specific application.  Assume also that client C1 supports
+          the DOIC solution but that client C2 does not.
+        </t>
+          <t><list><t>
+            This scenario is discussed in more detail in <xref target="uc-non"/>.
+          </t></list></t>
+        <t>
+          Client C1 will be a reacting node with the responsibility for abating
+          Destination-Host AVP routed requests it originates.
+        </t>
+        <t>
+          Agent A1 will be a reacting node with the responsibility for abating
+          Destination-Host AVP routed requests originated by client A2.
+        </t>
+        <t>
+          Agent A2 will be a reacting node with the responsibility for abating
+          realm-routed requests that would otherwise be routed the server S3.
+        </t>
+      </section>
+      <section title="Realm Reports">
+        <t>
+          [steve: similar discussion as for host reports.]
+        </t>
+      </section>
+      <section title="Peer Reports">
+        <t>
+          [steve: similar discussion as for host reports.]
+        </t>
+      </section>
     </section>
     <section anchor="deploy" title="Deployment Architecture">
       <t>
@@ -313,7 +402,7 @@
        route Diameter requests between Diameter clients and Diameter servers.
        This architecture also assumes that the Diameter servers are
        partitioned in a fashion that requires Diameter requests to be routed
-       through multiple agents. 
+       through multiple agents.
       </t>
       <t>
        [steve: I removed "All Diameter nodes in this deployment
@@ -470,17 +559,12 @@
           </artwork>
         </figure>
         <t>
-         Table <xref target="perReportAssoc1"/> contains a list of all DOIC
+         Table <xref target="perReportAssoc1"/> contains a list of  DOIC
          associations that result from the the deployment shown in
          <xref target="deploy-arch"/>, assuming that all nodes support DOIC.
          The table shows the associations for one of the clients, one of the
          agents and one of servers. The number of associations will be the
          other clients, agents and servers.
-        </t>
-        <t>
-          [steve: probably need a table for the two agent case as will as this 
-          will show that the number of associations increase significantly with
-          each agent involved.]
         </t>
         <t>
          <list>
@@ -492,93 +576,37 @@
          </list>
         </t>
         <texttable anchor="perReportAssoc1" title="Per Report Associations">
-          <ttcol align="center">Node</ttcol>
+          <ttcol align="center">Reacting Node</ttcol>
           <ttcol align="center">Report Type</ttcol>
-          <ttcol align="center">Associations</ttcol>
-          <c>C1</c>
-          <c>Host</c>
-          <c>C1S1</c>
-          <c></c>
-          <c></c>
-          <c>C1S2</c>
-          <c></c>
-          <c></c>
-          <c>C1S3</c>
-          <c></c>
-          <c></c>
-          <c>C1S4</c>
-          <c></c>
-          <c>RRR</c>
-          <c>C1A1</c>
-          <c></c>
-          <c></c>
-          <c>C1A2</c>
-          <c></c>
-          <c>Peer</c>
-          <c>C1A1</c>
-          <c>S1</c>
-          <c>Host</c>
-          <c>S1C1</c>
-          <c></c>
-          <c></c>
-          <c>S1C2</c>
-          <c></c>
-          <c></c>
-          <c>S1C3</c>
-          <c></c>
-          <c></c>
-          <c>S1C4</c>
-          <c></c>
-          <c>RRR</c>
-          <c>S1A1</c>
-          <c></c>
-          <c></c>
-          <c>S1A2</c>
-          <c></c>
-          <c>Peer</c>
-          <c>S1A1</c>
-          <c>A1</c>
-          <c>Host</c>
-          <c>N/A</c>
-          <c></c>
-          <c>RRR</c>
-          <c>A1C1</c>
-          <c></c>
-          <c></c>
-          <c>A1C2</c>
-          <c></c>
-          <c></c>
-          <c>A1C3</c>
-          <c></c>
-          <c></c>
-          <c>A1C4</c>
-          <c></c>
-          <c></c>
-          <c>A1S1</c>
-          <c></c>
-          <c></c>
-          <c>A1S2</c>
-          <c></c>
-          <c></c>
-          <c>A1S3</c>
-          <c></c>
-          <c></c>
-          <c>A1S4</c>
-          <c></c>
-          <c>Peer</c>
-          <c>A1C1</c>
-          <c></c>
-          <c></c>
-          <c>A1C2</c>
-          <c></c>
-          <c></c>
-          <c>A1S1</c>
-          <c></c>
-          <c></c>
-          <c>A1S2</c>
-          <c></c>
-          <c></c>
-          <c>A1A2</c>
+          <ttcol align="center">Association</ttcol>
+          <ttcol align="center">Reporting Node</ttcol>
+          <c>C1</c><c>Host</c><c>C1S1</c><c>S1</c>
+          <c></c><c></c><c>C1S2</c><c>S2</c>
+          <c></c><c></c><c>C1S3</c><c>S3</c>
+          <c></c><c></c><c>C1S4</c><c>S4</c>
+          <c></c><c>RRR</c><c>C1A1</c><c>A1</c>
+          <c></c><c></c><c>C1A2</c><c>A2</c>
+          <c></c><c>Peer</c><c>C1A1</c><c>A1</c>
+          <c>S1</c><c>Host</c><c>S1C1</c><c>C1</c>
+          <c></c><c></c><c>S1C2</c><c>C2</c>
+          <c></c><c></c><c>S1C3</c><c>C3</c>
+          <c></c><c></c><c>S1C4</c><c>C4</c>
+          <c></c><c>RRR</c><c>S1A1</c><c>A1</c>
+          <c></c><c></c><c>S1A2</c><c>A1</c>
+          <c></c><c>Peer</c><c>S1A1</c><c>A1</c>
+          <c>A1</c><c>Host</c><c>A1C1</c><c>C1</c>
+          <c></c><c></c><c>A1C2</c><c>C2</c>
+          <c></c><c></c><c>A1C3</c><c>C3</c>
+          <c></c><c></c><c>A1C4</c><c>C4</c>
+          <c></c><c></c><c>A1S1</c><c>S1</c>
+          <c></c><c></c><c>A1S2</c><c>S2</c>
+          <c></c><c></c><c>A1S3</c><c>S3</c>
+          <c></c><c></c><c>A1S4</c><c>S4</c>
+          <c></c><c>RRR</c><c>A1A2</c><c>A2</c>
+          <c></c><c>Peer</c><c>A1C1</c><c>C1</c>
+          <c></c><c></c><c>A1C2</c><c>C2</c>
+          <c></c><c></c><c>A1S1</c><c>S1</c>
+          <c></c><c></c><c>A1S2</c><c>S2</c>
         </texttable>
       </section>
       <section anchor="perNode" title="Per DOIC Node Associations">
@@ -589,8 +617,8 @@
         <t>
          The per node architecture is illustrated in
          <xref target="per-node-agent"/> for deployments that include a
-         single agent.  This shows the associations that result from a 
-         single transaction that traverses one agent.  This model results in 
+         single agent.  This shows the associations that result from a
+         single transaction that traverses one agent.  This model results in
          two associations.
         </t>
         <t>
@@ -653,13 +681,13 @@
           </artwork>
         </figure>
         <t>
-         <xref target="per-node-agent2"/> shows the associations that result from a 
-         single transaction that traverses one agent.  This model results in 
+         <xref target="per-node-agent2"/> shows the associations that result from a
+         single transaction that traverses one agent.  This model results in
          three associations.
         </t>
         <t><list><t>
           Note that one advantage of this model is that the number of DOIC associations
-          managed by any Diameter node is constrained by the number of DOIC supporting Diameter nodes 
+          managed by any Diameter node is constrained by the number of DOIC supporting Diameter nodes
           with which it communicates.  The addition of additional agents in the path between
           the client and server does not result in additional associations as is the case
           with the per report model.
@@ -685,7 +713,7 @@
          other clients, agents and servers.
         </t>
         <t>
-          [steve; this table is a better way of showing the associations by showing which nodes are 
+          [steve; this table is a better way of showing the associations by showing which nodes are
           reacting and reporting nodes for the association.  need to update the previous table to show
           the same.]
         </t>
@@ -770,9 +798,9 @@
           </t>
 	       <t><list style="symbols">
 	         <t>
-	           Clients and agents advertising separate and potentially different capabilities.  
+	           Clients and agents advertising separate and potentially different capabilities.
 	           For instance, the client might support just the loss algorithm while the agent
-	           supports both the loss and rate algorithms.  
+	           supports both the loss and rate algorithms.
 	         </t>
 	       </list>
 	       </t>
@@ -824,8 +852,8 @@
              </t>
              <t>
                [steve: i can see an advantage of reporting nodes advertising which
-               types of reports they will send.  this can help a reacting node to 
-               know which associations to listen to for realm and rrr reports.  i don't 
+               types of reports they will send.  this can help a reacting node to
+               know which associations to listen to for realm and rrr reports.  i don't
                think we are talking about e2e.  the report model says there needs to be
                an association per report type that can be sent over the association.]
              </t>
@@ -858,9 +886,50 @@
       |=<DOIC Peer Association>==|                          |
       |                          |                          |
 
+|- xxR OC-S-F:C ----->|- xxR OC-S-F:C ----->|- xxR OC-S-F:C ----->|
+
 		]]>
             </artwork>
           </figure>
+<figure anchor="pr-uc-basic2">
+  <artwork><![CDATA[
+
+   +-+                   +--+                  +--+                  +-+
+   |C|                   |A1|                  |A2|                  |S|
+   +-+                   +--+                  +--+                  +-+
+    |                     |                     |                     |
+    |- xxR OC-S-F:C ----->|                     |                     |
+    |                     |- xxR OC-S-F:C ----->|                     |
+    |                     |      OC-S-F:A1      |                     |
+    |                     |                     |- xxR OC-S-F:C ----->|
+    |                     |                     |      OC-S-F:A1      |
+    |                     |                     |      OC-S-F:A2      |
+    |                     |                     |                     |
+    |                     |                     |<--- xxA OC-S-F:SC --|
+    |                     |                     |         OC-S-F:SA1  |
+    |                     |                     |         OC-S-F:SA2  |
+    |                     |                     |                     |
+    |                     |                     |==<DOIC Host Assoc>==|
+    |                     |                     |==<DOIC Peer Assoc>==|
+    |                     |<--- xxA OC-S-F:SC --|                     |
+    |                     |         OC-S-F:SA1  |                     |
+    |                     |         OC-S-F:A2A1 |                     |
+    |                     |                     |                     |
+    |                     |=============<DOIC Host Assoc>=============|
+    |                     |==<DOIC Peer Assoc>==|                     |
+    |                     |                     |                     |
+    |<--- xxA OC-S-F:SC --|                     |                     |
+    |         OC-S-F:A1C  |                     |                     |
+    |                     |                     |                     |
+    |========================<DOIC Host Assoc>========================|
+    |=============<DOIC Realm Assoc>============|                     |
+    |==<DOIC Realm Assoc>=|                     |                     |
+    |==<DOIC Peer Assoc>==|                     |                     |
+    |                     |                     |                     |
+
+]]>
+  </artwork>
+</figure>
           <t>
            [ben: why do we need both a peer and host association between A and
            S?]
@@ -1137,35 +1206,35 @@
           <figure anchor="ptraAssoc2">
             <artwork><![CDATA[
 
-		      +-+                        +--+                       +--+                       +-+
-		      |C|                        |A1|                       |A2|                       |S|
-		      +-+                        +--+                       +--+                       +-+
-		       |                          |                          |                          |
-		       |-- xxR OC-S-F:C---------->|                          |                          |
-		       |                          |                          |                          |
-		       |                          |-- xxR OC-S-F:C---------->|                          |
-		       |                          |       OC-S-F:A           |                          |
-		       |                          |                          |-- xxR OC-S-F:C---------->|
-		       |                          |                          |       OC-S-F:A2          |
-		       |                          |                          |                          |
-		       |                          |                          |<----- xxR OC-S-F:C------>|
-		       |                          |                          |           OC-S-F:SA2     |
-		       |                          |                          |           OLR:Loss       |
-		       |                          |                          |==<DOIC Host Association>=|
-		       |                          |                          |                          |
-		       |                          |<--------- xxA OC-S-F:SC -|                          |
-		       |                          |               OC-S-F:A2A1|                          |
-		       |                          |               OLR:Loss   |                          |
-		       |                          |                          |                          |
-		       |                          |                          |                          |
-		       |<-------- xxA OC-S-F:SC --|                          |                          |
-		       |              OC-S-F:AC   |                          |                          |
-		       |              OLR:Loss    |                          |                          |
-		       |=============================<DOIC Host Association>============================|
-		       |                          |                          |                          |
-		       | Client abates host-      |                          | Agent 2 abates realm-    |
-		       | routed traffic           |                          | routed traffic           |
-		       |                          |                          |
+  +-+                      +--+                     +--+                     +-+
+  |C|                      |A1|                     |A2|                     |S|
+  +-+                      +--+                     +--+                     +-+
+   |                        |                        |                        |
+   |-- xxR OC-S-F:C-------->|                        |                        |
+   |                        |                        |                        |
+   |                        |-- xxR OC-S-F:C-------->|                        |
+   |                        |       OC-S-F:A         |                        |
+   |                        |                        |-- xxR OC-S-F:C-------->|
+   |                        |                        |       OC-S-F:A2        |
+	 |                        |                        |                        |
+   |                        |                        |<---- xxR OC-S-F:C----->|
+   |                        |                        |          OC-S-F:SA2    |
+   |                        |                        |          OLR:Loss      |
+   |                        |                        |<DOIC Host Association>=|
+   |                        |                        |                        |
+   |                        |<------- xxA OC-S-F:SC -|                        |
+   |                        |           OC-S-F:A2A1  |                        |
+   |                        |             OLR:Loss   |                        |
+   |                        |                        |                        |
+   |                        |                        |                        |
+   |<------ xxA OC-S-F:SC --|                        |                        |
+   |            OC-S-F:AC   |                        |                        |
+   |            OLR:Loss    |                        |                        |
+   |=========================<DOIC Host Association>==========================|
+   |                        |                        |                        |
+   | Client abates host-    |                        | Agent 2 abates realm-  |
+   | routed traffic         |                        | routed traffic         |
+   |                        |                        |
 
 		]]>
             </artwork>
@@ -1318,23 +1387,23 @@
           <t>
            In this case, it is the responsibility of the agents to act on
            behalf of the non-supporting clients.
-          </t>  
-          <t>
-           Agent A1 is responsible for handling
-           overload abatement for requests originating from client C2.  
           </t>
           <t>
-           Agent A2 is responsible for handling overload abagtement for requests originating from 
+           Agent A1 is responsible for handling
+           overload abatement for requests originating from client C2.
+          </t>
+          <t>
+           Agent A2 is responsible for handling overload abagtement for requests originating from
            client C3 and C4.
           </t>
           <t>
-            Note that client C1 is responsible for handling overload abatement for 
+            Note that client C1 is responsible for handling overload abatement for
             requests it originates.
           </t>
         </section>
         <section title="PRTA Handling">
           <t>
-            <xref target="ucnonPRTA1"/> shows the host report DOIC associations that will result 
+            <xref target="ucnonPRTA1"/> shows the host report DOIC associations that will result
             from this scenario.  Other report types associations are not addressed in this analysis.
             Associations from the server toward agents and clients are also not addressed in this analysis.
           </t>
@@ -1344,19 +1413,19 @@
           <ttcol align="center">Assoc</ttcol>
           <ttcol align="center">Behavior</ttcol>
           <c>C1</c><c>Host</c><c>C1S1</c>
-          <c>For host reports received on the C1S1 association, C1 is responsible for abatement 
+          <c>For host reports received on the C1S1 association, C1 is responsible for abatement
              of all request traffic that would be routed to server S1.</c>
           <c></c><c></c><c></c><c></c>
           <c></c><c></c><c>C1S2</c>
-          <c>For host reports received on the C1S2 association, C1 is responsible for abatement 
+          <c>For host reports received on the C1S2 association, C1 is responsible for abatement
              of all request traffic that would be routed to server S2</c>
           <c></c><c></c><c></c><c></c>
           <c></c><c></c><c>C1S3</c>
-          <c>For host reports received on the C1S3 association, C1 is responsible for abatement 
+          <c>For host reports received on the C1S3 association, C1 is responsible for abatement
              of all request traffic that would be routed to server S3</c>
           <c></c><c></c><c></c><c></c>
           <c></c><c></c><c>C1S4</c>
-          <c>For host reports received on the C1S4 association, C1 is responsible for abatement 
+          <c>For host reports received on the C1S4 association, C1 is responsible for abatement
              of all request traffic that would be routed to server S4</c>
           <c></c><c></c><c></c><c></c>
           <c>A1</c><c>Host</c><c>A1S1</c>
@@ -1400,14 +1469,14 @@
              S4.</c>
         </texttable>
         <t>
-        
+
         </t>
 
-          
+
         </section>
         <section title="PDNA Handling">
           <t>
-            <xref target="ucnonPDNA1"/> shows the host report DOIC associations that will result 
+            <xref target="ucnonPDNA1"/> shows the host report DOIC associations that will result
             from this scenario.  Other report types associations are not addressed in this analysis.
             Associations from the server toward agents and clients are also not addressed in this analysis.
           </t>
@@ -1416,37 +1485,37 @@
           <ttcol align="center">Assoc</ttcol>
           <ttcol align="center">Behavior</ttcol>
           <c>C1</c><c>C1A1</c>
-          <c>For host reports received on the C1S1 association, C1 is responsible for abatement 
+          <c>For host reports received on the C1S1 association, C1 is responsible for abatement
              of all request traffic that would be routed to the server indicated in the report.</c>
           <c></c><c></c><c></c>
           <c>A1</c><c>A1A2</c>
-          <c>For host reports received on the A1A2 association, A1 is responsible for abatement 
+          <c>For host reports received on the A1A2 association, A1 is responsible for abatement
              of all request traffic from C2 that would be routed to the server indicated in the report.
              A1 is also responsible for passing the host report over the C1A1 association.</c>
           <c></c><c></c><c></c>
           <c></c><c>A1S1</c>
-          <c>For host reports received on the A1S1 association, A1 is responsible for abatement 
-             of all request traffic from C2 that would be routed to S1.  A1 is also responsible for 
+          <c>For host reports received on the A1S1 association, A1 is responsible for abatement
+             of all request traffic from C2 that would be routed to S1.  A1 is also responsible for
              passing the host report over the C1A1 association.</c>
           <c></c><c></c><c></c>
           <c></c><c>A1S2</c>
-          <c>For host reports received on the A1S2 association, A1 is responsible for abatement 
-             of all request traffic from C2 that would be routed to S2.  A1 is also responsible for 
+          <c>For host reports received on the A1S2 association, A1 is responsible for abatement
+             of all request traffic from C2 that would be routed to S2.  A1 is also responsible for
              passing the host report over the C1A1 association.</c>
           <c></c><c></c><c></c>
           <c>A2</c><c>A2A1</c>
-          <c>For host reports received on the A2A1 association, A2 is responsible for abatement 
-             of all request traffic from C3 and C4 that would be routed to the server indicated 
+          <c>For host reports received on the A2A1 association, A2 is responsible for abatement
+             of all request traffic from C3 and C4 that would be routed to the server indicated
              in the report.</c>
           <c></c><c></c><c></c>
           <c></c><c>A2S3</c>
-          <c>For host reports received on the A2S3 association, A1 is responsible for abatement 
-             of all request traffic from C3 and C4 that would be routed to S2.  A1 is also responsible for 
+          <c>For host reports received on the A2S3 association, A1 is responsible for abatement
+             of all request traffic from C3 and C4 that would be routed to S2.  A1 is also responsible for
              passing the host report over the A1A2 association.</c>
           <c></c><c></c><c></c>
           <c></c><c>A2S4</c>
-          <c>For host reports received on the A2S4 association, A1 is responsible for abatement 
-             of all request traffic from C3 and C4 that would be routed to S4.  A1 is also responsible for 
+          <c>For host reports received on the A2S4 association, A1 is responsible for abatement
+             of all request traffic from C3 and C4 that would be routed to S4.  A1 is also responsible for
              passing the host report over the A1A2 association.</c>
         </texttable>
         </section>
@@ -1481,6 +1550,13 @@
               a reacting node.
              </t>
            </list>
+          </t>
+          <t>
+            This use case illustrates one instance where agents must be
+            able to insert an OC-Supported-Features AVP containing information
+            different then received from the client.  The assumption for this
+            analysis is that the agent will insert a second OC-Supported-Features
+            AVP.
           </t>
         </section>
         <section title="PRTA Handling">
@@ -1601,7 +1677,24 @@
       </section>
       <section title="Use Case - Stateful Abatement Algorithms">
         <section title="Description">
-          <t></t>
+          <t>
+            The loss algorithm defined in <xref target="I-D.ietf-dime-ovli"/> is
+            a stateless overload abatement algorithm.  This means that no history
+            of previous transactions needs to be kept in order to immediately apply
+            the loss algorithm upon receipt of an overload report.
+          </t>
+          <t>
+            There are overload abatement algorithms envisioned and discussed in
+            <xref target="RFC7068"/> that require the reacting node to maintain a
+            history of requests sent over a period of time to be able to properly
+            handle overload reports.  The rate and windowing algorithms are examples
+            of abatement algorithms that might require keeping a history of the rate
+            of transactions sent over the most immediate period of time.
+          </t>
+          <t>
+            This section explores the implication of a stateful abatement algorithm
+            on the two endpoint models.
+          </t>
         </section>
         <section title="PRTA Handling">
           <t></t>
@@ -1612,7 +1705,25 @@
       </section>
       <section title="Use Case - Targeted Overload Reports">
         <section title="Description">
-          <t></t>
+          <t>
+            The ability to target an overlaod report to a specific reacting node
+            is currently being discussed.
+          </t>
+          <t><list><t>
+            Note that at the time of this writing the DOIC solution does not
+            support the ability to target overload report.  There is general
+            consensus that this would be a useful thing for DOIC to support but
+            there is not agreement as to whether this should be in the base
+            specification or treated as an extension.
+          </t></list></t>
+          <t>
+            The primary basis of this feature would be the ability to throttle
+            traffic from a specific, potentially misbehaving, reacting node.  For
+            example, if a single Diameter client is generating a larger than normal
+            amount of traffic when all other clients are generating normal traffic,
+            the Diameter server might want to send an overload report that impacts
+            only the traffic from the client generating the large amount of traffic.
+          </t>
         </section>
         <section title="PRTA Handling">
           <t></t>
@@ -1635,11 +1746,11 @@
       <section title="Use Case - Cross Application Dependencies">
         <section title="Description">
           <t>
-            [steve: after thinking about pcc i'm not convinced this is a separate 
+            [steve: after thinking about pcc i'm not convinced this is a separate
             scenarios.  The cross application dependencies is nothing more that a change
-            in the way that a route is selected.  overload abatement treatment needs to 
+            in the way that a route is selected.  overload abatement treatment needs to
             happen after a route is selected and applied if the selected route matches an
-            active overload report.  overload abatement should not care about how the 
+            active overload report.  overload abatement should not care about how the
             route is selected.]
           </t>
           <t>
@@ -1673,24 +1784,24 @@
           </t>
           <figure anchor="fig-failed">
             <artwork><![CDATA[
-	
-	      +--+                **** 
+
+	      +--+                ****
 	      |C1|-----      -----*S1* <--- This server is OOS
-	      +--+     \+--+/     **** 
-	                |A1|            
-	      +--+     /+--+\     +--+ 
-	      |C2|-----  ||  -----|S2| 
-	      +--+       ||       +--+ 
+	      +--+     \+--+/     ****
+	                |A1|
+	      +--+     /+--+\     +--+
+	      |C2|-----  ||  -----|S2|
+	      +--+       ||       +--+
 	                 ||
-	      +--+       ||       +--+ 
-	      |C3|-----  ||  -----|S3|  
-	      +--+     \+--+/     +--+   
-	                |A2|              
-	      +--+     /+--+\     +--+   
-	      |C4|-----      -----|S4|   
-	      +--+                +--+ 
-	       
-	 
+	      +--+       ||       +--+
+	      |C3|-----  ||  -----|S3|
+	      +--+     \+--+/     +--+
+	                |A2|
+	      +--+     /+--+\     +--+
+	      |C4|-----      -----|S4|
+	      +--+                +--+
+
+
 	     ]]>
             </artwork>
           </figure>
@@ -1752,6 +1863,7 @@
      filing system or remote ones accessed by http (http://domain/dir/... ).-->
     <references title="Normative References">
 		&I-D.ietf-dime-ovli;
+    &RFC4006;
        <reference anchor='agent-overload'>
         <front>
           <title>Diameter Agent Overload</title>
@@ -1773,6 +1885,8 @@
 
       &RFC3552;
 
+      &RFC7068;
+
       <!-- A reference written by by an organization not a person.
 
       <reference anchor="DOMINATION"
@@ -1787,7 +1901,7 @@
    <date year="1984" />
  </front>
       </reference>
-      
+
       -->
     </references>
     <section anchor="app-additional" title="Additional Stuff">
