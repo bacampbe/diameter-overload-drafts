@@ -1251,9 +1251,8 @@
         </section>
         <section title="PRTA Handling">
           <t>
-           Under the per-report-type model there are
-           two DOIC associations established for host reports and one for
-realm reports  as a result
+           Under the per-report-type model there are two DOIC associations
+           established for host reports and one for realm reports as a result
            of a single capabilities exchange. This is illustrated in
            <xref target="ptraAssoc"/>.
           </t>
@@ -1289,31 +1288,37 @@ realm reports  as a result
 		]]>
             </artwork>
           </figure>
-		<t>
-		S sends a host-report using the loss algorithm. C begins to abate host-routed
-		traffic bound for S. A abates realm-routed traffic to the degree it can do so
-		by routing requests to other servers that support the given realm and application.
-		If the number of realm-routed requests from C (and potentially from other clients) exceed
-		this spare capacity, then A optionally sends a realm report to C. C would then 
-		abate realm-routed traffic.
-		</t>
-        <t><list><t>
-         This brings up a question about how agents might learn of server
-         overload conditions in order to generate "realm" reports. We assume
-that the agent inspects the realm-report prior to forwarding it towards the client.
-This further assumes that the realm-report is generic, that is, that it applies to all clients
-equally. If the working group chooses to make each host-report specific to a particular client,
-then this approach will not work.
-        </t></list></t>
-
-
+          <t>
+           S sends a host-report using the loss algorithm. C begins to abate
+           host-routed traffic bound for S. A abates realm-routed traffic to
+           the degree it can do so by routing requests to other servers that
+           support the given realm and application. If the number of
+           realm-routed requests from C (and potentially from other clients)
+           exceed this spare capacity, then A optionally sends a realm report
+           to C. C would then abate realm-routed traffic.
+          </t>
+          <t>
+           <list>
+             <t>
+              This brings up a question about how agents might learn of server
+              overload conditions in order to generate "realm" reports. We
+              assume that the agent inspects the realm-report prior to
+              forwarding it towards the client. This further assumes that the
+              realm-report is generic, that is, that it applies to all clients
+              equally. If the working group chooses to make each host-report
+              specific to a particular client, then this approach will not
+              work.
+             </t>
+           </list>
+          </t>
           <t>
            Figure <xref target="ptraAssoc2"/> illustrates the associations and
            behavior for requests that travel through two agents.
           </t>
-		<t>
-			[ben: Where are we taking this example? Will there be realm reports? Is A1 involved in any associations?]
-		</t>
+          <t>
+           [ben: Where are we taking this example? Will there be realm
+           reports? Is A1 involved in any associations?]
+          </t>
           <figure anchor="ptraAssoc2">
             <artwork><![CDATA[
 
