@@ -237,7 +237,9 @@
     <section anchor="end" title="DOIC Endpoints">
       <t>
         [steve: we might want to divide this into a section defining reacting
-        nodes and a section defining reporting nodes.]
+        nodes and a section defining reporting nodes.] [ben: Maybe--I'm not sure
+        if there's enough material to warrant the separation. OTOH, we need to
+        see if there's too much redundancy between here and the intro.]
       </t>
       <t>
        DOIC endpoints are defined in <xref target="I-D.ietf-dime-ovli"/>. A
@@ -262,11 +264,14 @@
           relays Diameter requests, while a reporting node responds to or
           relays Diameter requests. This is a side effect of the solution
           choice of imbedding overload reports in Diameter answers, but not
-          Diameter requests. Since Diameter supports bidirectional
+          Diameter requests.
+         </t>
+       </list>
+       </t>
+         <t>
+          Since Diameter supports bidirectional
           transactions, a node may simultaneously be a reacting node for
           transactions in one direction, and a reporting node for the other.
-         </t>
-         <t>
           This bidirectional nature makes it possible for a Diameter server to
           be a reacting node and for a Diameter client to be a reporting node.
           There are multiple examples of Diameter applications which require
@@ -275,8 +280,6 @@
           two Diameter servers, further confusing the concept of Diameter
           clients and servers.
          </t>
-       </list>
-      </t>
       <t>
        In the most basic case a reacting node will be a Diameter client and a
        reporting node will be a Diameter server. When a Diameter server
@@ -334,29 +337,34 @@
           will control the amount of RAR traffic routed to the client.
         </t></list></t>
         <t>
-          Diamter supports two primary methods for routing requests to a reporting
+          Diameter supports two primary methods for routing requests to a reporting
           node.  The first is routing based on the Destination-Host AVP and the
-          second is routing based on the Destination-Realm AVP.  In order to achieve
-          the desired reduction in traffic indicated in a host report, there must
-          be a reduction in requests routed using both mechanisms.
+          second is routing based on the Destination-Realm and Application AVPs.
+          For the purposes of this analysis, we refer to the first category as
+          "host-routed request", and the second
+          category as "realm-routed requests".
+          In order to achieve
+          the desired reduction in traffic indicated in a host report, there typically must
+          be a reduction in requests of both categories.
         </t>
         <t>
-          In a basic deployment involving only Diameter clients and Diamter servers,
-          the node sending requests can limit both types of requests.  The abatement
+          In a basic deployment involving only Diameter clients and Diameter servers,
+          the node initiating requests can limit both types of requests.  The abatement
           in this case includes requests with a Destination-Host AVP that matches
           an active and relevant overload report plus requests that do not contain
-          a Destination-Host AVP and that would be routed on a connection to
-          the server that advertised the Diameter ID that is contained in the overlaod
+          a Destination-Host AVP but would be sent over a direct transport-layer
+          connection to
+          the server that advertised the Diameter ID that matches the overload
           report.
         </t>
         <t>
-          In deployments that involve agents, the node sending requests cannot
-          limit both types of requests.  It can still abate traffic that includes
-          a Destination-Host AVP, as it knows which requests of that type will be
+          In deployments that involve agents, the node initiating requests cannot
+          directly limit both types of requests.  It can still abate traffic that includes
+          a Destination-Host AVP, as it knows which requests of that type would be
           routed to the reporting node.  The originator of the request does not,
           however, have any way of knowing which of the realm-routed requests
-          will be routed to the reporting node.  This is the job of the agent
-          sitting one hop before the reporting node.  In this case the agent
+          would be routed to the reporting node.  This is the job of the agent
+          sitting one hop before the reporting node.  Therefore, the agent
           must be the reacting node for realm-routed requests that would be routed
           to a node that sent a host report.
         </t>
@@ -365,7 +373,7 @@
           can be three types of reacting nodes for a single host report.
         </t>
         <t>
-          Consider the case where server S3 sends a host report to all requests
+          Consider the case where server S3 sends a host report in response to each request
           received for a specific application.  Assume also that client C1 supports
           the DOIC solution but that client C2 does not.
         </t>
@@ -374,11 +382,11 @@
           </t></list></t>
         <t>
           Client C1 will be a reacting node with the responsibility for abating
-          Destination-Host AVP routed requests it originates.
+          host-routed requests it originates.
         </t>
         <t>
           Agent A1 will be a reacting node with the responsibility for abating
-          Destination-Host AVP routed requests originated by client A2.
+          host-routed requests originated by client A2.
         </t>
         <t>
           Agent A2 will be a reacting node with the responsibility for abating
