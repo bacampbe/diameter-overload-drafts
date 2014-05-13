@@ -43,7 +43,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
-<rfc category="info" docName="DOIC-Endpoints-00" ipr="trust200902">
+<rfc category="info" docName="draft-donovan-doic-endpoints-00" ipr="trust200902">
 <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
      you can add the attributes updates="NNNN" and obsoletes="NNNN"
@@ -128,41 +128,47 @@
   <middle>
     <section anchor="intro" title="Introduction">
       <t>
-       The Diameter Overload Information Conveyance (DOIC) solution describes
-       a mechanism for exchanging information about Diameter Overload among
-       Diameter nodes. DOIC defines the concept of DOIC endpoints. A DOIC
+       The <xref target="I-D.ietf-dime-ovli"> Diameter Overload Information Conveyance (DOIC) </xref>
+        solution describes
+       a mechanism for exchanging diameter overload information among
+       Diameter nodes. DOIC defines the concept of a DOIC endpoint. A DOIC
        endpoint is a Diameter node that acts as either a reporting node or a
        reacting node. A reporting node originates overload reports, requesting
-       reacting nodes to reduce the amount of traffic sent. The type of
+       reacting nodes to reduce the offered load. An overload report has a "type".
+       The type of
        overload report determines the scope of the request for traffic
-       reduction. The current definition of DOIC endpoints is ambiguous,
-       resulting in differing assumptions about the implementation of the DOIC
-       solution. This document describes two common interpretations of DOIC
-       endpoints and analyzes how the two approaches address various Diameter
-       overload use cases and deployment scenarios.
-      </t>
-      <t>
+       reduction, and possibly other semantics.
+     </t>
+     <t>
        DOIC endpoints do not necessarily correspond to Diameter clients and
        servers. Any Diameter node that supports DOIC can be a DOIC endpoint.
        This includes Diameter agents, as well as Diameter clients and servers.
        A pair of DOIC endpoints that exchange overload information, as well as
        information about DOIC support, can be said to share a DOIC
        association.
+     </t>
+      <t>
+       The current definition of DOIC endpoints is ambiguous,
+       resulting in differing assumptions about the implementation and deployment
+        of the DOIC
+       solution. This document describes two common interpretations of DOIC
+       endpoints and analyzes how the two approaches address various Diameter
+       overload use cases and deployment scenarios.
       </t>
       <t>
-       The two interpretations of DOIC endpoints and the resulting
+       The two models of DOIC endpoints and the resulting
        associations are summarized as follows:
       </t>
       <t>
-       <list style="symbols">
-         <t hangText="Per-Report-type">
+       <list style="hanging">
+         <t hangText="Per-Report-type (PRT) Model:">
           The per report model implies there is a DOIC association per
           report-type that can be originated. With this model there can be
           multiple associations generated as a result of a single Diameter
           transaction. See <xref target="perReport"/> for more information on
           this model.
          </t>
-         <t hangText="Per DOIC Node">
+         <t hangText="Per DOIC Node (PDN) Model:">
           The per node model implies that there is a DOIC association between
           each pair of Diameter nodes that support the DOIC solution. With
           this model a transaction can only create a single association
@@ -172,21 +178,19 @@
           transaction (typically a Diameter Server). See
           <xref target="perNode"/> for more information on this model.
          </t>
-         <t>
-          [ben: Add the model acronyms here if we stick with them.]
-         </t>
        </list>
-      </t>
-      <t>
-       The current DOIC specification <xref target="I-D.ietf-dime-ovli"/> does
-       not fully specify the the semantics associated with the DOIC endpoint
-       concept. It is also possible that additional syntax will be required.
       </t>
       <t>
        This document outlines an example deployment and multiple use cases
        that can be used to evaluate how those use cases would be implemented
-       using the two assumed endpoint architectures.
+       using the two assumed endpoint models.
       </t>
+       <t>
+         The current DOIC specification <xref target="I-D.ietf-dime-ovli"/> does
+         not fully specify the the semantics associated with the DOIC endpoint
+         concept. It is also possible that additional syntax will be required as
+         a result of this analysis.
+       </t>
     </section>
     <section title="Terminology and Abbreviations">
       <t>
@@ -1151,11 +1155,11 @@
    |                          |-- xxR OC-S-F:C---------->|                          |
    |                          |       OC-S-F:A1          |                          |
    |                          |                          |-- xxR OC-S-F:C---------->|
-   |                          |                          |       OC-S-F:A1          |          
+   |                          |                          |       OC-S-F:A1          |
    |                          |                          |       OC-S-F:A2          |
    |                          |                          |                          |
    |                          |                          |<----- xxA OC-S-F:S(C)----|
-   |                          |                          |           OC-S-F:S(A1)   |          
+   |                          |                          |           OC-S-F:S(A1)   |
    |                          |                          |           OC-S-F:S(A2)   |
    |                          |                          |                          |
    |                          |                          |==<DOIC Peer Association>=|
@@ -1163,7 +1167,7 @@
    |                          |                          |==<DOIC Host Association>=|
    |                          |                          |                          |
    |                          |<------ xxA OC-S-F:S(C) --|                          |
-   |                          |            OC-S-F:S(A1)  |                          | 
+   |                          |            OC-S-F:S(A1)  |                          |
    |                          |            OC-S-F:A2(C)  |                          |
    |                          |            OC-S-F:A2(A1) |                          |
    |                          |                          |                          |
