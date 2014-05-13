@@ -10,7 +10,8 @@
 <!ENTITY RFC2629 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2629.xml">
 <!ENTITY RFC3552 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3552.xml">
 <!ENTITY RFC4006 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4006.xml">
-<!ENTITY RFC4006 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7068.xml">
+<!ENTITY RFC6733 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6733.xml">
+<!ENTITY RFC7086 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7068.xml">
 <!ENTITY I-D.narten-iana-considerations-rfc2434bis SYSTEM
 "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.narten-iana-considerations-rfc2434bis.xml">
 <!ENTITY RFC7068 PUBLIC ''
@@ -334,69 +335,75 @@
        <xref target="I-D.ietf-dime-ovli"/> and peer reports defined in
        <xref target="agent-overload"/>).
       </t>
+    </section>
+  <section anchor="reporttypes" title="Diameter Routing and Overload Report Types">
+<t>
+  Diameter supports <xref target="RFC6733">two primary methods</xref> for routing requests to a reporting
+  node. Normally, Diameter nodes route requests based on the Destination-Realm
+   and Application-Id AVP values. That is, they select the next hop
+   from their Diameter route table entry that matches the realm and application
+   of the request. For the sake of this analysis, we refer to requests routed
+   by this method as "realm-routed requests"
+</t>
+<t>
+   A Diameter node may also control the final destination of a request by inserting
+   a Destination-Host AVP. When a node forwards a request that includes Destination-Host,
+   it checks to see if it has a matching Diameter identity in its peer table. If so,
+   it forwards the request to that peer. Otherwise, it follows the normal routing
+   for the realm and application. We refer to requesta routed this way as "host-routed requests".
+</t>
+<t>
+  When a Diameter node becomes overloaded, there typically must
+  be a reduction of the number requests of both categories, in order to have the
+  desired reduction of the overall offered-load. Typically the only way to reduce
+  host-routed requests is by throttling some number of them. Throttling is best done as close
+  to the request origin as possible. The originator is usually in the best position to
+  intelligently throttle. The further from from the origin that throttling occurs, the more
+  network resources are expended on routing and responding to requests that do not result
+  in useful work.
+</t>
+<t>On the other hand, since realm routed requests are not targeted to a particular server, it may be possible
+  to reroute them to other servers that are less overloaded. Rerouting typically occur as close to the
+destination as possible. Nodes closest to the destination will typically have more knowledge about
+available the realm topology and capacity.</t>
+<t>
+  A Diameter overload report has a concept of type. The report-type designates which
+  kinds of requests should be reduced. It may also indicate additional information
+  about how nodes should handle requests that are selected for abatement. The currently
+  defined report types are "Host", "Realm", and "Peer".
+</t>
       <section anchor="hostreport" title="Host Reports">
         <t>
           Host reports are sent to decrease the amount of
-          traffic targeted for a particular Diameter node.  The Diameter
-          node to which the report applies is identified by the Destination-Host
-          AVP of the request carrying the overload report.
+          traffic targeted to a particular Diameter end-node, regardless of what
+          route requests might take to get to that node. Typically, this means host-routed
+          requests. Normally there is no opportunity to attempt to re-route
+          a host-routed request to a different destination, since the destination is
+          encoded into the message itself.
         </t>
+        <t>However, a host report can also apply to realm-routed requests if a node has
+        positive knowledge that the request will land on the node in question. For example,
+       the peer selected from the Diameter route table could actually be the overloaded host.
+       In this case, it might be possible to route the request to a different peer.
+       </t>
         <t><list><t>
-          Note: Diameter Clients and Diameter servers can originate host reports.
+          Note: Both Diameter clients and servers can originate host reports.
           For example, for the Diameter application defined in <xref target="RFC4006"/>,
           a Diameter server sending a host report will control the amount of CCR
           traffic routed to the server.  An RFC4006 client sending a host report
-          will control the amount of RAR traffic routed to the client.
+          will control the amount of RAR traffic routed to the client. Diameter agents
+          can also originate host reports if they become aware of an overload condition
+          of a specific end-node.
           </t>
           <t>
           Note: There are scenarios discussed in <xref target="I-D.ietf-dime-ovli"/>
-          where the host report applies to as set of servers.  The primary case
+          where the host report applies to a set of servers.  The primary case
           is when an agent is acting as a front end to a set of homogeneous
           servers.  As such, it could be argued that a host report is really
           requesting a reduction of traffic sent to an address rather than a
-          reduction of traffic sent to a specific server/node.
+          reduction of traffic sent to a specific server/node. [ben: Should we point
+          out that this case is typically opaque to the originating node?]
         </t></list></t>
-        <t>
-          Diameter supports two primary methods for routing requests to a reporting
-          node.  The first is routing based on the Destination-Host AVP and the
-          second is routing based on the Destination-Realm and Application AVPs.
-          For the purposes of this analysis, we refer to the first category as
-          "host-routed request", and the second
-          category as "realm-routed requests".
-          In order to achieve
-          the desired reduction in traffic indicated in a host report, there typically must
-          be a reduction in requests of both categories.
-        </t>
-        <t>
-          In a basic deployment involving only Diameter clients and Diameter servers,
-          the node initiating requests can limit both types of requests.  The abatement
-          in this case includes requests with a Destination-Host AVP that matches
-          an active and relevant overload report plus requests that do not contain
-          a Destination-Host AVP but would be sent over a direct transport-layer
-          connection to
-          the server that advertised the Diameter ID that matches the overload
-          report.
-        </t>
-        <t><list><t>
-          An active and relevant overload report is a report that has not expired
-          (is active) and that matches the contents of the request being sent.
-          For a host report this implies that the overload report state matches
-          the application-id, destination-realm and the destination-host
-          AVPs of the request.  The destionation-host AVP match only applies
-          if the request contains a destination-host AVP.
-        </t></list></t>
-        <t>
-          In deployments that involve agents, the node sending requests cannot
-          apply abatement to both types of requests.
-          It can abate host-routed traffic (requests that includes
-          a Destination-Host AVP0, as it knows which requests of that type will be
-          routed to the reporting node.  The originator of the request does not,
-          however, have any way of knowing which of the realm-routed requests
-          would be routed to the reporting node.  This is the job of the agent
-          sitting one hop before the reporting node.  Therefore, the agent
-          must be the reacting node for realm-routed requests that would be routed
-          to a node that sent a host report.
-        </t>
         <t>
           In deployments such as that outlined in <xref target="deploy"/>, there
           can be three types of reacting nodes for a single host report.
@@ -428,13 +435,48 @@
       </section>
       <section title="Realm Reports">
         <t>
-          [steve: similar discussion as for host reports.]
+          Realm reports apply to requests targeted to a particular realm, regardless
+          of which server they may land on. Realm reports would typically be used
+          when an entire realm is overloaded for some reason. For example, all servers in
+          a realm might depend on an overloaded back-end database. Or individual servers
+          may become overloaded to the point that an agent can no longer reroute
+          enough realm-routed traffic to achieve the necessary reduction.
         </t>
+        <t>Realm reports can only be sent by nodes that have full knowledge of the overload
+        state of the entire realm. Typically such a node would be an agent that is responsible
+      for distributing traffic to a set of servers for a realm. It could also be a server, if
+    the server has full knowledge of the realm (perhaps through some sort of out-of-band overload
+    state sharing mechanism.)</t>
+    <t><list><t>
+      At the time of this writing, <xref target="I-D.ietf-dime-ovli"/> define realm reports as
+      applying to realm-routed requests only. There is ongoing discussion about whether realm reports
+      should apply to all requests targeted to the realm, whether or not they include Destination-Host AVPs.
+    </t></list></t>
       </section>
       <section title="Peer Reports">
         <t>
-          [steve: similar discussion as for host reports.]
+          Peer reports apply to traffic sent to an immediate Diameter peer, across a
+          direct transport-layer connection. If the node's peer table contains other
+          peers that are valid next-hops for a request, the node can reroute traffic to
+          one of those peers. A peer report can only be acted on by a reacting node that is
+          an immediate peer to the overloaded node.
         </t>
+        <t>
+          Peer reports are useful for reporting overload conditions on specific nodes,
+          without effecting traffic to the realm or to other nodes. If the overloaded node
+          is a server, a peer report is subtantially similar to a host report, except for
+          limitation that only an immediate peer can act on the report. On the other hand,
+          an agent can send a peer report to report a local overload condition, where the previous
+          hop might be able to route traffic through another agent to reach the same realm and/or server.
+        </t>
+<t><list><t>
+  Note: At the time of this writing, <xref target="I-D.ietf-dime-ovli"/> does not define
+  the peer report-type. Instead, they are defined in a separate draft on
+   <xref target="agent-overload">agent overload.</xref> While there is general agreement
+     that agent overload is in-scope for the Diameter overload work, that draft has
+     not been accepted as a working group item.
+</t></list></t>
+
       </section>
     </section>
     <section anchor="deploy" title="Deployment Architecture">
@@ -2178,6 +2220,7 @@
     <references title="Normative References">
 		&I-D.ietf-dime-ovli;
     &RFC4006;
+    &RFC6733;
        <reference anchor='agent-overload'>
         <front>
           <title>Diameter Agent Overload</title>
