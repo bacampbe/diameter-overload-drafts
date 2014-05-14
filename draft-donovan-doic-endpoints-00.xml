@@ -795,7 +795,7 @@ available the realm topology and capacity.</t>
           <artwork><![CDATA[
 
       +-+             +--+            +--+           +-+
-      |C|             |A1|            |A1|           |S|
+      |C|             |A1|            |A2|           |S|
       +-+             +--+            +--+           +-+
        |               |               |               |
        |-<DOIC Assoc>--|-<DOIC Assoc>--|-<DOIC Assoc>--|
@@ -2141,7 +2141,7 @@ available the realm topology and capacity.</t>
             <t>
               Reporting node for Realm and RRR reports.
             </t>
-          </t>
+          </list></t>
         </section>
         <section title="PRTA Handling">
           <t>
