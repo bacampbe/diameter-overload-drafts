@@ -469,13 +469,13 @@ available the realm topology and capacity.</t>
           an agent can send a peer report to report a local overload condition, where the previous
           hop might be able to route traffic through another agent to reach the same realm and/or server.
         </t>
-<t><list><t>
-  Note: At the time of this writing, <xref target="I-D.ietf-dime-ovli"/> does not define
-  the peer report-type. Instead, they are defined in a separate draft on
-   <xref target="agent-overload">agent overload.</xref> While there is general agreement
-     that agent overload is in-scope for the Diameter overload work, that draft has
-     not been accepted as a working group item.
-</t></list></t>
+        <t><list><t>
+          Note: At the time of this writing, <xref target="I-D.ietf-dime-ovli"/> does not define
+          the peer report-type. Instead, they are defined in a separate draft on
+          <xref target="agent-overload">agent overload.</xref> While there is general agreement
+          that agent overload is in-scope for the Diameter overload work, that draft has
+          not been accepted as a working group item.
+        </t></list></t>
 
       </section>
     </section>
