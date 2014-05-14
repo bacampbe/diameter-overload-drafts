@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- This template is for creating an Internet Draft using xml2rfc,
+     which is available here: http://xml.resource.org. -->
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!-- One method to get references from the online citation libraries.
+     There has to be one entity for each item to be referenced.
+     An alternate method (rfc include) is described in the references. -->
+
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC2629 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2629.xml">
+<!ENTITY RFC3552 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3552.xml">
+<!ENTITY RFC4006 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4006.xml">
+<!ENTITY RFC6733 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6733.xml">
+<!ENTITY RFC7086 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7068.xml">
+<!ENTITY I-D.narten-iana-considerations-rfc2434bis SYSTEM
+"http://xml.resource.org/public/rfc/bibxml3/reference.I-D.narten-iana-considerations-rfc2434bis.xml">
+<!ENTITY RFC7068 PUBLIC ''
+'http://xml.resource.org/public/rfc/bibxml/reference.RFC.7068.xml'>
+<!ENTITY I-D.ietf-dime-ovli PUBLIC ''
+'http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dime-ovli-02.xml'>
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<!-- used by XSLT processors -->
+<!-- For a complete list and description of processing instructions (PIs),
+     please see http://xml.resource.org/authoring/README.html. -->
+<!-- Below are generally applicable Processing Instructions (PIs) that most I-Ds might want to use.
+     (Here they are set differently than their defaults in xml2rfc v1.32) -->
+<?rfc strict="yes" ?>
+<!-- give errors regarding ID-nits and DTD validation -->
+<!-- control the table of contents (ToC) -->
+<?rfc toc="yes"?>
+<!-- generate a ToC -->
+<?rfc tocdepth="4"?>
+<!-- the number of levels of subsections in ToC. default: 3 -->
+<!-- control references -->
+<?rfc symrefs="yes"?>
+<!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?>
+<!-- sort the reference entries alphabetically -->
+<!-- control vertical white space
+     (using these PIs as follows is recommended by the RFC Editor) -->
+<?rfc compact="yes" ?>
+<!-- do not start each main section on a new page -->
+<?rfc subcompact="no" ?>
+<!-- keep one blank line between list items -->
+<!-- end of list of popular I-D processing instructions -->
+<rfc category="info" docName="draft-donovan-doic-agent-cases-00" ipr="trust200902">
+<!-- category values: std, bcp, info, exp, and historic
+     ipr values: full3667, noModification3667, noDerivatives3667
+     you can add the attributes updates="NNNN" and obsoletes="NNNN"
+     they will automatically be output with "(if approved)" -->
+<!-- ***** FRONT MATTER ***** -->
+  <front>
+<!-- The abbreviated title is used in the page header - it is only necessary if the
+  full title is longer than 39 characters -->
+    <title abbrev="Abbreviated Title">Analysis of Agent Use Cases
+      for Diameter Overload Information Conveyance (DOIC)</title>
+<!-- add 'role="editor"' below for the editors if appropriate -->
+<!-- Another author who claims to be an editor -->
+    <author fullname="Steve Donovan" initials="S.R."
+     surname="Donovan">
+      <organization>Oracle</organization>
+      <address>
+        <postal>
+          <street/>
+<!-- Reorder these if your country does things differently -->
+          <city>Frisco</city>
+          <region>Texas</region>
+          <code/>
+          <country>USA</country>
+        </postal>
+        <phone>+1</phone>
+        <email>srdonovan@usdonovans.com</email>
+<!-- uri and facsimile elements may also be added -->
+      </address>
+    </author>
+    <author fullname="Ben Campbell" initials="B."
+     surname="Campbell">
+      <organization>Oracle</organization>
+      <address>
+        <postal>
+          <street/>
+<!-- Reorder these if your country does things differently -->
+          <city>Frisco</city>
+          <region>Texas</region>
+          <code/>
+          <country>USA</country>
+        </postal>
+        <phone>+1</phone>
+        <email>ben@nostrum.com</email>
+<!-- uri and facsimile elements may also be added -->
+      </address>
+    </author>
+    <date month="April" year="2014" />
+<!-- If the month and year are both specified and are the current ones, xml2rfc will fill
+  in the current day for you. If only the current year is specified, xml2rfc will fill
+    in the current day and month for you. If the year is not the current one, it is
+    necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the
+    purpose of calculating the expiry date).  With drafts it is normally sufficient to
+    specify just the year. -->
+<!-- Meta-data Declarations -->
+    <area>General</area>
+    <workgroup>Internet Engineering Task Force</workgroup>
+<!-- WG name at the upperleft corner of the doc,
+  IETF is fine for individual submissions.
+    If this element is not present, the default is "Network Working Group",
+  which is used by the RFC Editor as a nod to the history of the IETF. -->
+    <keyword>template</keyword>
+<!-- Keywords will be incorporated into HTML output
+  files in a meta tag but they have no effect on text or nroff
+  output. If you submit your draft to the RFC Editor, the
+  keywords will be used for the search engine. -->
+    <abstract>
+      <t>
+       The Diameter Overload Information Conveyance (DOIC) solution describes
+       a mechanism for exchanging information about Diameter Overload among
+       Diameter nodes. A DOIC endpoint is a Diameter node that acts as either
+       a reporting node are a reacting node. A reporting node originates
+       overload reports, requesting reacting nodes to reduce the amount of
+       traffic sent. DOIC allows Diameter agents to act as reporting nodes,
+       reacting nodes, or both, but does not describe agent behavior. This
+       document explores several use cases for agents to participate in
+       overload control, and makes recommendations for certain agent behaviors
+       to be added to DOIC.
+      </t>
+    </abstract>
+  </front>
+  <middle>
+    <section anchor="intro" title="Introduction">
+      <t>
+       The <xref target="I-D.ietf-dime-ovli"> Diameter Overload Information
+       Conveyance (DOIC) </xref> solution describes a mechanism for exchanging
+       diameter overload information among Diameter nodes. DOIC defines the
+       concept of a DOIC endpoint. A DOIC endpoint is a Diameter node that
+       acts as either a reporting node or a reacting node. A reporting node
+       originates overload reports, requesting reacting nodes to reduce the
+       offered load. An overload report has a "type". The type of overload
+       report determines the scope of the request for traffic reduction, and
+       possibly other semantics.
+      </t>
+      <t>
+       DOIC endpoints do not necessarily correspond to Diameter clients and
+       servers. Any Diameter node that supports DOIC can be a DOIC endpoint.
+       This includes Diameter agents, as well as Diameter clients and servers.
+       However, DOIC does not currently describe how agents should behave as
+       part of an overload control solution. This document explores several
+       use cases for agents to participate in overload control, and makes
+       recommendations for certain agent behaviors to be added to DOIC.
+      </t>
+      <section title="Terminology and Abbreviations">
+        <t>
+         <list style="hanging">
+           <t hangText="Diameter Node:">
+            A Diameter client, agent or server.
+           </t>
+           <t hangText="DOIC Endpoint:">
+            A Diameter node that supports the DOIC solution and acts as either
+            a reporting node, a reacting node, or both.
+           </t>
+           <t hangText="Reacting node:">
+            A DOIC endpoint that can receive overload reports from a reporting
+            node, and perform overload abatement. A DOIC endpoint can
+            simultaneously be both a reacting node and reporting node.
+           </t>
+           <t hangText="Reporting node:">
+            A DOIC endpoint that can send overload reports to a reacting node,
+            requesting the reacting node to perform overload abatement.
+           </t>
+           <t hangText="Overload Abatement:">
+            Actions taken by a reacting node to reduce the load offered to an
+            overloaded Diameter node. The specific actions required to perform
+            overload abatement are described by the DOIC algorithm. Overload
+            abatement actions may involve local traffic reduction, or
+            delegation of actions towards the client. Local traffic reduction
+            can be achieved by either throttling a request or routing a
+            request to a different destination.
+           </t>
+           <t>
+            [steve: should we have a definition of throttling?]
+           </t>
+         </list>
+        </t>
+      </section>
+    </section>
+    <section anchor="reporttypes" title="Diameter Routing">
+      <t>
+       Diameter supports <xref target="RFC6733">two primary methods</xref> for
+       routing requests to a reporting node. Normally, Diameter nodes route
+       requests based on the Destination-Realm and Application-Id AVP values.
+       That is, they select the next hop from their Diameter route table entry
+       that matches the realm and application of the request. For the sake of
+       this analysis, we refer to requests routed by this method as
+       "realm-routed requests"
+      </t>
+      <t>
+       A Diameter node may also control the final destination of a request by
+       inserting a Destination-Host AVP. When a node forwards a request that
+       includes Destination-Host, it checks to see if it has a matching
+       Diameter identity in its peer table. If so, it forwards the request to
+       that peer. Otherwise, it follows the normal routing for the realm and
+       application. We refer to requesta routed this way as "host-routed
+       requests".
+      </t>
+      <t>
+       When a Diameter node becomes overloaded, there typically must be a
+       reduction of the number requests of both categories, in order to have
+       the desired reduction of the overall offered-load. Typically the only
+       way to reduce host-routed requests is by throttling some number of
+       them. Throttling is best done as close to the request origin as
+       possible. The originator is usually in the best position to
+       intelligently throttle. The further from from the origin that
+       throttling occurs, the more network resources are expended on routing
+       and responding to requests that do not result in useful work.
+      </t>
+      <t>
+       On the other hand, since realm routed requests are not targeted to a
+       particular server, it may be possible to reroute them to other servers
+       that are less overloaded. Rerouting should typically occur as close to
+       the destination as possible (commonly at an agent). Nodes closest to
+       the destination will typically have more knowledge about available the
+       realm topology and capacity.
+      </t>
+    </section>
+    <section title="DOIC Agent Use Cases">
+      <t>
+       [ToDo: High level intro to use cases]
+      </t>
+      <section anchor="uc-simple" title="Simple Agent Use Case">
+        <t>
+         [single agent, all nodes support DOIC, same features. Clients
+         throttle host-routed requests, agent reroutes realm-routed requests
+         (and maybe sends realm reports.)]
+        </t>
+      </section>
+      <section anchor="uc-chain" title="Chain of Agents" >
+        <t>
+         [Two agents in sequence. Agent closest to server performs
+         realm-routed request abatement.]
+        </t>
+      </section>
+      <section anchor="uc-mixedcaps" title="Mixed Capabilities" >
+        <t>
+         [Single agent, different capabilities at client and server. Agent adapts oc-supported-features and olrs.]
+        </t>
+      </section>
+      <section anchor="uc-non-supporting" title="Non-Supporting Nodes" >
+        <t>
+         [Category for several non-supporting node use cases.]
+        </t>
+        <section anchor="uc-nsclient" title="Non-Supporting Client" >
+          <t>
+           [Handling non-supporting clients.]
+          </t>
+        </section>
+        <section anchor="uc-nsserver" title="Non Supporting Server" >
+          <t>
+           [Agent acts as reporting node for a non-supporting server.]
+          </t>
+        </section>
+        <section anchor="uc-nsagent" title="Non-Supporting Agent" >
+          <t>
+           [Two agents in sequence, one non-supporting. Show both with
+           non-supporting agent nearest the server vs earlier in chain.]
+          </t>
+        </section>
+      </section>
+	<section anchor="uc-rate" title="Rate Algorithm" >
+		<t>
+			[Show implications of rate algorithm across an agent.]
+		</t>
+	</section>
+	<section anchor="uc-agent-overload" title="Agent Overload" >
+		<t>
+			[Do we need this? May be covered sufficiently in agent overload draft.]
+		</t>
+	</section>
+	
+	
+
+    </section>
+    <section title="Recommendation">
+      <t>
+       This section is to be completed once the document has been reviewed.
+      </t>
+    </section>
+    <section title="Security Considerations">
+      <t>
+       [ToDO]
+      </t>
+    </section>
+  </middle>
+  <back>
+<!-- References split into informative and normative -->
+<!-- There are 2 ways to insert reference entries from the citation libraries:
+     1. define an ENTITY at the top, and use "ampersand character"RFC2629; here (as shown)
+     2. simply use a PI "less than character"?rfc include="reference.RFC.2119.xml"?> here
+ (for I-Ds: include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")
+
+     Both are cited textually in the same manner: by using xref elements.
+     If you use the PI option, xml2rfc will, by default, try to find included files in the same
+     directory as the including file. You can also define the XML_LIBRARY environment variable
+     with a value containing a set of directories to search.  These can be either in the local
+     filing system or remote ones accessed by http (http://domain/dir/... ).-->
+    <references title="Normative References">
+		&I-D.ietf-dime-ovli;
+    &RFC4006;
+    &RFC6733;
+       <reference anchor='agent-overload'>
+        <front>
+          <title>Diameter Agent Overload</title>
+          <author initials="S." surname="Donovan">
+            <organization abbrev="Oracle">
+                Oracle
+                </organization>
+          </author>
+          <date month="March" year="2014"/>
+        </front>
+        <format type="TXT" octets="94506" target="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-donovan-dime-agent-overload-01.xml"/>
+      </reference>
+    </references>
+    <references title="Informative References">
+<!-- Here we use entities that we defined at the beginning. -->
+
+      &RFC2629;
+
+      &RFC3552;
+
+      &RFC7068;
+
+      <!-- A reference written by by an organization not a person.
+
+      <reference anchor="DOMINATION"
+   target="http://www.example.com/dominator.html">
+ <front>
+   <title>Ultimate Plan for Taking Over the World</title>
+
+   <author>
+     <organization>Mad Dominators, Inc.</organization>
+   </author>
+
+   <date year="1984" />
+ </front>
+      </reference>
+
+      -->
+    </references>
+    <section anchor="app-additional" title="Additional Stuff">
+      <t>
+       This becomes an Appendix.
+      </t>
+    </section>
+  </back>
+</rfc>
