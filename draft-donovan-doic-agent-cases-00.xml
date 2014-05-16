@@ -182,6 +182,99 @@
         </t>
       </section>
     </section>
+    <section anchor="deploy" title="Deployment Architecture">
+      <t>
+       This section outlines the deployment architectures used to
+       determine agent related Diameter DOIC requirements.
+      </t>
+      <t>
+       These deployment architectures include the use of Diameter agents to
+       route Diameter requests between Diameter clients and Diameter servers.
+      </t>
+      <t>
+        <xref target="deploy-arch1"/> shows an architecture with a single agent
+        sitting between Diameter clients and Diamter servers.
+      </t>
+      <figure anchor="deploy-arch1">
+        <artwork><![CDATA[
+
+      +--+                +--+
+      |C1|-----      -----|S1|
+      +--+     \+--+/     +--+
+                |A1|
+      +--+     /+--+\     +--+
+      |C2|-----      -----|S2|
+      +--+                +--+
+
+
+      ]]>
+        </artwork>
+      </figure>
+
+      <t>
+        <xref target="deploy-arch2"/> shows an architecture with a multiple agents
+        sitting between Diameter clients and Diamter servers.
+      </t>
+      <figure anchor="deploy-arch2">
+        <artwork><![CDATA[
+
+      +--+                          +--+
+      |C1|-----                -----|S1|
+      +--+     \+--+      +--+/     +--+
+                |A1|------|A2|
+      +--+     /+--+      +--+\     +--+
+      |C2|-----                -----|S2|
+      +--+                          +--+
+
+
+      ]]>
+        </artwork>
+      </figure>
+
+      <t>
+        <xref target="deploy-arch3"/> shows an architecture with the servers
+        partitioned, with agents sitting in front of each partition.  This use
+        case illustrates one instance where individual agents do not have a view
+        of the overload status of all servers in the network.
+      </t>
+      <figure anchor="deploy-arch3">
+        <artwork><![CDATA[
+
+      +--+                +--+ -\
+      |C1|-----      -----|S1|   |
+      +--+     \+--+/     +--+   |
+                |A1|              > Server Partition 1
+      +--+     /+--+\     +--+   |
+      |C2|-----  ||  -----|S2|   |
+      +--+       ||       +--+ -/
+                 ||
+      +--+       ||       +--+ -\
+      |C3|-----  ||  -----|S3|   |
+      +--+     \+--+/     +--+   |
+                |A2|              > Server Partition 2
+      +--+     /+--+\     +--+   |
+      |C4|-----      -----|S4|   |
+      +--+                +--+ -/
+
+
+     ]]>
+        </artwork>
+      </figure>
+      <t><list><t>
+       Note that only two partitions of the Diameter servers are shown. This
+       is bending to the limitations of ASCII art for drawing complex
+       deployment scenarios. It is possible, and even likely, that real world
+       deployments will have more that two partitions of the servers for
+       a Diameter application.
+      </t></list></t>
+      <t>
+       This document focuses on deployments that involve agents.  It is, however,
+       important that any changes to the DOIC solution introduced to support networks
+       that contain agents also work when there is no agent sitting between Diameter
+       clients and servers.
+      </t>
+    </section>
+
     <section anchor="reporttypes" title="Diameter Routing">
       <t>
        Diameter supports <xref target="RFC6733">two primary methods</xref> for
@@ -274,8 +367,8 @@
 			[Do we need this? May be covered sufficiently in agent overload draft.]
 		</t>
 	</section>
-	
-	
+
+
 
     </section>
     <section title="Recommendation">
