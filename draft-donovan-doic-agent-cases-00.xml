@@ -318,6 +318,70 @@
       <t>
        [ToDo: High level intro to use cases]
       </t>
+      <t>
+       This section outlines example use cases. Each of the endpoint
+       models will then be evaluated against each of these use cases,
+       showing how the use case would be implemented using that model
+       and identifying any gaps in the current DOIC specification.
+      </t>
+      <t>
+       The following is the list of use cases considered. This is not an
+       exhaustive list of DOIC use cases but is rather a list of use cases
+       identified as being impacted by the definition of the definition of
+       DOIC endpoints and DOIC associations.
+      </t>
+      <t>
+       <list style="symbols">
+         <t>
+           Simple Agent - Overload capability exchange and overload report handling
+           in a deployment with a single agent as illustrated in
+           <xref target="deploy-arch1"/>.  In this case all Diameter nodes
+           are assumed to support DOIC.
+         </t>
+         <t>
+           Chain of Agents - Overload capability exchange and overload report
+           handling in a deployment with multiple agents between reacting nodes
+           and reporting nodes as illustrated in <xref target="deploy-arch2"/>.
+           In this case all Diameter nodes are assumed to support DOIC.
+         </t>
+         <t>
+           Partitioned Servers - Overlaod capability exchange and overload report
+           handling in a deployment using partitioned servers as illustrated
+           in <xref target="deploy-arch3"/>.  In this case all Diameter nodes
+           are assumed to support DOIC.
+         </t>
+         <t>
+           Mixed Capabilities - Overload capability exchange and overload report
+           handling in deployments where agents support capabilities that are
+           not included in the set of capabilities advertised by reacting
+           nodes.
+         </t>
+         <t>
+           Non supporting DOIC nodes - Agent behavior in the face of Diameter
+           nodes that do not support the DOIC solution.  There are four sub-use
+           cases that are addressed:
+         </t>
+         <t><list style="symbols">
+           <t>
+             Non supporting reacting node.
+           </t>
+           <t>
+             Non supporting reporting node.
+           </t>
+           <t>
+             Non supporting agent between reacting node and a supporting agent.
+           </t>
+           <t>
+             Non supporting agent between a supporting agent and the reporting node.
+           </t>
+         </list></t>
+         <t>
+           Support for targeted overload reports [steve: only needed if this makes
+           it into the based DOIC specification.]
+         </t>
+       </list>
+      </t>
+
       <section anchor="uc-simple" title="Simple Agent Use Case">
         <t>
          [single agent, all nodes support DOIC, same features. Clients
@@ -329,6 +393,14 @@
         <t>
          [Two agents in sequence. Agent closest to server performs
          realm-routed request abatement.]
+        </t>
+      </section>
+      <section anchor="uc-partition" title="Partitioned Servers">
+        <t>
+          [steve: I think this is a separate use case as it requires different
+          behavior in the last hop agent in that that agent does not have
+          full visibility of all servers in the network and, as such, cannot
+          generate RRR reports based on observing host reports.]
         </t>
       </section>
       <section anchor="uc-mixedcaps" title="Mixed Capabilities" >
@@ -366,6 +438,10 @@
 		<t>
 			[Do we need this? May be covered sufficiently in agent overload draft.]
 		</t>
+    <t>
+      [steve: If we are looking for normative language that goes into the DOIC
+      spec then it is handled by the agent overload draft.]
+    </t>
 	</section>
 
 
