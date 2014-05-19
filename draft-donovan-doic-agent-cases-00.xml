@@ -260,6 +260,29 @@
      ]]>
         </artwork>
       </figure>
+      <t>
+        <xref target="deploy-arch4"/> illustrates server partitioning.  In this case
+        the agent routes determines the partition to which a request is routed
+        based on the contents of the message.  For instance, the request might
+        contain an indicator of a user to which the request applies.  All request for
+        that user must be routed to the same server, or more generally set of
+        servers.
+      </t>
+
+      <figure anchor="deploy-arch4">
+        <artwork><![CDATA[
+
+      +--+                +--+
+      |C1|-----      -----|S1|  > Server Partition 1
+      +--+     \+--+/     +--+
+                |A1|
+      +--+     /+--+\     +--+
+      |C2|-----      -----|S2|  > Server Partition 2
+      +--+                +--+
+
+      ]]>
+        </artwork>
+      </figure>
       <t><list><t>
        Note that only two partitions of the Diameter servers are shown. This
        is bending to the limitations of ASCII art for drawing complex
@@ -587,8 +610,6 @@
               </t>
             </list>
           </t>
-
-
           <figure anchor="pr-uc-basic3">
             <artwork><![CDATA[
 
@@ -713,10 +734,158 @@
           full visibility of all servers in the network and, as such, cannot
           generate RRR reports based on observing host reports.]
         </t>
+        <t>
+          [need to illustrate that agent must always handle throttling of
+          realm-routed requests in this scenario.]
+        </t>
+        <t>
+          This use case is based on the basic partitioning deployment
+          architecture illustrated in <xref target="deploy-arch4"/>.
+        </t>
+        <section title="Capability Exchange">
+          <t>
+            This section explores the capability exchange requirements for the
+            partitioned server use case.
+          </t>
+          <t>
+            <xref target="pr-uc-part1"/> illustrates capability exchange for the
+            partitioned server use case.  There is nothing surprising in this
+            use case for capability exchange.  The reacting node must be prepared to
+            received OC-Supported-Feature AVPs from multiple servers.  This, howerver,
+            is the case for non partitioned scenarios as well.
+          </t>
+
+          <figure anchor="pr-uc-part1">
+            <artwork><![CDATA[
+
+    +-+                   +-+                  +--+                  +--+
+    |C|                   |A|                  |S1|                  |S2|
+    +-+                   +-+                  +--+                  +--+
+     |                     |                     |                     |
+  1> |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C----->|                     |
+     |                     |                     |                     |
+  2> |<-----xxA OC-S-F:S1--|<-----xxA OC-S-F:S1--|                     |
+     |                     |                     |                     |
+  3> |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C--------------------------->|
+     |                     |                     |                     |
+  4> |<-----xxA OC-S-F:S2--|<---------------------------xxA OC-S-F:S2--|
+     |                     |                     |                     |
+
+  ]]>
+            </artwork>
+          </figure>
+          <t><list style="numbers">
+            <t>
+              The client (reacting node) originates a request that the agent routes to the
+              partition handled by server S1.
+            </t>
+            <t>
+              The server (reporting node) generates and answer that is relayed
+              by the agent.
+            </t>
+            <t>
+              The client (reacting node) originates a request that the agent routes to the
+              partition handled by server S2.
+            </t>
+            <t>
+              The server (reporting node) generates and answer that is relayed
+              by the agent.
+            </t>
+          </list></t>
+        </section>
+        <section title="Overload Report Handling">
+          <t>
+            This section explores the impacts of the partitioned case on the handling of
+            overload reports.
+          </t>
+          <t>
+            <xref target="pr-uc-part2"/> illustrates the message flow that occurs
+            when one of the servers, or more generally, when one of the partitions
+            becomes overloaded.
+          </t>
+          <t>
+            [steve: probably need to explain that in the case that the partition
+            containes more than one server the agent will first try to route
+            abated requests to an alternative server and will only reject them if
+            there is not alternative route.]
+          </t>
+          <t>
+            In this case, server S1 becomes overloaded and send a loss overload report.
+            Upon receipt of subsequent realm-routed requests targeted for that
+            partition, the agent is responsible for applying overload abatement
+            for realm-routed requests, as illustrated in <xref target="uc-simple"/>.  In this
+            case there is no alternative route for the request.
+          </t>
+          <t>
+            <xref target="uc-simple"/> shows the agent generating an RRR overload
+            report in a similar scenario.  The agent cannot generate an RRR report
+            in this case as it would incorrectly lead to requests that would be
+            routed to the S2 partition being throttled when the S2 server is
+            not overloaded.  As a result, the agent must handle reject requests
+            that to not pass the abatement algorithm.
+          </t>
+          <figure anchor="pr-uc-part2">
+            <artwork><![CDATA[
+
+    +-+                   +-+                  +--+                  +--+
+    |C|                   |A|                  |S1|                  |S2|
+    +-+                   +-+                  +--+                  +--+
+     |                     |                     |                     |
+  1> |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C----->|                     |
+     |                     |                     |                     |
+  2> |<-----xxA OC-S-F:S1--|<-----xxA OC-S-F:S1--|                     |
+     |          OLR:Host   |          OLR:Host   |                     |
+     |                     |                     |                     |
+  4> |-- xxR OC-S-F:C----->|                     |                     |
+     |       RR            |                     |                     |
+     |                     |                     |                     |
+  5> |<--- xxA OC-S-F:S----|                     |                     |
+     |         Reason: Diameter-Throttled        |                     |
+     |                     |                     |                     |
+
+  ]]>
+            </artwork>
+          </figure>
+          <t><list style="numbers">
+            <t>
+              The reacting node generates a request that is routed to S1.  S1 is
+              the only server in the partition.
+            </t>
+            <t>
+              S1 reports host overload.  Both A and C save overload state based
+              on the received host report.
+            </t>
+            <t>
+              C originates a realm-routed request.
+            </t>
+            <t>
+              A applies overload abatement logic and determines that this request
+              must be abated.  A first determines that there is no alternative
+              route for the message.  A also knows that there are multiple
+              partitions for the application indicated in the request.  As a result
+              A must reject the request, indicating that the request was rejected
+              as a result of overload abatement throttling.
+            </t>
+          </list></t>
+
+        </section>
+        <section title="DOIC Specification Impacts">
+          <t>
+            Agent must have the ability to reject realm-routed requests indicating
+            that the request was rejected due to overload abatement.
+          </t>
+          <t>
+            C must recognize the Diameter-Throttled error code, indicating that the
+            request should not be re-attempted on an alternative route.  The error
+            should be interpretted as a final failure for the transaction.
+          </t>
+        </section>
+
       </section>
       <section anchor="uc-mixedcaps" title="Mixed Capabilities" >
         <t>
-         [Single agent, different capabilities at client and server. Agent adapts oc-supported-features and olrs.]
+         [Single agent, different capabilities at client and server.
+         Agent adapts oc-supported-features and olrs.]
         </t>
       </section>
       <section anchor="uc-non-supporting" title="Non-Supporting Nodes" >
