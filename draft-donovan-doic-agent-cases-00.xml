@@ -452,6 +452,30 @@
     ]]>
             </artwork>
           </figure>
+          <t>
+            <list style="numbers">
+              <t>
+                The client originates a request and, as a result, is the reacting
+                node for this transaction.  The client supports DOIC and, as
+                such, includes the OC-Supported-Features AVP in all requests.  The
+                OC-S-F AVP contains the clients capabilities.
+              </t>
+              <t>
+                The agent inspects the OC-S-F AVP and determines that the agent
+                does not support additional OC features.  The agent relays the
+                request unchanged to the server.
+              </t>
+              <t>
+                The server, acting as the reporting node, inspects the OC-S-F AVP in
+                the request and generates an OC-S-F to be included in the answer
+                message.  This is done according to the behavior defined in the
+                DOIC specification <xref target="I-D.ietf-dime-ovli"/>.
+              </t>
+              <t>
+                The agent relays the answer message unchanged.
+              </t>
+            </list>
+          </t>
         </section>
         <section title="Overload Report Handling">
           <t>
@@ -494,6 +518,77 @@
     ]]>
             </artwork>
           </figure>
+          <t>
+            <list style="numbers">
+              <t>
+                The client originates a request with the OC-Supporting-Features
+                AVP per <xref target="I-D.ietf-dime-ovli"/>.
+              </t>
+              <t>
+                The agent relays the
+                request unchanged to the server.
+              </t>
+              <t>
+                The server, acting as the reporting node, has determined that
+                it needs to request a reduction in traffic.  The server includes
+                the OC-S-F AVP per <xref target="I-D.ietf-dime-ovli"/>.  In this
+                case the loss algorithm is indicated as the abatement algorithm
+                to be used for the included OC-OLR.  The server also includes the
+                OC-OLR AVP to indicate the requested reduction in traffic.
+              </t>
+              <t>
+                The agent saves overload state based on the presence of the
+                OC-OLR AVP.  The agent will use this overload state for handling
+                of future realm routed requests.
+                The agent relays the answer message unchanged.  Upon receipt of
+                the answer, the client saves overload state associated with the
+                overload report.
+              </t>
+              <t>
+                The client sends a request which includes the Destination-Host
+                AVP with a value that matches the overload state stored.  In this
+                case the request survives abatement and is sent to the agent.
+                Handling of requests that do not survive abatement is dependent
+                on the application.
+              </t>
+              <t>
+                The agent relays the request based on the included Destination-Host
+                AVP.
+              </t>
+              <t>
+                The server generates an answer which includes the OC-S-F AVP and
+                OC-OLR AVP.
+              </t>
+              <t>
+                If the OC-OLR is a new overload report then the agent updates
+                the overload state associated with the report.
+                The agent relays the answer unchanged.
+                The client determines if the OC-OLR is new.  If so, the client
+                updates overload state.
+              </t>
+              <t>
+                The client originates a realm-routed request.  The client cannot
+                apply overload abatement to this request as it does not match
+                any locally stored overload state (the assumption for this
+                scenario is that a RRR overload report has not yet been sent.)
+              </t>
+              <t>
+                The agent determines that there is overload state associated with
+                this request.  The agent uses this overload state as input to
+                routing decisions for the request.  In this case, it is assumed
+                that the request would have been routed to S1 but is instead
+                routed to S2 as a result of the overload report.
+              </t>
+              <t>
+                Server S2 generates an answer message.
+              </t>
+              <t>
+                The agent relays the answer.
+              </t>
+            </list>
+          </t>
+
+
           <figure anchor="pr-uc-basic3">
             <artwork><![CDATA[
 
@@ -526,14 +621,89 @@
     ]]>
             </artwork>
           </figure>
-
+          <t><list style="numbers">
+            <t>
+              Same as in <xref target="pr-uc-basic2"/>.
+            </t>
+            <t>
+              Same as in <xref target="pr-uc-basic2"/>.
+            </t>
+            <t>
+              Same as in <xref target="pr-uc-basic2"/>.
+            </t>
+            <t>
+              Same as in <xref target="pr-uc-basic2"/>.
+            </t>
+            <t>
+              Same as in <xref target="pr-uc-basic2"/>.
+            </t>
+            <t>
+              Same as in <xref target="pr-uc-basic2"/>.
+            </t>
+            <t>
+              Same as in <xref target="pr-uc-basic2"/>, with the addition that
+              server S2 also includes an overload report in the answer message.
+            </t>
+            <t>
+              The agent determines that the available capacity of servers in
+              the realm has been reduced to the degree that it must generate
+              a Realm-Routed-Request overload report.  The agent adds this report
+              to the answer message.  The client saves overload state associated
+              with the new RRR overload report.  For the duration of the RRR
+              overload report the client performs the requested abatement on
+              realm-routed requests.
+            </t>
+          </list></t>
 
         </section>
+        <section title="DOIC Specification Impacts">
+          <t>
+            The following is a list of behavior that needs to be reflected in
+            the DOIC specification.
+          </t>
+          <t>
+            <list style="symbols">
+              <t>
+                Reacting Node - Host Report: No change.
+              </t>
+              <t>
+                Reacting Node - RRR Report: NEED TO VERIFY THAT RRR STATE
+                IS SAVED AND THAT ABATEMENT LOGIC FOR RRR REPORT IS PROPERLY
+                SPECIFIED.
+              </t>
+              <t>
+                Agent: Save host overload report state.  QUESTION: IS THIS
+                CATAGORIZED AS REACTING NODE FOR HOST REPORT?
+              </t>
+              <t>
+                Agent: Use host overload report state as input to routing decisions
+                for realm-routing request.  QUESTION: IS THE CATAGORIZED AS
+                REACTING NODE BEHAVIOR FOR HOST REPORTS?
+              </t>
+              <t>
+                Reporting Node - Host Report: No change.
+              </t>
+              <t>
+                Reporting Node - RRR Report: Syntax for the OC-OLR AVP must support
+                multiple OC-OLR AVPs in answer messages.
+              </t>
+            </list>
+          </t>
+        </section>
+
       </section>
       <section anchor="uc-chain" title="Chain of Agents" >
         <t>
          [Two agents in sequence. Agent closest to server performs
          realm-routed request abatement.]
+        </t>
+        <t>
+          [steve: propose moving this to after the non supporting client usecase
+          as there are two things that need to be addressed for agent chagnes --
+          first that only the last agent in a chain becomes a reacting node
+          to use host reports for routing changes.  Second, only the first
+          agent in a chain becomes
+          the reacting node for non supporting clients.]
         </t>
       </section>
       <section anchor="uc-partition" title="Partitioned Servers">
