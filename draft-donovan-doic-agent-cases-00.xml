@@ -875,7 +875,7 @@
             that the request was rejected due to overload abatement.
           </t>
           <t>
-            C must recognize the Diameter-Throttled error code, indicating that the
+            Reacting nodes must recognize the Diameter-Throttled error code, indicating that the
             request should not be re-attempted on an alternative route.  The error
             should be interpretted as a final failure for the transaction.
           </t>
@@ -887,6 +887,115 @@
          [Single agent, different capabilities at client and server.
          Agent adapts oc-supported-features and olrs.]
         </t>
+        <t>
+          This use case explores the impact of there being a different set of
+          DOIC capabilities supported by the reacting node that originates a
+          request and and agent in the path taken by the request.
+        </t>
+        <t>
+          <xref target="pr-uc-mixed1"/> illustrates the case.  In this figure, the
+          OC-S-F:C indicates it carries the set of capabilities supported by C.
+          OC-S-FC:AC indicates the set of merging of capabilities supporting by
+          C and those supported by A.  In most cases this merging will be a union
+          of capabilities, unless there are conflicting capabilities. OC-S-FC:S
+          indicates S's response to the AC set of capabilities.  OC-S-FC:S'
+          indicates A's modification to S.  This is needed in the case where S's
+          capabilities are not compatible with C's.
+        </t>
+        <t>
+          [steve: question for doic specification -- do we need guidance that
+          specifications for new capabilities must indicate merging logic?]
+        </t>
+        <figure anchor="pr-uc-mixed1">
+          <artwork><![CDATA[
+
+           +-+                        +-+                        +-+
+           |C|                        |A|                        |S|
+           +-+                        +-+                        +-+
+            |                          |                          |
+      1>    |-- xxR OC-S-F:C---------->|                          |
+            |                          |                          |
+      2>    |                          |-- xxR OC-S-F:AC--------->|
+            |                          |                          |
+      3>    |                          |<---------- xxA OC-S-F:S--|
+            |                          |                          |
+      4>    |<-------- xxA OC-S-F:S'---|                          |
+            |                          |                          |
+        ]]>
+          </artwork>
+        </figure>
+        <t><list style="numbers">
+          <t>
+            C originates a request including the OC-S-F AVP indicating the
+            DOIC features supported by C.
+          </t>
+          <t>
+            A inspects OC-S-F:C and determines that A supports features not
+            included.  A relays the request, replacing the OC-S-F APV with
+            an AVP that indicates the merged capabilities of A and C.
+          </t>
+          <t>
+            S responds to the set of advertised features with the OC-S-F:S
+            AVP.  There is no change in S's behavior beyond what is specified in
+            <xref target="I-D.ietf-dime-ovli"/>.
+          </t>
+          <t>
+            A inspects OC-S-F:S.  If necessary A replaces OC-S-F:S with OC-S-F:S'.
+          </t>
+        </list></t>
+        <t>
+          <xref target="pr-uc-mixed2"/> illustrates one specific type of mixed
+          capabilities.  In this case, C only supports the loss abatement
+          algorithm, A supports both loss and rate and S selects rate.
+        </t>
+        <figure anchor="pr-uc-mixed2">
+          <artwork><![CDATA[
+
+           +-+                        +-+                        +-+
+           |C|                        |A|                        |S|
+           +-+                        +-+                        +-+
+            |                          |                          |
+      1>    |-- xxR OC-S-F:C---------->|                          |
+            |       loss               |                          |
+            |                          |                          |
+      2>    |                          |-- xxR OC-S-F:AC--------->|
+            |                          |       loss, rate         |
+            |                          |                          |
+      3>    |                          |<---------- xxA OC-S-F:S--|
+            |                          |                rate      |
+            |                          |                          |
+      4>    |<-------- xxA OC-S-F:S'---|                          |
+            |              loss        |                          |
+        ]]>
+
+          </artwork>
+        </figure>
+        <t><list style="numbers">
+          <t>
+            C originates a request with OC-S-F AVP inicating support for only the
+            loss abatement algorithm.
+          </t>
+          <t>
+            A inspects the OC-S-F AVP and determins it needs to advertise support
+            for additional capabilities.  A removes C's OC-S-F AVP and inserts
+            a new OC-S-F AVP indicating support for both the loss and rate
+            algorithms.
+          </t>
+          <t>
+            S responds, including an OC-S-F AVP indicating that the rate algorithm
+            will be used for overload reports.
+          </t>
+          <t>
+            A determines that C does not support the rate algorithm and, as such,
+            includes an OC-S-F AVP indicating that loss will be used for overload
+            reports sent to C.  This implies that A is able to handle rate based
+            overload reports.  How this is done is implementation specific.  It
+            can mean that A handles all abatement resulting from the rate OLR in
+            a similar fashion as discussed in <xref target="uc-nsclient"/>.  It can also mean
+            that A will send loss reports to C in an attempt to conform to the
+            requested reduction contained in the rate OLR.
+          </t>
+        </list></t>
       </section>
       <section anchor="uc-non-supporting" title="Non-Supporting Nodes" >
         <t>
@@ -896,17 +1005,183 @@
           <t>
            [Handling non-supporting clients.]
           </t>
+          <figure anchor="non-supp-client">
+            <artwork><![CDATA[
+
+          +--+                +--+
+          |C1|-----      -----|S1|
+          +--+     \+--+/     +--+
+                    |A1|
+          ****     /+--+\     +--+
+          *C2*-----      -----|S2|
+          ****                +--+
+
+
+          ]]>
+            </artwork>
+          </figure>
+          <t>
+          </t>
+          <figure anchor="non-supp-cl1">
+            <artwork><![CDATA[
+
+    +--+                  ****                  +-+                   +-+
+    |C1|                  *C2*                  |A|                   |S|
+    +--+                  ****                  +-+                   +-+
+     |                     |                     |                     |
+  1> |-- xxR OC-S-F:C--------------------------->|-- xxR OC-S-F:C----->|
+     |                     |                     |                     |
+  2> |<---------------------------xxA OC-S-F:S---|<-----xxA OC-S-F:S---|
+     |                     |                     |                     |
+  3> |                     |-- xxR ------------->|-- xxR OC-S-F:A----->|
+     |                     |                     |                     |
+  4> |                     |<------------- xxA---|<-----xxA OC-S-F:S---|
+     |                     |                     |                     |
+
+  ]]>
+            </artwork>
+          </figure>
+          <t>
+          </t>
+
+          <figure anchor="non-supp-cl2">
+            <artwork><![CDATA[
+
+    +--+                  ****                  +-+                   +-+
+    |C1|                  *C2*                  |A|                   |S|
+    +--+                  ****                  +-+                   +-+
+     |                     |                     |                     |
+  1> |-- xxR OC-S-F:C--------------------------->|-- xxR OC-S-F:C----->|
+     |                     |                     |                     |
+  2> |<---------------------------xxA OC-S-F:S---|<-----xxA OC-S-F:S---|
+     |                     |          OLR        |          OLR        |
+     |                     |                     |                     |
+     | Primary abatement handled by C            |                     |
+     |                     |                     |                     |
+  3> |                     |-- xxR ------------->|-- xxR OC-S-F:A----->|
+     |                     |                     |                     |
+  4> |                     |<------------- xxA---|<-----xxA OC-S-F:S---|
+     |                     |                     |          OLR        |
+     |                     |                     |                     |
+     |                     |                     | Primary abatement   |
+     |                     |                     | handled by A        |
+     |                     |                     |                     |
+
+  ]]>
+            </artwork>
+          </figure>
+
         </section>
-        <section anchor="uc-nsserver" title="Non Supporting Reporting NOde" >
+        <section anchor="uc-nsserver" title="Non Supporting Reporting Node" >
           <t>
            [Agent acts as reporting node for a non-supporting server.]
           </t>
+          <figure anchor="non-supp-server">
+            <artwork><![CDATA[
+
+          +--+                +--+
+          |C1|-----      -----|S1|
+          +--+     \+--+/     +--+
+                    |A1|
+          +--+     /+--+\     ****
+          |C2|-----      -----*S2*
+          +--+                ****
+
+
+          ]]>
+            </artwork>
+          </figure>
+          <figure anchor="non-supp-server2">
+            <artwork><![CDATA[
+
+    +-+                   ---                  +--+                  ****
+    |C|                   |A|                  |S1|                  *S2*
+    +-+                   ---                  +--+                  ****
+     |                     |                     |                     |
+     |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C----->|                     |
+     |                     |                     |                     |
+     |<-----xxA OC-S-F:S---|<-----xxA OC-S-F:S---|                     |
+     |                     |          OLR        |                     |
+     |                     |                     |                     |
+     |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C--------------------------->|
+     |                     |                     |                     |
+     |<-----xxA OC-S-F:A---|<-----------------------------------xxA ---|
+     |          OLR        |                     |                     |
+     |                     |                     |                     |
+     |                     |                     |                     |
+
+  ]]>
+            </artwork>
+          </figure>
         </section>
         <section anchor="uc-nsagent" title="Non-Supporting Agent" >
           <t>
            [Two agents in sequence, one non-supporting. Show both with
            non-supporting agent nearest the server vs earlier in chain.]
           </t>
+          <t>
+            <xref target="non-supp-agent1"/> illustrates the first non supporting
+            agent case, where the first agent in a chain of agents does not support
+            DOIC.
+          </t>
+          <t>
+            In this case, agent A2 picks up the responsibility of handling overload
+            abatement in the case that either C1 or C2 do not support DOIC.
+          </t>
+          <figure anchor="non-supp-agent1">
+            <artwork><![CDATA[
+
+          +--+                          +--+
+          |C1|-----                -----|S1|
+          +--+     \****      +--+/     +--+
+                    *A1*------|A2|
+          +--+     /****      +--+\     +--+
+          |C2|-----                -----|S2|
+          +--+                          +--+
+
+
+          ]]>
+            </artwork>
+          </figure>
+          <t>
+            <xref target="non-supp-agent2"/> illustrates the second non supporting
+              agent case, where the last agent in the chain does not support
+              DOIC.
+          </t>
+          <t>
+            There are two impacts to this scenario.  The first is that there is
+            no Diameter node in this scenario that can handle abatement of
+            realm-routed requests resulting from a host overload report.
+          </t>
+          <t>
+            The second impact of this scenario is that A1 might be expected to
+            take on reporting node responsibilities for a non supporting S1 or S2.
+          </t>
+          <t><list><t>
+            It is not been evaluated whether or not agent A1 could effectively
+            manage overload of a node to which it does not have a direct connection.
+          </t></list></t>
+          <t>
+            These two reasons combined lead to the conclusion that this
+            deployment scenario should be avoided.
+          </t>
+          <figure anchor="non-supp-agent2">
+            <artwork><![CDATA[
+
+          +--+                          +--+
+          |C1|-----                -----|S1|
+          +--+     \+--+      ****/     +--+
+                    |A1|------*A2*
+          +--+     /+--+      ****\     +--+
+          |C2|-----                -----|S2|
+          +--+                          +--+
+
+
+          ]]>
+            </artwork>
+          </figure>
+
+
         </section>
       </section>
 	<section anchor="uc-rate" title="Rate Algorithm" >
@@ -966,6 +1241,24 @@
         </front>
         <format type="TXT" octets="94506" target="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-donovan-dime-agent-overload-01.xml"/>
       </reference>
+      <reference anchor='DOIC-rate'>
+       <front>
+         <title>Diameter Agent Overload</title>
+         <author initials="S." surname="Donovan">
+           <organization abbrev="Oracle">
+               Oracle
+               </organization>
+         </author>
+         <author initials="E." surname="Noel">
+           <organization abbrev="AT&amp;T">
+               AT&amp;T
+               </organization>
+         </author>
+         <date month="February" year="2014"/>
+       </front>
+       <format type="TXT" octets="94506" target="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-donovan-dime-doc-rate-control-00.xml"/>
+     </reference>
+
     </references>
     <references title="Informative References">
 <!-- Here we use entities that we defined at the beginning. -->
