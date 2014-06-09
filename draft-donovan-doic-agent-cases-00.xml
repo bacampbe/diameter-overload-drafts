@@ -487,6 +487,10 @@
           <t>
             <xref target="pr-uc-basic1"/> shows the message flow for this use case.
           </t>
+          <t>
+            The nomenclature OC-S-F:x is short for OC-Supported-Feature with the ":x"
+            indicating the Diameter node that inserted the AVP into the message.
+          </t>
           <figure anchor="pr-uc-basic1">
             <artwork><![CDATA[
 
@@ -518,6 +522,10 @@
                 does not support additional OC features.  The agent relays the
                 request unchanged to the server.
               </t>
+              <t><list style="none"><t>
+                Note: The scenario where the agent supports a different set of
+                DOIC features is addressed in <xref target="uc-mixedcaps"/>.
+              </t></list></t>
               <t>
                 The server, acting as the reporting node, inspects the OC-S-F AVP in
                 the request and generates an OC-S-F to be included in the answer
@@ -539,7 +547,8 @@
           <t>
             <xref target="pr-uc-basic2"/> shows the message flow for this use case.
             In this use case HR under a request indicates that the request is
-            host-routed.  RR indicates the request is realm-routed.
+            host-routed.  RR indicates the request is realm-routed.  OLR:Host
+            indicates an overload report of type Host.
           </t>
           <figure anchor="pr-uc-basic2">
             <artwork><![CDATA[
@@ -653,7 +662,7 @@
           <t>
             <xref target="pr-uc-basic3"/> illustrates the agents behavior
             when it has received a host report from all servers.  In this case
-            the agent generates a RRR report.  This is only possible because
+            the agent generates a RRR report.  This is only possible when
             the agent has a view of the state of all server in the Diameter
             network.
           </t>
@@ -732,7 +741,7 @@
           <t>
             <list style="symbols">
               <t>
-                Reacting Node - Host Report: No change.
+                Reacting Node - Host Report:
               </t>
               <t>
                 Reacting Node - RRR Report: NEED TO VERIFY THAT RRR STATE
@@ -886,10 +895,10 @@
   2> |<-----xxA OC-S-F:S1--|<-----xxA OC-S-F:S1--|                     |
      |          OLR:Host   |          OLR:Host   |                     |
      |                     |                     |                     |
-  4> |-- xxR OC-S-F:C----->|                     |                     |
+  3> |-- xxR OC-S-F:C----->|                     |                     |
      |       RR            |                     |                     |
      |                     |                     |                     |
-  5> |<--- xxA OC-S-F:S----|                     |                     |
+  4> |<--- xxA OC-S-F:S----|                     |                     |
      |         Reason: Diameter-Throttled        |                     |
      |                     |                     |                     |
 
@@ -917,7 +926,40 @@
               as a result of overload abatement throttling.
             </t>
           </list></t>
+          <figure anchor="pr-uc-part3">
+            <artwork><![CDATA[
 
+    +-+                   +-+                  +--+                  +--+
+    |C|                   |A|                  |S1|                  |S2|
+    +-+                   +-+                  +--+                  +--+
+     |                     |                     |                     |
+  1> |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C----->|                     |
+     |                     |                     |                     |
+  2> |<-----xxA OC-S-F:S1--|<-----xxA OC-S-F:S1--|                     |
+     |          OLR:Host   |          OLR:Host   |                     |
+     |                     |                     |                     |
+  3> |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C--------------------------->|
+     |       RR            |                     |                     |
+     |                     |                     |                     |
+  4> |                     |<--------------------------- xxA OC-S-F:S--|
+     |                     |                     |           OLR:Host  |
+  5> |<--- xxA OC-S-F:S----|                     |                     |
+     |         OLR:Host    |                     |                     |
+     |                     |                     |                     |
+  6> |-- xxR OC-S-F:C----->|                     |                     |
+     |       RR            |                     |                     |
+     |                     |                     |                     |
+  7> |<--- xxA OC-S-F:S----|                     |                     |
+     |         Reason: Diameter-Throttled        |                     |
+     |                     |                     |                     |
+
+  ]]>
+            </artwork>
+          </figure>
+          <t>
+            [NEED TO ADD DESCRIPTION OF STEPS.  THIS MIGHT BE A BETTER
+            FLOW TO TO REPLACE THE PREVIOUS ONE.]
+          </t>
         </section>
         <section title="DOIC Specification Impacts">
           <t>
@@ -933,6 +975,10 @@
             Reacting nodes must recognize the Diameter-Throttled error code, indicating that the
             request should not be re-attempted on an alternative route.  The error
             should be interpretted as a final failure for the transaction.
+          </t>
+          <t>
+            [steve: need to verify there is strong enough wording to indicate
+            that this is a scenario that RRR reports cannot be used.]
           </t>
         </section>
 
