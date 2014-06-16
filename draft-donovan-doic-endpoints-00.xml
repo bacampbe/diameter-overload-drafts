@@ -795,7 +795,7 @@ available the realm topology and capacity.</t>
           <artwork><![CDATA[
 
       +-+             +--+            +--+           +-+
-      |C|             |A1|            |A1|           |S|
+      |C|             |A1|            |A2|           |S|
       +-+             +--+            +--+           +-+
        |               |               |               |
        |-<DOIC Assoc>--|-<DOIC Assoc>--|-<DOIC Assoc>--|
@@ -1960,6 +1960,21 @@ available the realm topology and capacity.</t>
       <section title="Use Case - Stateful Abatement Algorithms">
         <section title="Description">
           <t>
+            [steve: this section points out the need to maintain load/overload
+            state on a per reporting node basis.  this does not seem to impact
+            the definition of endpoints.  this state is needed either way.  it is
+            possible in a per report model to associate the state with the doic
+            association but that is not required.  in a per doic node model the
+            state still needs to be saved but it doesn't make sense for it to be
+            associated with a doic association.  in fact, that might be bad in a
+            deployment where a client has connections to two agents and receives
+            oc-supported-features from the same server through both connections.
+            in summary, i don't think this is a differentiator for the endpoint
+            models, it just helps to inform how to store any reporting node
+            state that applies to the overload abatement algorithm -- it should be
+            indexed by the reporting node, not the doic association.]
+          </t>
+          <t>
             The loss algorithm defined in <xref target="I-D.ietf-dime-ovli"/> is
             a stateless overload abatement algorithm.  This means that no history
             of previous transactions needs to be kept in order to immediately apply
@@ -2077,7 +2092,9 @@ available the realm topology and capacity.</t>
             2 agent must not pick up reporting node responsibilities as it
             knows there is a downstream DOIC node.  It know this by the presense
             of OC-Supported-Features AVPs in the answer message received for the
-            transaction.
+            transaction.  And finally, the type 2 node should not do any route
+            selection abatement for host reports, as it will not have a
+            direct connection to reporting nodes.
           </t>
           <t>
             A type 3 agent that sits in front of a non supporting node can act
@@ -2090,10 +2107,51 @@ available the realm topology and capacity.</t>
             inidicate support for DOIC and DOIC feature.
           </t>
           <t>
+            [steve: if we keep this model then we need type 1a and type 1b to
+            differentiate first agent for supporting clients and type 1 for
+            non supporting clients.]
           </t>
+          <t>
+            An agent determines it is a Type 2 agent by the presence of at least
+            one OC-Supported-Features in the request message and at least one
+            OC-Supported-Features AVP in the answer message.
+          </t>
+          <t>
+            An agent determines it is a Type 3 agent by the absence of
+            OC-Supported-Features in answer messages.
+          </t>
+          <t>
+            [steve: same thing here, need type 3a and type 3b.  or we model
+            middle agents as any agent that sits between doic nodes.  this seems
+            more fruitful.]
+          </t>
+          <t><list>
+            <t>
+              Reacting node for non supporting node.
+            </t>
+            <t>
+              Reporting node for non supporting node.
+            </t>
+            <t>
+              Reporting node for route selection abatement.
+            </t>
+            <t>
+              Reacting and reporting node for peer reports.
+            </t>
+            <t>
+              Reporting node for Realm and RRR reports.
+            </t>
+          </list></t>
         </section>
         <section title="PRTA Handling">
-          <t/>
+          <t>
+            PRTA model requires saving state on a per association basis for an
+            agent to determine correct behavior.
+          </t>
+          <t>
+            IS THIS TRUE SINCE THE DOIC ASSOCIATION STATE IS RECONSTITUTED WITH
+            EVERY TRANSACTION?
+          </t>
         </section>
         <section title="PDNA Handling">
           <t/>
