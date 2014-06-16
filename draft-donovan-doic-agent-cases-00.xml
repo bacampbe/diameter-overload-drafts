@@ -166,6 +166,24 @@
             A DOIC endpoint that can send overload reports to a reacting node,
             requesting the reacting node to perform overload abatement.
            </t>
+		   <t hangText="Transaction Client (TC)">
+		   	A diameter node that originates a Diameter request. This is distinct
+			from "Diameter Client" as used in RFC 6733. Note that a Diameter Server acts as
+			a TC if and when it originates a request towards a Diameter Client.
+		   </t>
+		   <t hangText="TransactionServer (TS)">
+		   	A diameter node that consumes a Diameter request, and responds with
+			a Diameter answer. This is distinct from "Diameter Server" as used in RFC 6733.
+			Note that a Diameter Client acts as
+			a TS if and when it answers a request sent by a Diameter Server.
+		   </t>
+		   <t hangText="Client Application">
+		   	The application that uses Diameter for various Authentication, Authorization, 
+		    and/or Accounting (AAA) functions. For example, a Network Access Server (NAS) performs
+		    certain network attachment services, detachment services, packet forwarding, etc.
+			These are collectively the NAS client application, which depends on Diameter for AAA
+			services.
+		   </t>	
            <t hangText="Overload Abatement:">
             Actions taken by a reacting node to reduce the load offered to an
             overloaded Diameter node. The specific actions required to perform
@@ -175,9 +193,17 @@
             can be achieved by either throttling a request or routing a
             request to a different destination.
            </t>
-           <t>
-            [steve: should we have a definition of throttling?]
+           <t hangText="Throttling">
+            Overload abatement through the rejection of some number of requests.
+			Throttling at an agent requires the agent to reject requests with
+			appropriate error codes. Throttling at a transaction client requires
+			the client to indicate appropriate errors to the client application
            </t>
+			<t hangText="Diversion">
+				Overload abatement through the routing of some number of requests
+				away from an overloaded node towards one or more appropriate nodes
+				that are less-overloaded.
+			</t>
          </list>
         </t>
       </section>
@@ -298,30 +324,81 @@
        clients and servers.
       </t>
     </section>
+	<section anchor="abatement" title="Overload Abatement">
+	      <t>
+	       When a Diameter node becomes overloaded, there typically must be a
+	       reduction of the number requests of both categories, in order to have
+	       the desired reduction of the overall offered-load. We refer to this
+	   	   reductions as "Overload Abatement"
+		</t>
+		<t>In general, there are two ways to perform overload abatement. Perhaps the
+			most obvious is to reject some number of Diameter requests, also known 
+			as "throttling". When a TC throttles traffic, it rejects or defers certain
+			client application requests, as appropriate for the client application. When
+			an agent throttles traffic, it rejects Diameter requests with appropriate
+			error codes, so that the TC can behave correctly at the client application layer.</t>
+			<t>
+				A second way to abate overload is to route some fraction of requests from an
+			    overloaded node to one or more eligible nodes that. For the purposes
+			    of this draft, we refer to this abatement method as "Diversion".
+			</t>
+			<t>
+			   There are a few architectural principles that should be considered when building Diameter
+			networks to be resilient to overload, or when deploying DOIC into existing Diameter network:
+			</t>
+			<t><list style="symbols">
+				<t>
+					All things being equal, diversion SHOULD be preferred to throttling. Diversion
+					allows more requests to succeed, which will have less negative impact on
+					the client application. However, there are situations where diversion is
+					not possible. For example, diversion is usually not possible for host-routed
+					requests (see discussion). Diversion may not be helpful if all potential
+					destinations are overloaded. If proprietary load balancing mechanisms are in use,
+					diversion for DOIC purposes may be redundant with those mechanisms.
+			    </t>
+				<t>
+					If diversion is performed, the diversion SHOULD occur as close as possible to the TS,
+					preferably at a node that shares a direct transport connection with the TS. A directly
+					connected peer is likely to have the most knowledge of alternative destinations and their
+					current loads. If nodes
+					further from the TS perform diversion, topology knowledge and overload state knowledge
+					must be pushed further down the chain of Diameter nodes.
+				</t>
+				<t>
+					Throttling SHOULD occur at the TC, or as close as possible to the TC. 
+					The TC has the best knowledge of the client application,
+					and can choose to reject requests that have the lease impact on the client
+					application, or provide the most effect for traffic reduction over time.
+					Furthermore, throttling at the TC entirely avoids Diameter overhead for
+					rejected requests. Each additional hop traversed by requests that will
+					eventually be rejected increases the impact of those requests.
+				</t>
+			</list></t>
+		
+	</section>
 
     <section anchor="reporttypes" title="Diameter Routing">
+	<t>[Ben ToDo: Remove bits redundant with new abatement section]</t>
       <t>
        Diameter supports <xref target="RFC6733">two primary methods</xref> for
        routing requests to a reporting node. Normally, Diameter nodes route
        requests based on the Destination-Realm and Application-Id AVP values.
-       That is, they select the next hop from their Diameter route table entry
+       That is, they select a next hop from their Diameter peer table entry
        that matches the realm and application of the request. For the sake of
        this analysis, we refer to requests routed by this method as
        "realm-routed requests"
       </t>
       <t>
-       A Diameter node may also control the final destination of a request by
+       A Diameter TC may also control the final destination of a request by
        inserting a Destination-Host AVP. When a node forwards a request that
        includes Destination-Host, it checks to see if it has a matching
        Diameter identity in its peer table. If so, it forwards the request to
        that peer. Otherwise, it follows the normal routing for the realm and
-       application. We refer to requesta routed this way as "host-routed
+       application. We refer to requests routed this way as "host-routed
        requests".
       </t>
-      <t>
-       When a Diameter node becomes overloaded, there typically must be a
-       reduction of the number requests of both categories, in order to have
-       the desired reduction of the overall offered-load. Typically the only
+		<t>
+Typically the only
        way to reduce host-routed requests is by throttling some number of
        them. Throttling is best done as close to the request origin as
        possible. The originator is usually in the best position to
@@ -381,6 +458,9 @@
       </figure>
 
     </section>
+	<section anchor="relay-behavior" title="DOIC Behavior at Relays">
+		<t>[Ben ToDo: Add discussion of relay behavior as discussed Friday.]</t>
+	</section>
     <section title="DOIC Agent Use Cases">
       <t>
        This section outlines example use cases involving agents.  Each of
