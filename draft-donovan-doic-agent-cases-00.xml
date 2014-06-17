@@ -378,8 +378,7 @@
 	</section>
 
     <section anchor="reporttypes" title="Diameter Routing">
-	<t>[Ben ToDo: Remove bits redundant with new abatement section]</t>
-      <t>
+     <t>
        Diameter supports <xref target="RFC6733">two primary methods</xref> for
        routing requests to a reporting node. Normally, Diameter nodes route
        requests based on the Destination-Realm and Application-Id AVP values.
