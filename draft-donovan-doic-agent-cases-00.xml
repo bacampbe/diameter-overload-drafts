@@ -324,7 +324,7 @@
        clients and servers.
       </t>
     </section>
-	<section anchor="abatement" title="Overload Abatement">
+	<section anchor="abatement" title="Overload Abatement Methods">
 	      <t>
 	       When a Diameter node becomes overloaded, there typically must be a
 	       reduction of the number requests of both categories, in order to have
@@ -416,8 +416,63 @@
       </t>
 
     </section>
-	<section anchor="relay-behavior" title="DOIC Behavior at Relays">
-		<t>[Ben ToDo: Add discussion of relay behavior as discussed Friday.]</t>
+	<section anchor="relay-behavior" title="DOIC-Supporting Relay Guidelines">
+		<t>
+			The discussion in <xref target="abatement"/> and <xref target="reporttypes"/> suggest certain
+		    guidelines for DOIC supporting Diameter relay behavior. These guidelines represent a balance between
+		    deployment flexibility and predictable behavior.
+		</t>
+		<t>
+			When a DOIC-supporting relay inserts an OC-Supported-Features AVP 
+			(or passes through one received from downstream),
+			it becomes responsible for ensuring that any OLRs it receives from upstream
+			nodes are honored. It can honor an OLR by locally performing overload abatement, delegate
+			abatement to downstream nodes, or a combination of both.
+		</t>
+		<t>
+			If a relay can honor the OLR by locally diverting traffic, it SHOULD do so before resorting
+			to throttling. For example, if a relay
+			receives a realm report from its upstream peer, and has other less-overloaded peers that 
+			are valid for the realm and application, it diverts traffic to the less overloaded peers
+			as needed. The relay SHOULD apply any knowledge it has of the peers' relative load and capacity
+			in determining how to divert traffic.
+		</t>
+		<t>
+			When an overload condition requires throttling of traffic, an agent SHOULD delegate that
+			throttling to downstream nodes if at all possible. Depending on local policy and the nature
+			of the overload condition, this means the agent either originates a new OLR to send downstream,
+			or forwards an OLR received from upstream. For example, if a relay receives a host report (which usually
+			requires traffic throttling), the relay typically forwards that report downstream. The relay MAY modify
+			the report based on local policy.
+		</t>
+		<t><list><t>
+			There may be circumstances where an agent must perform local throttling. An obvious example
+			is when  downstream nodes do not support DOIC, that is, requests from downstream nodes do not contain
+			OC-Supported-Features AVPs. Mismatched upstream and downstream capabilities could require local
+			throttling. For example, if a relay uses a rate-limiting abatement algorithm upstream, but downstream
+			devices do not support rate-limiting, it may have to locally throttle traffic to meet
+			its upstream abatement commitment. It might still invoke the "loss" algorithm downstream in order
+			to reduce the amount of traffic that must be locally throttled.			
+		</t></list></t>
+		<t>
+			A relay SHOULD apply all the information at hand to determine upstream overload. For example,
+			if a relay receives a host-report from a directly attached TS, that relay can reasonable infer that
+			the overload condition applies to all traffic for the realm and application, and also abate 
+			realm-routed requests that it knows would go to the overloaded TS. A relay might also have knowledge
+			of the overload or load state of other nodes through some non-DOIC mechanism.
+		</t>
+		<t>
+			Finally, a relay SHOULD NOT generate or forward OLRs in a way likely to cause redundant abatement. For example,
+			if a relay locally throttles traffic due to a "loss" algorithm OLR, it should not forward the OLR downstream
+			where other nodes will also apply abatement to the same traffic.
+		</t> 
+		<t><list><t>
+			The idea of redundant abatement is at least somewhat specific to the algorithm. For example, a rate-limiting
+			algorithm might allow both local and delegated abatement, since the algorithm creates a maximum rate limit.
+			On the other hand, the "loss" algorithm requests a percentage reduction. If a relay receives an OLR for
+			a 10 percentage reduction, applies local throttling, and also forwards the OLR downstream, the 10% reduction
+			may be applied twice.
+		</t></list></t>
 	</section>
     <section title="DOIC Agent Use Cases">
       <t>
