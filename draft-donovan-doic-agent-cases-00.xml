@@ -166,6 +166,24 @@
             A DOIC endpoint that can send overload reports to a reacting node,
             requesting the reacting node to perform overload abatement.
            </t>
+		   <t hangText="Transaction Client (TC)">
+		   	A diameter node that originates a Diameter request. This is distinct
+			from "Diameter Client" as used in RFC 6733. Note that a Diameter Server acts as
+			a TC if and when it originates a request towards a Diameter Client.
+		   </t>
+		   <t hangText="TransactionServer (TS)">
+		   	A diameter node that consumes a Diameter request, and responds with
+			a Diameter answer. This is distinct from "Diameter Server" as used in RFC 6733.
+			Note that a Diameter Client acts as
+			a TS if and when it answers a request sent by a Diameter Server.
+		   </t>
+		   <t hangText="Client Application">
+		   	The application that uses Diameter for various Authentication, Authorization, 
+		    and/or Accounting (AAA) functions. For example, a Network Access Server (NAS) performs
+		    certain network attachment services, detachment services, packet forwarding, etc.
+			These are collectively the NAS client application, which depends on Diameter for AAA
+			services.
+		   </t>	
            <t hangText="Overload Abatement:">
             Actions taken by a reacting node to reduce the load offered to an
             overloaded Diameter node. The specific actions required to perform
@@ -175,9 +193,17 @@
             can be achieved by either throttling a request or routing a
             request to a different destination.
            </t>
-           <t>
-            [steve: should we have a definition of throttling?]
+           <t hangText="Throttling">
+            Overload abatement through the rejection of some number of requests.
+			Throttling at an agent requires the agent to reject requests with
+			appropriate error codes. Throttling at a transaction client requires
+			the client to indicate appropriate errors to the client application
            </t>
+			<t hangText="Diversion">
+				Overload abatement through the routing of some number of requests
+				away from an overloaded node towards one or more appropriate nodes
+				that are less-overloaded.
+			</t>
          </list>
         </t>
       </section>
@@ -216,7 +242,7 @@
       </figure>
       <t>
         <xref target="deploy-arch2"/> shows an architecture with a multiple agents
-        sitting between Diameter clients and Diamter servers.
+        sitting between Diameter clients and Diameter servers.
       </t>
       <figure anchor="deploy-arch2">
         <artwork><![CDATA[
@@ -298,89 +324,156 @@
        clients and servers.
       </t>
     </section>
+	<section anchor="abatement" title="Overload Abatement Methods">
+	      <t>
+	       When a Diameter node becomes overloaded, there typically must be a
+	       reduction of the number requests of both categories, in order to have
+	       the desired reduction of the overall offered-load. We refer to this
+	   	   reductions as "Overload Abatement"
+		</t>
+		<t>In general, there are two ways to perform overload abatement. Perhaps the
+			most obvious is to reject some number of Diameter requests, also known 
+			as "throttling". When a TC throttles traffic, it rejects or defers certain
+			client application requests, as appropriate for the client application. When
+			an agent throttles traffic, it rejects Diameter requests with appropriate
+			error codes, so that the TC can behave correctly at the client application layer.</t>
+			<t>
+				A second way to abate overload is to route some fraction of requests from an
+			    overloaded node to one or more eligible nodes that. For the purposes
+			    of this draft, we refer to this abatement method as "Diversion".
+			</t>
+			<t>
+			   There are a few architectural principles that should be considered when building Diameter
+			networks to be resilient to overload, or when deploying DOIC into existing Diameter network:
+			</t>
+			<t><list style="symbols">
+				<t>
+					All things being equal, diversion SHOULD be preferred to throttling. Diversion
+					allows more requests to succeed, which will have less negative impact on
+					the client application. However, there are situations where diversion is
+					not possible. For example, diversion is usually not possible for host-routed
+					requests (see discussion). Diversion may not be helpful if all potential
+					destinations are overloaded. If proprietary load balancing mechanisms are in use,
+					diversion for DOIC purposes may be redundant with those mechanisms.
+			    </t>
+				<t>
+					If diversion is performed, the diversion SHOULD occur as close as possible to the TS,
+					preferably at a node that shares a direct transport connection with the TS. A directly
+					connected peer is likely to have the most knowledge of alternative destinations and their
+					current loads. If nodes
+					further from the TS perform diversion, topology knowledge and overload state knowledge
+					must be pushed further down the chain of Diameter nodes.
+				</t>
+				<t>
+					Throttling SHOULD occur at the TC, or as close as possible to the TC. 
+					The TC has the best knowledge of the client application,
+					and can choose to reject requests that have the lease impact on the client
+					application, or provide the most effect for traffic reduction over time.
+					Furthermore, throttling at the TC entirely avoids Diameter overhead for
+					rejected requests. Each additional hop traversed by requests that will
+					eventually be rejected increases the impact of those requests.
+				</t>
+			</list></t>
+		
+	</section>
 
     <section anchor="reporttypes" title="Diameter Routing">
-      <t>
+     <t>
        Diameter supports <xref target="RFC6733">two primary methods</xref> for
        routing requests to a reporting node. Normally, Diameter nodes route
        requests based on the Destination-Realm and Application-Id AVP values.
-       That is, they select the next hop from their Diameter route table entry
+       That is, they select a next hop from their Diameter peer table entry
        that matches the realm and application of the request. For the sake of
        this analysis, we refer to requests routed by this method as
        "realm-routed requests"
       </t>
       <t>
-       A Diameter node may also control the final destination of a request by
+       A Diameter TC may also control the final destination of a request by
        inserting a Destination-Host AVP. When a node forwards a request that
        includes Destination-Host, it checks to see if it has a matching
        Diameter identity in its peer table. If so, it forwards the request to
        that peer. Otherwise, it follows the normal routing for the realm and
-       application. We refer to requesta routed this way as "host-routed
+       application. We refer to requests routed this way as "host-routed
        requests".
       </t>
+		<t>
+			In general, throttling is the the only abatement technique that
+			works for host-routed requests. Diversion is typically not possible,
+			since only a single TS can handle the request.
+		</t>
+		<t><list><t>
+	        There may be some
+			exceptions to this rule. For example, a node might have multiple peer table entries that share
+			the same Diameter Identity. A node might map Diameter identities
+			in a way that results in multiple next-hop destinations for a given
+			Destination-Host value.
+		</t></list></t>
       <t>
-       When a Diameter node becomes overloaded, there typically must be a
-       reduction of the number requests of both categories, in order to have
-       the desired reduction of the overall offered-load. Typically the only
-       way to reduce host-routed requests is by throttling some number of
-       them. Throttling is best done as close to the request origin as
-       possible. The originator is usually in the best position to
-       intelligently throttle. The further from from the origin that
-       throttling occurs, the more network resources are expended on routing
-       and responding to requests that do not result in useful work.
+       On the other hand, diversion is often useful for abating realm-routed traffic.
+ 	   Since realm-routed requests are not bound to a
+       particular TS, it is often be possible to divert a number of them to other servers
+       that are less overloaded.
       </t>
-      <t>
-       On the other hand, since realm routed requests are not targeted to a
-       particular server, it may be possible to reroute them to other servers
-       that are less overloaded. Rerouting should typically occur as close to
-       the destination as possible (commonly at an agent). Nodes closest to
-       the destination will typically have more knowledge about available the
-       realm topology and capacity.
-      </t>
-      <t>
-        [steve: i'm not sure that the following adds much value and won't be
-        hurt if we decide to remove it.]
-      </t>
-      <t>
-        For instance, assume in <xref target="reroute"/> that all servers are
-        able to handle all realm-routed requests for an application and that
-        in normal, non overloaded scenarios, requests are evenly distributed
-        between all four servers.
-      </t>
-      <t>
-        Now assume that S1 is overloaded and requests a 20% reduction in traffic.
-      </t>
-      <t>
-        C1 throttling all realm-routed requests by 20% will result in a reduction
-        in traffic to all servers, not just to S1.  A1 can better handle the
-        overload abatement of realm-routed first attempting to route requests
-        to S2 and A2.  This use case is discussed in more detail in
-        <xref target="uc-simple"/>.
-      </t>
-      <figure anchor="reroute">
-        <artwork><![CDATA[
-
-      +--+                ****
-      |C1|-----      -----*S1*
-      +--+     \+--+/     ****
-                |A1|
-                +--+\     +--+
-                 ||  -----|S2|
-                 ||       +--+
-                 ||
-                 ||       +--+
-                 ||  -----|S3|
-                +--+/     +--+
-                |A2|
-                +--+\     +--+
-                     -----|S4|
-                          +--+
-
-      ]]>
-        </artwork>
-      </figure>
 
     </section>
+	<section anchor="relay-behavior" title="DOIC-Supporting Relay Guidelines">
+		<t>
+			The discussion in <xref target="abatement"/> and <xref target="reporttypes"/> suggest certain
+		    guidelines for DOIC supporting Diameter relay behavior. These guidelines represent a balance between
+		    deployment flexibility and predictable behavior.
+		</t>
+		<t>
+			When a DOIC-supporting relay inserts an OC-Supported-Features AVP 
+			(or passes through one received from downstream),
+			it becomes responsible for ensuring that any OLRs it receives from upstream
+			nodes are honored. It can honor an OLR by locally performing overload abatement, delegate
+			abatement to downstream nodes, or a combination of both.
+		</t>
+		<t>
+			If a relay can honor the OLR by locally diverting traffic, it SHOULD do so before resorting
+			to throttling. For example, if a relay
+			receives a realm report from its upstream peer, and has other less-overloaded peers that 
+			are valid for the realm and application, it diverts traffic to the less overloaded peers
+			as needed. The relay SHOULD apply any knowledge it has of the peers' relative load and capacity
+			in determining how to divert traffic.
+		</t>
+		<t>
+			When an overload condition requires throttling of traffic, an agent SHOULD delegate that
+			throttling to downstream nodes if at all possible. Depending on local policy and the nature
+			of the overload condition, this means the agent either originates a new OLR to send downstream,
+			or forwards an OLR received from upstream. For example, if a relay receives a host report (which usually
+			requires traffic throttling), the relay typically forwards that report downstream. The relay MAY modify
+			the report based on local policy.
+		</t>
+		<t><list><t>
+			There may be circumstances where an agent must perform local throttling. An obvious example
+			is when  downstream nodes do not support DOIC, that is, requests from downstream nodes do not contain
+			OC-Supported-Features AVPs. Mismatched upstream and downstream capabilities could require local
+			throttling. For example, if a relay uses a rate-limiting abatement algorithm upstream, but downstream
+			devices do not support rate-limiting, it may have to locally throttle traffic to meet
+			its upstream abatement commitment. It might still invoke the "loss" algorithm downstream in order
+			to reduce the amount of traffic that must be locally throttled.			
+		</t></list></t>
+		<t>
+			A relay SHOULD apply all the information at hand to determine upstream overload. For example,
+			if a relay receives a host-report from a directly attached TS, that relay can reasonable infer that
+			the overload condition applies to all traffic for the realm and application, and also abate 
+			realm-routed requests that it knows would go to the overloaded TS. A relay might also have knowledge
+			of the overload or load state of other nodes through some non-DOIC mechanism.
+		</t>
+		<t>
+			Finally, a relay SHOULD NOT generate or forward OLRs in a way likely to cause redundant abatement. For example,
+			if a relay locally throttles traffic due to a "loss" algorithm OLR, it should not forward the OLR downstream
+			where other nodes will also apply abatement to the same traffic.
+		</t> 
+		<t><list><t>
+			The idea of redundant abatement is at least somewhat specific to the algorithm. For example, a rate-limiting
+			algorithm might allow both local and delegated abatement, since the algorithm creates a maximum rate limit.
+			On the other hand, the "loss" algorithm requests a percentage reduction. If a relay receives an OLR for
+			a 10 percentage reduction, applies local throttling, and also forwards the OLR downstream, the 10% reduction
+			may be applied twice.
+		</t></list></t>
+	</section>
     <section title="DOIC Agent Use Cases">
       <t>
        This section outlines example use cases involving agents.  Each of
