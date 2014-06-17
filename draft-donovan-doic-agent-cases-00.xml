@@ -242,7 +242,7 @@
       </figure>
       <t>
         <xref target="deploy-arch2"/> shows an architecture with a multiple agents
-        sitting between Diameter clients and Diamter servers.
+        sitting between Diameter clients and Diameter servers.
       </t>
       <figure anchor="deploy-arch2">
         <artwork><![CDATA[
@@ -398,64 +398,23 @@
        requests".
       </t>
 		<t>
-Typically the only
-       way to reduce host-routed requests is by throttling some number of
-       them. Throttling is best done as close to the request origin as
-       possible. The originator is usually in the best position to
-       intelligently throttle. The further from from the origin that
-       throttling occurs, the more network resources are expended on routing
-       and responding to requests that do not result in useful work.
-      </t>
+			In general, throttling is the the only abatement technique that
+			works for host-routed requests. Diversion is typically not possible,
+			since only a single TS can handle the request.
+		</t>
+		<t><list><t>
+	        There may be some
+			exceptions to this rule. For example, a node might have multiple peer table entries that share
+			the same Diameter Identity. A node might map Diameter identities
+			in a way that results in multiple next-hop destinations for a given
+			Destination-Host value.
+		</t></list></t>
       <t>
-       On the other hand, since realm routed requests are not targeted to a
-       particular server, it may be possible to reroute them to other servers
-       that are less overloaded. Rerouting should typically occur as close to
-       the destination as possible (commonly at an agent). Nodes closest to
-       the destination will typically have more knowledge about available the
-       realm topology and capacity.
+       On the other hand, diversion is often useful for abating realm-routed traffic.
+ 	   Since realm-routed requests are not bound to a
+       particular TS, it is often be possible to divert a number of them to other servers
+       that are less overloaded.
       </t>
-      <t>
-        [steve: i'm not sure that the following adds much value and won't be
-        hurt if we decide to remove it.]
-      </t>
-      <t>
-        For instance, assume in <xref target="reroute"/> that all servers are
-        able to handle all realm-routed requests for an application and that
-        in normal, non overloaded scenarios, requests are evenly distributed
-        between all four servers.
-      </t>
-      <t>
-        Now assume that S1 is overloaded and requests a 20% reduction in traffic.
-      </t>
-      <t>
-        C1 throttling all realm-routed requests by 20% will result in a reduction
-        in traffic to all servers, not just to S1.  A1 can better handle the
-        overload abatement of realm-routed first attempting to route requests
-        to S2 and A2.  This use case is discussed in more detail in
-        <xref target="uc-simple"/>.
-      </t>
-      <figure anchor="reroute">
-        <artwork><![CDATA[
-
-      +--+                ****
-      |C1|-----      -----*S1*
-      +--+     \+--+/     ****
-                |A1|
-                +--+\     +--+
-                 ||  -----|S2|
-                 ||       +--+
-                 ||
-                 ||       +--+
-                 ||  -----|S3|
-                +--+/     +--+
-                |A2|
-                +--+\     +--+
-                     -----|S4|
-                          +--+
-
-      ]]>
-        </artwork>
-      </figure>
 
     </section>
 	<section anchor="relay-behavior" title="DOIC Behavior at Relays">
