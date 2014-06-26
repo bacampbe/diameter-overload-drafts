@@ -416,65 +416,7 @@
       </t>
 
     </section>
-	<section anchor="relay-behavior" title="DOIC-Supporting Relay Guidelines">
-		<t>
-			The discussion in <xref target="abatement"/> and <xref target="reporttypes"/> suggest certain
-		    guidelines for DOIC supporting Diameter relay behavior. These guidelines represent a balance between
-		    deployment flexibility and predictable behavior.
-		</t>
-		<t>
-			When a DOIC-supporting relay inserts an OC-Supported-Features AVP
-			(or passes through one received from downstream),
-			it becomes responsible for ensuring that any OLRs it receives from upstream
-			nodes are honored. It can honor an OLR by locally performing overload abatement, delegate
-			abatement to downstream nodes, or a combination of both.
-		</t>
-		<t>
-			If a relay can honor the OLR by locally diverting traffic, it SHOULD do so before resorting
-			to throttling. For example, if a relay
-			receives a realm report from its upstream peer, and has other less-overloaded peers that
-			are valid for the realm and application, it diverts traffic to the less overloaded peers
-			as needed. The relay SHOULD apply any knowledge it has of the peers' relative load and capacity
-			in determining how to divert traffic.
-		</t>
-		<t>
-			When an overload condition requires throttling of traffic, an agent SHOULD delegate that
-			throttling to downstream nodes if at all possible. Depending on local policy and the nature
-			of the overload condition, this means the agent either originates a new OLR to send downstream,
-			or forwards an OLR received from upstream. For example, if a relay receives a host report (which usually
-			requires traffic throttling), the relay typically forwards that report downstream. The relay MAY modify
-			the report based on local policy.
-		</t>
-		<t><list><t>
-			There may be circumstances where an agent must perform local throttling. An obvious example
-			is when  downstream nodes do not support DOIC, that is, requests from downstream nodes do not contain
-			OC-Supported-Features AVPs. Mismatched upstream and downstream capabilities could require local
-			throttling. For example, if a relay uses a rate-limiting abatement algorithm upstream, but downstream
-			devices do not support rate-limiting, it may have to locally throttle traffic to meet
-			its upstream abatement commitment. It might still invoke the "loss" algorithm downstream in order
-			to reduce the amount of traffic that must be locally throttled.
-		</t></list></t>
-		<t>
-			A relay SHOULD apply all the information at hand to determine upstream overload. For example,
-			if a relay receives a host-report from a directly attached TS, that relay can reasonable infer that
-			the overload condition applies to all traffic for the realm and application, and also abate
-			realm-routed requests that it knows would go to the overloaded TS. A relay might also have knowledge
-			of the overload or load state of other nodes through some non-DOIC mechanism.
-		</t>
-		<t>
-			Finally, a relay SHOULD NOT generate or forward OLRs in a way likely to cause redundant abatement. For example,
-			if a relay locally throttles traffic due to a "loss" algorithm OLR, it should not forward the OLR downstream
-			where other nodes will also apply abatement to the same traffic.
-		</t>
-		<t><list><t>
-			The idea of redundant abatement is at least somewhat specific to the algorithm. For example, a rate-limiting
-			algorithm might allow both local and delegated abatement, since the algorithm creates a maximum rate limit.
-			On the other hand, the "loss" algorithm requests a percentage reduction. If a relay receives an OLR for
-			a 10 percentage reduction, applies local throttling, and also forwards the OLR downstream, the 10% reduction
-			may be applied twice.
-		</t></list></t>
-	</section>
-    <section title="DOIC Use Cases">
+    <section anchor="doic-uc" title="DOIC Use Cases">
       <t>
        This section outlines example use cases involving agents.  Each of
        these use cases will be evaluated with the goal of identifying any
@@ -1050,7 +992,7 @@
           </list></t>
 
         </section>
-        <section title="DOIC Specification Impacts">
+        <section anchor="uc-simple-impacts" title="DOIC Specification Impacts">
           <t>
             The following is a list of behavior that needs to be reflected in
             the DOIC specification.
@@ -1180,7 +1122,7 @@
             </t>
           </list></t>
         </section>
-        <section title="Overload Report Handling">
+        <section anchor="report-handling" title="Overload Report Handling">
           <t>
             This section explores the impacts of the partitioned case on the handling of
             overload reports.
@@ -1302,7 +1244,7 @@
             ALL SERVERS]
           </t>
         </section>
-        <section title="DOIC Specification Impacts">
+        <section anchor="uc-partition-impacts" title="DOIC Specification Impacts">
           <t>
             Agent must have the ability to reject realm-routed requests indicating
             that the request was rejected due to overload abatement.
@@ -1874,7 +1816,7 @@
       	</section>
       </section>
     </section>
-    <section title="Recommendation">
+    <section title="Recommendations">
       <t>
        This section is to be completed once the document has been reviewed.
       </t>
@@ -1910,6 +1852,111 @@
           Agents may serve as reporting node for non DOIC nodes.
         </t>
       </list></t>
+	<section anchor="general-recommendations" title="General Recommendations">
+		<t>This section describes recommendations that apply to the DOIC mechanism in general:</t>
+		<t>The working group should define a "Diameter-Throttled" error code, that indicates a request
+			has failed due to overload, and should not be retried. (See <xref target="uc-simple-impacts" />.) 
+		</t>
+		<t>
+			Reacting nodes must recognize the Diameter-Throttled error code, and interpret it as a
+			final failure for the transaction. (See <xref target="uc-partition-impacts" />.)
+		</t>
+		<t>
+			The OC-OLR AVP syntax must allow multiple occurrences in the same Diameter answer message.
+			(See <xref target="uc-simple-impacts" />.)
+		</t>
+
+	</section>
+	<section anchor="relay-behavior" title="Agent Behavior Recommendations">
+		<t>
+			The discussion in <xref target="abatement"/>, <xref target="reporttypes"/>, and <xref target="doic-uc" /> suggest certain
+		    recommendations for DOIC supporting Diameter relay behavior. The authors recommend that language
+		    be added to <xref target="I-D.ietf-dime-ovli" /> to the general effect of the following sections:
+		</t>
+		
+	<section anchor="ocsf-recommendations" title="Capabilites Exchange Behaviors">
+		<t>This section describes recommended Agent behaviors with respect to the OC-Supported-Features AVP.</t>
+		<t>A DOIC supporting agent acts as a reporting-node, a reacting-node, or both.</t>
+		<t>
+			An agent that acts as a reacting node MUST include an OC-Supported-Features in each Diameter 
+			request that it forwards in that role.
+			If the inbound request included an OC-Supported-Features AVP, the relay MAY copy its content to 
+			the one in the outbound request, or MAY modify the contents if it wishes to indicate
+			different DOIC capabilities to upstream nodes. If the inbound request did not
+			contain an OC-Supported-Features AVP, the agent MUST insert one into the outbound
+			request, indicating the DOIC capabilities of the agent itself.
+		</t>
+		<t>
+			An agent that acts as a reporting node MUST include an OC-Supported-Features AVP in each Diameter answer
+			that it forwards in that role. If the agent modified the OC-Supported-Features AVP in the associated request,
+			it MUST perform a reciprocal modification of the OC-Supported-Features AVP in the response.
+		</t>
+		<t>
+			An agent that does not support the DOIC mechanism is likely to forward an OC-Supported-Features AVP without 
+			modification. A DOIC node MUST be able to tell between an OC-Supported-Features AVP that was forwarded by
+			such a non-supporting agent, and one inserted or copied by a DOIC-supporting node [ref?].
+		</t>
+    </section>	
+	<section anchor="olr-recommendations" title="Overload Report Behaviors">	
+		<t>
+			When a DOIC-supporting relay inserts an OC-Supported-Features AVP
+			(or passes through one received from downstream),
+			it becomes responsible for ensuring that any OLRs it receives from upstream
+			nodes are honored. It can honor an OLR by locally performing overload abatement, delegating
+			abatement to downstream nodes, or a combination of both.
+		</t>
+		<t>
+			If a relay can honor the OLR by locally diverting traffic, it SHOULD do so before resorting
+			to throttling. For example, if a relay
+			receives a realm report from its upstream peer, and has other less-overloaded peers that
+			are valid for the realm and application, it diverts traffic to the less overloaded peers
+			as needed. The relay SHOULD apply any knowledge it has of the peers' relative load and capacity
+			in determining how to divert traffic.
+		</t>
+		<t>
+			When an overload condition requires throttling of traffic, an agent SHOULD delegate that
+			throttling to downstream nodes if at all possible. Depending on local policy and the nature
+			of the overload condition, this means the agent either originates a new OLR to send downstream,
+			or forwards an OLR received from upstream. For example, if a relay receives a host report (which usually
+			requires traffic throttling), the relay typically forwards that report downstream. The relay MAY modify
+			the report based on local policy.
+		</t>
+		<t>
+			If an agent needs to perform local throttling, it MUST explicitly reject each throttled request
+			with a "Diameter-Throttled" error code. (See <xref target=
+			"uc-simple-impacts" /> and <xref target="uc-partition-impacts" />.)
+		</t>
+		<t><list><t>
+			There may be circumstances where an agent must perform local throttling. An obvious example
+			is when  downstream nodes do not support DOIC, that is, requests from downstream nodes do not contain
+			OC-Supported-Features AVPs. Mismatched upstream and downstream capabilities could require local
+			throttling. For example, if a relay uses a rate-limiting abatement algorithm upstream, but downstream
+			devices do not support rate-limiting, it may have to locally throttle traffic to meet
+			its upstream abatement commitment. It might still invoke the "loss" algorithm downstream in order
+			to reduce the amount of traffic that must be locally throttled.
+		</t></list></t>
+		<t>
+			A relay SHOULD apply all the information at hand to determine upstream overload. For example,
+			if a relay receives a host-report from a directly attached TS, that relay can reasonable infer that
+			the overload condition applies to all traffic for the realm and application, and also abate
+			realm-routed requests that it knows would go to the overloaded TS. A relay might also have knowledge
+			of the overload or load state of other nodes through some non-DOIC mechanism.
+		</t>
+		<t>
+			Finally, a relay SHOULD NOT generate or forward OLRs in a way likely to cause redundant abatement. For example,
+			if a relay locally throttles traffic due to a "loss" algorithm OLR, it should not forward the OLR downstream
+			where other nodes will also apply abatement to the same traffic.
+		</t>
+		<t><list><t>
+			The idea of redundant abatement is at least somewhat specific to the algorithm. For example, a rate-limiting
+			algorithm might allow both local and delegated abatement, since the algorithm creates a maximum rate limit.
+			On the other hand, the "loss" algorithm requests a percentage reduction. If a relay receives an OLR for
+			a 10 percentage reduction, applies local throttling, and also forwards the OLR downstream, the 10% reduction
+			may be applied twice.
+		</t></list></t>
+</section>
+	</section>
+
     </section>
     <section title="Security Considerations">
       <t>
