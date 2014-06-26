@@ -260,10 +260,10 @@
       </figure>
       <t>
         <xref target="deploy-arch4"/> illustrates server partitioning.  In this case
-        the agent routes determines the partition to which a request is routed
+        the agent determines the partition to which a request is routed
         based on the contents of the message.  For instance, the request might
         contain an indicator of a user to which the request applies.  All request for
-        that user must be routed to the same server, or more generally set of
+        that user must be routed to the same server, or more generally that set of
         servers.
       </t>
 
@@ -513,7 +513,7 @@
                </t>
                <t>
                  Non supporting agent between a supporting agent and the reporting node.
-                 In this case, the agent that supports DOIC cannot reliably re-route
+                 In this case, the agent that supports DOIC cannot reliably divert
                  requests as a result of a host report.This use case is discussed in
                  <xref target="uc-nsagent"/>.
                  <vspace blankLines="1"/>
