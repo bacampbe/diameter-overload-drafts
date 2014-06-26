@@ -344,8 +344,8 @@
    <section anchor="reporttypes" title="Diameter Routing">
      <t>
        Diameter supports <xref target="RFC6733">two primary methods</xref> for
-       routing requests to a reporting node. Normally, Diameter nodes route
-       requests based on the Destination-Realm and Application-Id AVP values.
+       nodes to select the next hop for a request . Normally, Diameter nodes base peer-selection
+       on the Destination-Realm and Application-Id AVP values.
        That is, they select a next hop from their Diameter peer table entry
        that matches the realm and application of the request. For the sake of
        this analysis, we refer to requests routed by this method as
@@ -356,14 +356,14 @@
        inserting a Destination-Host AVP. When a node forwards a request that
        includes Destination-Host, it checks to see if it has a matching
        Diameter identity in its peer table. If so, it forwards the request to
-       that peer. Otherwise, it follows the normal routing for the realm and
+       that peer. Otherwise, it follows the normal peer-selection for the realm and
        application. We refer to requests routed this way as "host-routed
        requests".
       </t>
 		<t>
-			In general, throttling is the the only abatement technique that
-			works for host-routed requests. Diversion is typically not possible,
-			since only a single TS can handle the request.
+			In general, <xref target="abatement">throttling</xref> is the the only abatement technique that
+			works for host-routed requests. <xref target="abatement">Diversion</xref> is typically not possible,
+			since only a single TS can handle any given request.
 		</t>
 		<t><list><t>
 	        There may be some
@@ -383,18 +383,20 @@
 	<section anchor="abatement" title="Overload Abatement Methods">
 	      <t>
 	       When a Diameter node becomes overloaded, there typically must be a
-	       reduction of the number requests of both categories, in order to have
+	       reduction of the number of both realm-routed and host-routed requests, 
+	       in order to have
 	       the desired reduction of the overall offered-load. We refer to this
 	   	   reductions as "Overload Abatement"
 		</t>
-		<t>In general, there are two ways to perform overload abatement. Perhaps the
+		<t>
+			In general, there are two ways to perform overload abatement. Perhaps the
 			most obvious is to reject some number of Diameter requests, also known
 			as "throttling". When a TC throttles traffic, it rejects or defers certain
 			client application requests, as appropriate for the client application. When
-			an agent throttles traffic, it rejects Diameter requests with appropriate
-			error codes, so that the TC can behave correctly at the client application layer.</t>
+			an agent or TS throttles traffic, it rejects Diameter requests with an appropriate
+			error code, so that the TC can behave correctly at the client application layer.</t>
 			<t>
-				A second way to abate overload is to route some fraction of requests from an
+				A second way to abate overload is to move some number of requests from an
 			    overloaded node to one or more eligible nodes that. For the purposes
 			    of this draft, we refer to this abatement method as "Diversion".
 			</t>
@@ -404,24 +406,27 @@
 			</t>
 			<t><list style="symbols">
 				<t>
-					All things being equal, diversion SHOULD be preferred to throttling. Diversion
+					All things being equal, diversion should be preferred to throttling. Diversion
 					allows more requests to succeed, which will have less negative impact on
 					the client application. However, there are situations where diversion is
 					not possible. For example, diversion is usually not possible for host-routed
-					requests (see discussion). Diversion may not be helpful if all potential
+					requests <xref target="reporttypes" />. Diversion may not be helpful if all potential
 					destinations are overloaded. If proprietary load balancing mechanisms are in use,
 					diversion for DOIC purposes may be redundant with those mechanisms.
 			    </t>
 				<t>
-					If diversion is performed, the diversion SHOULD occur as close as possible to the TS,
-					preferably at a node that shares a direct transport connection with the TS. A directly
-					connected peer is likely to have the most knowledge of alternative destinations and their
+					If diversion is performed, the diversion should occur as close as possible to the TS.
+					(Not at the TS itself,since this would defeat the point of overload abatement.)
+					Diversion should preferably occur at a node that shares a direct transport connection 
+					with the TS. A directly
+					connected peer will have the most knowledge of alternative destinations and their
 					current loads. If nodes
-					further from the TS perform diversion, topology knowledge and overload state knowledge
-					must be pushed further down the chain of Diameter nodes.
+					further from the TS attempt to diversion, topology knowledge and overload state knowledge
+					must be pushed further down the chain. Even then, a node usually cannot control how a realm-routed
+					request may be routed beyond the immediate peer.
 				</t>
 				<t>
-					Throttling SHOULD occur at the TC, or as close as possible to the TC.
+					Throttling should occur at the TC, or as close as possible to the TC.
 					The TC has the best knowledge of the client application,
 					and can choose to reject requests that have the lease impact on the client
 					application, or provide the most effect for traffic reduction over time.
