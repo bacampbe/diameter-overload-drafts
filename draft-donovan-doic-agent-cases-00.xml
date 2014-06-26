@@ -178,12 +178,12 @@
 			a TS if and when it answers a request sent by a Diameter Server.
 		   </t>
 		   <t hangText="Client Application">
-		   	The application that uses Diameter for various Authentication, Authorization, 
+		   	The application that uses Diameter for various Authentication, Authorization,
 		    and/or Accounting (AAA) functions. For example, a Network Access Server (NAS) performs
 		    certain network attachment services, detachment services, packet forwarding, etc.
 			These are collectively the NAS client application, which depends on Diameter for AAA
 			services.
-		   </t>	
+		   </t>
            <t hangText="Overload Abatement:">
             Actions taken by a reacting node to reduce the load offered to an
             overloaded Diameter node. The specific actions required to perform
@@ -332,7 +332,7 @@
 	   	   reductions as "Overload Abatement"
 		</t>
 		<t>In general, there are two ways to perform overload abatement. Perhaps the
-			most obvious is to reject some number of Diameter requests, also known 
+			most obvious is to reject some number of Diameter requests, also known
 			as "throttling". When a TC throttles traffic, it rejects or defers certain
 			client application requests, as appropriate for the client application. When
 			an agent throttles traffic, it rejects Diameter requests with appropriate
@@ -365,7 +365,7 @@
 					must be pushed further down the chain of Diameter nodes.
 				</t>
 				<t>
-					Throttling SHOULD occur at the TC, or as close as possible to the TC. 
+					Throttling SHOULD occur at the TC, or as close as possible to the TC.
 					The TC has the best knowledge of the client application,
 					and can choose to reject requests that have the lease impact on the client
 					application, or provide the most effect for traffic reduction over time.
@@ -374,7 +374,7 @@
 					eventually be rejected increases the impact of those requests.
 				</t>
 			</list></t>
-		
+
 	</section>
 
     <section anchor="reporttypes" title="Diameter Routing">
@@ -423,7 +423,7 @@
 		    deployment flexibility and predictable behavior.
 		</t>
 		<t>
-			When a DOIC-supporting relay inserts an OC-Supported-Features AVP 
+			When a DOIC-supporting relay inserts an OC-Supported-Features AVP
 			(or passes through one received from downstream),
 			it becomes responsible for ensuring that any OLRs it receives from upstream
 			nodes are honored. It can honor an OLR by locally performing overload abatement, delegate
@@ -432,7 +432,7 @@
 		<t>
 			If a relay can honor the OLR by locally diverting traffic, it SHOULD do so before resorting
 			to throttling. For example, if a relay
-			receives a realm report from its upstream peer, and has other less-overloaded peers that 
+			receives a realm report from its upstream peer, and has other less-overloaded peers that
 			are valid for the realm and application, it diverts traffic to the less overloaded peers
 			as needed. The relay SHOULD apply any knowledge it has of the peers' relative load and capacity
 			in determining how to divert traffic.
@@ -452,12 +452,12 @@
 			throttling. For example, if a relay uses a rate-limiting abatement algorithm upstream, but downstream
 			devices do not support rate-limiting, it may have to locally throttle traffic to meet
 			its upstream abatement commitment. It might still invoke the "loss" algorithm downstream in order
-			to reduce the amount of traffic that must be locally throttled.			
+			to reduce the amount of traffic that must be locally throttled.
 		</t></list></t>
 		<t>
 			A relay SHOULD apply all the information at hand to determine upstream overload. For example,
 			if a relay receives a host-report from a directly attached TS, that relay can reasonable infer that
-			the overload condition applies to all traffic for the realm and application, and also abate 
+			the overload condition applies to all traffic for the realm and application, and also abate
 			realm-routed requests that it knows would go to the overloaded TS. A relay might also have knowledge
 			of the overload or load state of other nodes through some non-DOIC mechanism.
 		</t>
@@ -465,7 +465,7 @@
 			Finally, a relay SHOULD NOT generate or forward OLRs in a way likely to cause redundant abatement. For example,
 			if a relay locally throttles traffic due to a "loss" algorithm OLR, it should not forward the OLR downstream
 			where other nodes will also apply abatement to the same traffic.
-		</t> 
+		</t>
 		<t><list><t>
 			The idea of redundant abatement is at least somewhat specific to the algorithm. For example, a rate-limiting
 			algorithm might allow both local and delegated abatement, since the algorithm creates a maximum rate limit.
@@ -474,7 +474,7 @@
 			may be applied twice.
 		</t></list></t>
 	</section>
-    <section title="DOIC Agent Use Cases">
+    <section title="DOIC Use Cases">
       <t>
        This section outlines example use cases involving agents.  Each of
        these use cases will be evaluated with the goal of identifying any
@@ -489,33 +489,57 @@
       <t>
        <list style="symbols">
          <t>
-           Simple Agent - Overload capability exchange and overload report handling
+           Simple Agent - Overload capability announcement and overload report handling
            in a deployment with a single agent as illustrated in
            <xref target="deploy-arch1"/>.  In this case all Diameter nodes
            are assumed to support DOIC.  This use case is discussed in
            <xref target="uc-simple"/>.
+           <vspace blankLines="1" />
+           This use case includes four sub-cases:
+           <list style="numbers">
+             <t>
+               OC Capability Announcement where the TC and Agent support the
+               same OC capabilities.
+             </t>
+             <t>
+               Host overload report handling for host-routed requests.  This
+               case illustrates throttling of host-routed requests at the
+               transaction client.
+             </t>
+             <t>
+               Host overload report handling for realm-routed request and a
+               single server.  This case illustrates throttling of host-routed
+               requests at the agent that has a direct transport connection to
+               the transaction server.
+             </t>
+             <t>
+               Host overload report handling for realm-routed request and
+               multiple server with agent diversion.  This case illustrates
+               diversion of host-routed requests by the agent.
+             </t>
+             <t>
+               Multiple host overload reports resulting in a realm overload report.
+             </t>
+           </list>
          </t>
          <t>
-           Chain of Agents - Overload capability exchange and overload report
-           handling in a deployment with multiple agents between reacting nodes
-           and reporting nodes as illustrated in <xref target="deploy-arch2"/>.
-           In this case all Diameter nodes are assumed to support DOIC.
-           This use case is discussed in
-           <xref target="uc-chain"/>.
-         </t>
-         <t>
-           Partitioned Servers - Overlaod capability exchange and overload report
+           Partitioned Servers - Overlaod capability announcement and overload report
            handling in a deployment using partitioned servers as illustrated
            in <xref target="deploy-arch3"/>.  In this case all Diameter nodes
            are assumed to support DOIC.  This use case is discussed in
            <xref target="uc-partition"/>.
+           <vspace blankLines="1"/>
+           This case illustrates one scenario where realm reports cannot be used.
          </t>
          <t>
-           Mixed Capabilities - Overload capability exchange and overload report
+           Mixed Capabilities - Overload capability announcement and overload report
            handling in deployments where agents support capabilities that are
            not included in the set of capabilities advertised by reacting
            nodes.This use case is discussed in
            <xref target="uc-mixedcaps"/>.
+           <vspace blankLines="1"/>
+           This use case illustrates one scenario where an agent consumes an overload
+           report and replaces it with a new overload report of a different type.
          </t>
          <t>
            Non supporting DOIC nodes - Agent behavior in the face of Diameter
@@ -523,48 +547,74 @@
            addressed in
            <xref target="uc-non-supporting"/>.  There are four sub-use
            cases that are addressed:
+             <list style="symbols">
+               <t>
+                 Non supporting reacting node.  In this case a DOIC supporting agent
+                 should handle overload abatement for the non supporting node.  An
+                 agent or a reporting node can detect if there is a reacting node
+                 in the path a request takes by the presence of the OC-Supported-Features
+                 AVP in the request message.  This use case is discussed in
+                 <xref target="uc-nsclient"/>.
+               </t>
+               <t>
+                 Non supporting reporting node.  In this case a DOIC supporting agent
+                 may act as the reporting node for any upstream non supporting Diameter
+                 nodes (client or servers depending on the direction of the request).
+                 In this case a DOIC supporting agent can detect if there is a reporting
+                 node in the path
+                 of the transaction by the presence of the OC-Supported-Features AVP
+                 in the answer message for the transaction.  This use case is discussed in
+                 <xref target="uc-nsserver"/>.
+               </t>
+               <t>
+                 Non supporting agent between reacting node and a supporting agent.
+               </t>
+               <t>
+                 Non supporting agent between a supporting agent and the reporting node.
+                 In this case, the agent that supports DOIC cannot reliably re-route
+                 requests as a result of a host report.This use case is discussed in
+                 <xref target="uc-nsagent"/>.
+                 <vspace blankLines="1"/>
+                 This use case illustrates when this deployment scenario is not
+                 recommended.
+               </t>
+             </list>
          </t>
-         <t><list style="symbols">
-           <t>
-             Non supporting reacting node.  In this case a DOIC supporting agent
-             should handle overload abatement for the non supporting node.  An
-             agent or a reporting node can detect if there is a reacting node
-             in the path a request takes by the presence of the OC-Supported-Features
-             AVP in the request message.This use case is discussed in
-             <xref target="uc-nsclient"/>.
-           </t>
-           <t>
-             Non supporting reporting node.  In this case a DOIC supporting agent
-             may act as the reporting node for any upstream non supporting Diameter
-             nodes (client or servers depending on the direction of the request).
-             In this case a DOIC supporting agent can detect if there is a reporting
-             node in the path
-             of the transaction by the presence of the OC-Supported-Features AVP
-             in the answer message for the transaction.This use case is discussed in
-             <xref target="uc-nsserver"/>.
-           </t>
-           <t>
-             Non supporting agent between reacting node and a supporting agent. [steve:
-             it isn't clear on a Friday afternoon what different agent behavior this
-             use case drives.]
-           </t>
-           <t>
-             Non supporting agent between a supporting agent and the reporting node.
-             In this case, the agent that supports DOIC cannot reliably re-route
-             requests as a result of a host report.This use case is discussed in
-             <xref target="uc-nsagent"/>.
-           </t>
-         </list></t>
          <t>
-           Support for targeted overload reports [steve: only needed if this makes
-           it into the based DOIC specification.]
+           Inter domain or untrusted node authorization.
+           <vspace blankLines="1"/>
+           This use case illustrates one case where attribution of OC-Supported-Features
+           AVP is required.
+         </t>
+         <t>
+           [steve: i'm not convinced we need the following use cases]
+           <list>
+             <t>
+               Chain of Agents - Overload capability announcement and overload report
+               handling in a deployment with multiple agents between reacting nodes
+               and reporting nodes as illustrated in <xref target="deploy-arch2"/>.
+               In this case all Diameter nodes are assumed to support DOIC.
+               This use case is discussed in
+               <xref target="uc-chain"/>.
+             </t>
+             <t>
+               Support for targeted overload reports [steve: only needed if this makes
+               it into the based DOIC specification.]
+             </t>
+             <t>
+               Hop-by-hop abatement algorithm.
+               <vspace blankLines="1"/>
+               This use case illustrates one case where attribution of OC-Supported-Features
+               AVP is required.
+             </t>
+           </list>
          </t>
        </list>
       </t>
 
       <section anchor="uc-simple" title="Simple Agent">
         <t>
-          This section addresses overload capability exchange and overload report handling
+          This section addresses overload capability announcement and overload report handling
           in a deployment with a single agent as illustrated in
           <xref target="deploy-arch1"/>.
         </t>
@@ -572,10 +622,43 @@
           This use case assumes that all nodes support DOIC and that all nodes
           support the same set of overload features.
         </t>
-        <section title="Capability Exchange">
+        <t>
+          This use case includes four sub-cases:
+          <list style="numbers">
+            <t>
+              OC Capability Announcement where the TC and Agent support the
+              same OC capabilities.
+            </t>
+            <t>
+              Host overload report handling for host-routed requests.  This
+              case illustrates throttling of host-routed requests at the
+              transaction client.
+            </t>
+            <t>
+              Host overload report handling for realm-routed request and a
+              single server.  This case illustrates throttling of host-routed
+              requests at the agent that has a direct transport connection to
+              the transaction server.
+            </t>
+            <t>
+              Host overload report handling for realm-routed request and
+              multiple server with agent diversion.  This case illustrates
+              diversion of host-routed requests by the agent.
+            </t>
+            <t>
+              Multiple host overload reports resulting in a realm overload report.
+            </t>
+          </list>
+        </t>
+        <section title="Capability Announcement">
           <t>
-            This section explores the capability exchange requirements for the
+            This section explores capability announcement for the
             simple agent use case.
+          </t>
+          <t>
+            This use case assumes that the capabilities supported by the TC and
+            those supported by the agent are the same.  The scenario where different
+            capabilities are supported in discussed in <xref target="uc-mixedcaps"/>.
           </t>
           <t>
             <xref target="pr-uc-basic1"/> shows the message flow for this use case.
@@ -587,9 +670,9 @@
           <figure anchor="pr-uc-basic1">
             <artwork><![CDATA[
 
-       +-+                        +-+                        +-+
-       |C|                        |A|                        |S|
-       +-+                        +-+                        +-+
+       +--+                       +-+                        +--+
+       |TC|                       |A|                        |TS|
+       +--+                       +-+                        +--+
         |                          |                          |
   1>    |-- xxR OC-S-F:C---------->|                          |
         |                          |                          |
@@ -605,8 +688,8 @@
           <t>
             <list style="numbers">
               <t>
-                The client originates a request and, as a result, is the reacting
-                node for this transaction.  The client supports DOIC and, as
+                The transaction client (TC) originates a request.  The TC supports
+                DOIC and, as
                 such, includes the OC-Supported-Features AVP in all requests.  The
                 OC-S-F AVP contains the clients capabilities.
               </t>
@@ -614,85 +697,137 @@
                 The agent inspects the OC-S-F AVP and determines that the agent
                 does not support additional OC features.  The agent relays the
                 request unchanged to the server.
+                <list style="none"><t>
+                  The scenario where the agent supports a different set of
+                  DOIC features is addressed in <xref target="uc-mixedcaps"/>.
+                </t>
+                <t>
+                  Note: It is an open question whether the agent needs to
+                  include an indication that it also supports DOIC or if
+                  attribution of the OC-S-F is needed.
+                </t></list>
               </t>
-              <t><list style="none"><t>
-                Note: The scenario where the agent supports a different set of
-                DOIC features is addressed in <xref target="uc-mixedcaps"/>.
-              </t></list></t>
               <t>
-                The server, acting as the reporting node, inspects the OC-S-F AVP in
+                The transaction server (TS), acting as the reporting node,
+                inspects the OC-S-F AVP in
                 the request and generates an OC-S-F to be included in the answer
                 message.  This is done according to the behavior defined in the
                 DOIC specification <xref target="I-D.ietf-dime-ovli"/>.
               </t>
               <t>
                 The agent relays the answer message unchanged.
+                <vspace blankLines="1"/>
+                The presence of the OC-S-F header in the answer message indicates
+                to the TC that it needs to be prepared for overlaod reports in
+                subsequent requests of the same type.
+                <list style="none"><t>
+                  With the loss algorithm defined in <xref target="I-D.ietf-dime-ovli"/>
+                  there is no explicit action required of the TC.  Stateful
+                  abatement algorithms will likely action to be taken by the TC
+                  to be able to handle subsequent overload reports.
+                </t></list>
               </t>
             </list>
           </t>
         </section>
         <section title="Overload Report Handling">
           <t>
-            This section addresses overload capability exchange and overload report handling
+            This section addresses overload report handling
             in a deployment with a single agent as illustrated in
             <xref target="deploy-arch1"/>.
           </t>
           <t>
-            <xref target="pr-uc-basic2"/> shows the message flow for this use case.
-            In this use case HR under a request indicates that the request is
-            host-routed.  RR indicates the request is realm-routed.  OLR:Host
-            indicates an overload report of type Host.
+            The following three sub-cases are illustrated:
+            <list style="symbols">
+              <t>
+                <xref target="pr-uc-basic2"/> shows the message flow illustrating
+                handling of host reports for host-routed requests and realm-routed
+                requests when there is a single transaction server.
+              </t>
+              <t>
+                <xref target="pr-uc-basic4"/> shows the handling of host-routed
+                requests when there is a second server to which requests can
+                be diverted when one of the servers is in an overload state.
+              </t>
+              <t>
+                <xref target="pr-uc-basic3"/> illustrates the agents behavior
+                when it has received a host report from all servers.  In this case
+                the agent generates a Realm report.  This is only possible when
+                the agent has a view of the state of all servers in the Diameter
+                network.
+              </t>
+            </list>
+          </t>
+          <t>
+            In these message flows, "HR" under a request indicates that the request is
+            host-routed.  "RR" indicates the request is realm-routed.  "OLR:Host"
+            indicates an overload report of type Host.  "OLR:Realm" indicates an
+            overload report of type Realm.
           </t>
           <figure anchor="pr-uc-basic2">
             <artwork><![CDATA[
 
-    +-+                   +-+                  +--+                  +--+
-    |C|                   |A|                  |S1|                  |S2|
-    +-+                   +-+                  +--+                  +--+
-     |                     |                     |                     |
-  1> |-- xxR OC-S-F:C----->|                     |                     |
-  2> |                     |-- xxR OC-S-F:C----->|                     |
-     |                     |                     |                     |
-  3> |                     |<----- xxA OC-S-F:S--|                     |
-     |                     |           OLR:Host  |                     |
-  4> |<--- xxA OC-S-F:S----|                     |                     |
-     |         OLR:Host    |                     |                     |
-     |                     |                     |                     |
-  5> |-- xxR OC-S-F:C----->|                     |                     |
-     |       HR            |                     |                     |
-  6> |                     |-- xxR OC-S-F:C----->|                     |
-     |                     |                     |                     |
-     |                     |                     |                     |
-  7> |                     |<----- xxA OC-S-F:S--|                     |
-     |                     |           OLR:Host  |                     |
-     |                     |                     |                     |
-  8> |<--- xxA OC-S-F:S----|                     |                     |
-     |         OLR:Host    |                     |                     |
-     |                     |                     |                     |
-  9> |-- xxR OC-S-F:C----->|                     |                     |
-     |       RR            |                     |                     |
-  10>|                     |-- xxR OC-S-F:C--------------------------->|
-     |                     |       RR            |                     |
-     |                     |                     |                     |
-  11>|                     |<--------------------------- xxA OC-S-F:S--|
-  12>|<--- xxA OC-S-F:S----|                     |                     |
-     |                     |                     |                     |
-
+    +-+                   +-+                   +-+
+    |C|                   |A|                   |S|
+    +-+                   +-+                   +-+
+     |                     |                     |
+  1> |-- xxR OC-S-F:C----->|                     |
+     |                     |                     |
+  2> |                     |-- xxR OC-S-F:C----->|
+     |                     |                     |
+  3> |                     |<----- xxA OC-S-F:S--|
+     |                     |           OLR:Host  |
+  4> |<--- xxA OC-S-F:S----|                     |
+     |         OLR:Host    |                     |
+     |                     |                     |
+  5> |-- xxR OC-S-F:C---X  |                     |
+     |       HR            |                     |
+     |                     |                     |
+  6> |-- xxR OC-S-F:C----->|                     |
+     |       HR            |                     |
+     |                     |                     |
+  7> |                     |-- xxR OC-S-F:C----->|
+     |                     |                     |
+     |                     |                     |
+  8> |                     |<----- xxA OC-S-F:S--|
+     |                     |           OLR:Host  |
+     |                     |                     |
+  9> |<--- xxA OC-S-F:S----|                     |
+     |         OLR:Host    |                     |
+     |                     |                     |
+  10>|-- xxR OC-S-F:C----->|                     |
+     |       RR            |                     |
+  11>|                     |-- xxR OC-S-F:C---X  |
+     |                     |       RR            |
+     |                     |                     |
+  12>|<--- xxA Throttled---|                     |
+     |                     |                     |
+     |                     |                     |
+  13>|-- xxR OC-S-F:C----->|                     |
+     |       RR            |                     |
+     |                     |                     |
+  14>|                     |-- xxR OC-S-F:C----->|
+     |                     |       RR            |
+     |                     |                     |
+  15>|                     |<----- xxA OC-S-F:S--|
+     |                     |           OLR:Host  |
+     |                     |                     |
+  16>|<--- xxA OC-S-F:S----|                     |
+     |         OLR:Host    |                     |
+     |                     |                     |
     ]]>
             </artwork>
           </figure>
           <t>
             <list style="numbers">
               <t>
-                The client originates a request with the OC-Supporting-Features
-                AVP per <xref target="I-D.ietf-dime-ovli"/>.
+                Same as in <xref target="pr-uc-basic1"/>.
               </t>
               <t>
-                The agent relays the
-                request unchanged to the server.
+                Same as in <xref target="pr-uc-basic1"/>.
               </t>
               <t>
-                The server, acting as the reporting node, has determined that
+                The server, acting as a reporting node, has determined that
                 it needs to request a reduction in traffic.  The server includes
                 the OC-S-F AVP per <xref target="I-D.ietf-dime-ovli"/>.  In this
                 case the loss algorithm is indicated as the abatement algorithm
@@ -703,17 +838,32 @@
                 The agent saves overload state based on the presence of the
                 OC-OLR AVP.  The agent will use this overload state for handling
                 of future realm routed requests.
+                <vspace blankLines="1"/>
                 The agent relays the answer message unchanged.  Upon receipt of
                 the answer, the client saves overload state associated with the
                 overload report.
+                <list style="none">
+                  <t>
+                    Note: This is behavior that it not yet specified in the DOIC
+                    specification.  It is based on the principle that only nodes
+                    with a direction transport connnection to an overloaded host
+                    should throttle those requests as other nodes earlier in the
+                    requests path do not have the topology knowledge to know if
+                    diversion of the request would have been successful.
+                  </t>
+                </list>
               </t>
               <t>
                 The client invokes the requested overload abatement algorithm
-                on host-routed requests.  Requests that are not rejected due
-                to the requested reduction in traffic are sent with the Destination-Host
-                AVP with a value that matches the overload state stored.
-                Handling of requests that do not survive abatement is dependent
-                on the application.
+                on host-routed requests.  This step illustrates a host-routed
+                request that is throttled.
+                The client gives application appropriate feedback to the
+                client application.
+              </t>
+              <t>
+                Host-routed requests that are not rejected due to the requested reduction
+                in traffic, as shown in this step, are handled the same as if there
+                where no overload report for the host to which the request is routed.
               </t>
               <t>
                 The agent relays the request based on the included Destination-Host
@@ -727,14 +877,95 @@
                 If the OC-OLR is a new overload report then the agent updates
                 the overload state associated with the report.
                 The agent relays the answer unchanged.
+                <vspace blankLines="1" />
                 The client determines if the OC-OLR is new.  If so, the client
                 updates overload state.
               </t>
               <t>
                 The client originates a realm-routed request.  The client cannot
                 apply overload abatement to this request as it does not match
+                any locally stored overload control state (the assumption for this
+                scenario is that a realm overload report has not yet been sent.)
+              </t>
+              <t>
+                The agent determines that there is overload state associated with
+                this request (the host report received from S).
+                The agent uses this overload state as input to
+                routing decisions for the request.  In this case it is assumed
+                that there is no alternative route to divert request toward and, as
+                such, the agent throttles the reqeust.
+              </t>
+              <t>
+                The agent generates an error response indicating that the request
+                was throttled and should not be retried.
+              </t>
+              <t>
+                The client originates another realm-routed request.
+              </t>
+              <t>
+                The agent determines that there is overload state associated with
+                this request (the host report received from S).
+                The agent uses this overload state as input to
+                routing decisions for the request.  In this case the request
+                is not throttled and is routed to S.
+              </t>
+              <t>
+                S generates an answer message.
+              </t>
+              <t>
+                The agent relays the answer.
+              </t>
+            </list>
+          </t>
+
+          <figure anchor="pr-uc-basic4">
+            <artwork><![CDATA[
+
+    +-+                   +-+                  +--+                  +--+
+    |C|                   |A|                  |S1|                  |S2|
+    +-+                   +-+                  +--+                  +--+
+     |                     |                     |                     |
+  1> |-- xxR OC-S-F:C----->|                     |                     |
+     |                     |                     |                     |
+  2> |                     |-- xxR OC-S-F:C----->|                     |
+     |                     |                     |                     |
+  3> |                     |<----- xxA OC-S-F:S--|                     |
+     |                     |           OLR:Host  |                     |
+  4> |<--- xxA OC-S-F:S----|                     |                     |
+     |         OLR:Host    |                     |                     |
+     |                     |                     |                     |
+  5> |-- xxR OC-S-F:C----->|                     |                     |
+     |       RR            |                     |                     |
+  6> |                     |-- xxR OC-S-F:C--------------------------->|
+     |                     |       RR            |                     |
+     |                     |                     |                     |
+  7> |                     |<--------------------------- xxA OC-S-F:S--|
+     |                     |                     |                     |
+  8> |<--- xxA OC-S-F:S----|                     |                     |
+     |                     |                     |                     |
+
+    ]]>
+            </artwork>
+          </figure>
+          <t>
+            <list style="numbers">
+              <t>
+                Same as in <xref target="pr-uc-basic1"/>.
+              </t>
+              <t>
+                Same as in <xref target="pr-uc-basic1"/>.
+              </t>
+              <t>
+                Same as in <xref target="pr-uc-basic1"/>.
+              </t>
+              <t>
+                Same as in <xref target="pr-uc-basic1"/>.
+              </t>
+              <t>
+                The client originates a realm-routed request.  The client cannot
+                apply overload abatement to this request as it does not match
                 any locally stored overload state (the assumption for this
-                scenario is that a RRR overload report has not yet been sent.)
+                scenario is that a realm overload report has not yet been sent.)
               </t>
               <t>
                 The agent determines that there is overload state associated with
@@ -751,13 +982,6 @@
                 The agent relays the answer.
               </t>
             </list>
-          </t>
-          <t>
-            <xref target="pr-uc-basic3"/> illustrates the agents behavior
-            when it has received a host report from all servers.  In this case
-            the agent generates a RRR report.  This is only possible when
-            the agent has a view of the state of all server in the Diameter
-            network.
           </t>
           <figure anchor="pr-uc-basic3">
             <artwork><![CDATA[
@@ -785,7 +1009,7 @@
      |                     |                     |           OLR:Host  |
   8> |<--- xxA OC-S-F:S----|                     |                     |
      |         OLR:Host    |                     |                     |
-     |         OLR:RRR     |                     |                     |
+     |         OLR:Realm   |                     |                     |
      |                     |                     |                     |
 
     ]]>
@@ -817,9 +1041,9 @@
             <t>
               The agent determines that the available capacity of servers in
               the realm has been reduced to the degree that it must generate
-              a Realm-Routed-Request overload report.  The agent adds this report
+              a Realm overload report.  The agent adds this report
               to the answer message.  The client saves overload state associated
-              with the new RRR overload report.  For the duration of the RRR
+              with the new Realm overload report.  For the duration of the Realm
               overload report the client performs the requested abatement on
               realm-routed requests.
             </t>
@@ -834,11 +1058,29 @@
           <t>
             <list style="symbols">
               <t>
+                There can be multiple reacting nodes for a single overload report.
+                A DOIC TC or a DOIC agent when the TC does not support DOIC
+                handle abatement of host-routed requests.  A DOIC node with
+                a direct transport connection to an overloaded host handles abatement
+                of realm-routed requests that would normally be routed to the
+                overloaded host.
+              </t>
+              <t>
+                Syntax for the OC-OLR AVP must support multiple OC-OLR AVPs in
+                answer messages.
+              </t>
+              <t>
+                Must define a Diameter-Throttled error response that indicates
+                that the request was rejected due to overload and that the request
+                should not be retried .
+              </t>
+<!--
+              <t>
                 Reacting Node - Host Report:
               </t>
               <t>
-                Reacting Node - RRR Report: NEED TO VERIFY THAT RRR STATE
-                IS SAVED AND THAT ABATEMENT LOGIC FOR RRR REPORT IS PROPERLY
+                Reacting Node - Realm Report: NEED TO VERIFY THAT Realm STATE
+                IS SAVED AND THAT ABATEMENT LOGIC FOR Realm REPORT IS PROPERLY
                 SPECIFIED.
               </t>
               <t>
@@ -861,48 +1103,41 @@
                 Reporting Node - Host Report: No change.
               </t>
               <t>
-                Reporting Node - RRR Report: Syntax for the OC-OLR AVP must support
+                Reporting Node - Realm Report: Syntax for the OC-OLR AVP must support
                 multiple OC-OLR AVPs in answer messages.
               </t>
+-->
             </list>
           </t>
         </section>
 
       </section>
-      <section anchor="uc-chain" title="Chain of Agents" >
-        <t>
-          [steve: propose moving this to after the non supporting client usecase
-          as there are two things that need to be addressed for agent changes --
-          first that only the last agent in a chain becomes a reacting node
-          to use host reports for routing changes.  Second, only the first
-          agent in a chain becomes
-          the reacting node for non supporting clients.]
-        </t>
-      </section>
+
       <section anchor="uc-partition" title="Partitioned Servers">
         <t>
-          [steve: I think this is a separate use case as it requires different
-          behavior in the last hop agent in that that agent does not have
-          full visibility of all servers in the network and, as such, cannot
-          generate RRR reports based on observing host reports.]
-        </t>
-        <t>
-          [need to illustrate that agent must always handle throttling of
-          realm-routed requests in this scenario.]
+          [STEVE: I'M NOT CONVINCED THAT THESE USE CASES DRIVE ANY
+          NEW PROTOCOL BEHAVIOR.  THE ONLY THING THEY ILLUSTRATE IS
+          AGENT BEHAVIOR FOR PARTITIONING.  I SUGGEST WE REMOVE IT UNLESS
+          WE FIND SOMETHING IN THE PREVIOUS SECTIONS THAT NEEDS ONE OF
+          THESE USE CASES AS JUSTIFICATION.]
         </t>
         <t>
           This use case is based on the basic partitioning deployment
           architecture illustrated in <xref target="deploy-arch4"/>.
         </t>
-        <section title="Capability Exchange">
+        <t>
+          This use case illustrates that there are scenarios where a Realm
+          overload report cannot be used.
+        </t>
+        <section title="Capability Announcement">
           <t>
-            This section explores the capability exchange requirements for the
+            This section explores the capability announcement requirements for the
             partitioned server use case.
           </t>
           <t>
-            <xref target="pr-uc-part1"/> illustrates capability exchange for the
+            <xref target="pr-uc-part1"/> illustrates capability announcement for the
             partitioned server use case.  There is nothing surprising in this
-            use case for capability exchange.  The reacting node must be prepared to
+            use case for capability announcement.  The reacting node must be prepared to
             received OC-Supported-Feature AVPs from multiple servers.  This, however,
             is the case for non partitioned scenarios as well.
           </t>
@@ -969,8 +1204,8 @@
             case there is no alternative route for the request.
           </t>
           <t>
-            <xref target="uc-simple"/> shows the agent generating an RRR overload
-            report in a similar scenario.  The agent cannot generate an RRR report
+            <xref target="uc-simple"/> shows the agent generating an Realm overload
+            report in a similar scenario.  The agent cannot generate an Realm report
             in this case as it would incorrectly lead to requests that would be
             routed to the S2 partition being throttled when the S2 server is
             not overloaded.  As a result, the agent must reject requests
@@ -1013,12 +1248,21 @@
             <t>
               A applies overload abatement logic and determines that this request
               must be abated.  A first determines that there is no alternative
-              route for the message.  A also knows that there are multiple
-              partitions for the application indicated in the request.  As a result
+              route for the message.  S2 is not overloaded in this scenario but
+              A is unable to route the request ot S2 because needs to be handled by
+              a server in partition 1.  As a result
               A must reject the request, indicating that the request was rejected
               as a result of overload abatement throttling.
             </t>
           </list></t>
+          <t>
+            <xref target="pr-uc-part3"/> illustrates the case where servers
+            in both partitions are overloaded.  In a non partitioned case this
+            would result in a realm overload report being generated.  This
+            is not likely to be feasible in this case as the level of overload
+            in each partition might be very different and there is no way to
+            report overload on a subset of servers in the realm.
+          </t>
           <figure anchor="pr-uc-part3">
             <artwork><![CDATA[
 
@@ -1053,6 +1297,10 @@
             [NEED TO ADD DESCRIPTION OF STEPS.  THIS MIGHT BE A BETTER
             FLOW TO TO REPLACE THE PREVIOUS ONE.]
           </t>
+          <t>
+            [NEED TO ILLUSTRATE THAT AN AGENT MIGHT NOT KNOW STATUS OF
+            ALL SERVERS]
+          </t>
         </section>
         <section title="DOIC Specification Impacts">
           <t>
@@ -1071,7 +1319,7 @@
           </t>
           <t>
             [steve: need to verify there is strong enough wording to indicate
-            that this is a scenario that RRR reports cannot be used.]
+            that this is a scenario that Realm reports cannot be used.]
           </t>
         </section>
 
@@ -1082,23 +1330,24 @@
           DOIC capabilities supported by the reacting node that originates a
           request and and agents in the path of the request.
         </t>
-        <t>
-          <xref target="pr-uc-mixed1"/> illustrates the case.  In this figure,
-          "OC-S-F:C"  indicates it carries the set of capabilities supported by C.
-          "OC-S-FC:AC" indicates the merged capabilities of C and A.
-          In most cases this merging will be a union
-          of capabilities.  The exception will be when there are
-          conflicting capabilities. "OC-S-FC:S"
-          indicates S's response to the AC set of capabilities.  OC-S-FC:S'
-          indicates A's modification to S.  This is needed in the case where S's
-          capabilities are not compatible with C's.
-        </t>
-        <t>
-          [steve: question for doic specification -- do we need guidance that
-          specifications for new capabilities must indicate merging logic?]
-        </t>
-        <figure anchor="pr-uc-mixed1">
-          <artwork><![CDATA[
+        <section title="Capability Announcement">
+          <t>
+            <xref target="pr-uc-mixed1"/> illustrates the case.  In this figure,
+            "OC-S-F:C"  indicates it carries the set of capabilities supported by C.
+            "OC-S-FC:AC" indicates the merged capabilities of C and A.
+            In most cases this merging will be a union
+            of capabilities.  The exception will be when there are
+            conflicting capabilities. "OC-S-FC:S"
+            indicates S's response to the AC set of capabilities.  OC-S-FC:AS
+            indicates A's modification to S.  This is needed in the case where S's
+            capabilities are not compatible with C's.
+          </t>
+          <t>
+            [steve: question for doic specification -- do we need guidance that
+            specifications for new capabilities must indicate merging logic?]
+          </t>
+          <figure anchor="pr-uc-mixed1">
+            <artwork><![CDATA[
 
            +-+                        +-+                        +-+
            |C|                        |A|                        |S|
@@ -1110,37 +1359,43 @@
             |                          |                          |
       3>    |                          |<---------- xxA OC-S-F:S--|
             |                          |                          |
-      4>    |<-------- xxA OC-S-F:S'---|                          |
+      4>    |<-------- xxA OC-S-F:AS---|                          |
             |                          |                          |
         ]]>
-          </artwork>
-        </figure>
-        <t><list style="numbers">
+            </artwork>
+          </figure>
+          <t><list style="numbers">
+            <t>
+              C originates a request including the OC-S-F AVP indicating the
+              DOIC features supported by C.
+            </t>
+            <t>
+              A inspects OC-S-F:C and determines that A supports features not
+              included.  A relays the request, replacing the OC-S-F APV with
+              an AVP that indicates the merged capabilities of A and C.
+            </t>
+            <t>
+              S responds to the set of advertised features with the OC-S-F:S
+              AVP.  There is no change in S's behavior beyond what is specified in
+              <xref target="I-D.ietf-dime-ovli"/> and any other extensions documenting
+              the features in the received OC-S-F AVP.
+            </t>
+            <t>
+              A inspects OC-S-F:S.  If necessary A replaces OC-S-F:S with OC-S-F:S'.
+              <vspace blankLines="1"/>
+              <xref target="pr-uc-mixed2"/> illustrates one case were A replaces
+              OC-S-F:S with OC-S-F:S'.
+            </t>
+          </list></t>
+        </section>
+        <section title="Mixed Overload Report Type Handling">
           <t>
-            C originates a request including the OC-S-F AVP indicating the
-            DOIC features supported by C.
+            <xref target="pr-uc-mixed2"/> illustrates one specific type of mixed
+            capabilities.  In this case, C only supports the loss abatement
+            algorithm, A supports both loss and rate and S selects rate.
           </t>
-          <t>
-            A inspects OC-S-F:C and determines that A supports features not
-            included.  A relays the request, replacing the OC-S-F APV with
-            an AVP that indicates the merged capabilities of A and C.
-          </t>
-          <t>
-            S responds to the set of advertised features with the OC-S-F:S
-            AVP.  There is no change in S's behavior beyond what is specified in
-            <xref target="I-D.ietf-dime-ovli"/>.
-          </t>
-          <t>
-            A inspects OC-S-F:S.  If necessary A replaces OC-S-F:S with OC-S-F:S'.
-          </t>
-        </list></t>
-        <t>
-          <xref target="pr-uc-mixed2"/> illustrates one specific type of mixed
-          capabilities.  In this case, C only supports the loss abatement
-          algorithm, A supports both loss and rate and S selects rate.
-        </t>
-        <figure anchor="pr-uc-mixed2">
-          <artwork><![CDATA[
+          <figure anchor="pr-uc-mixed2">
+            <artwork><![CDATA[
 
            +-+                        +-+                        +-+
            |C|                        |A|                        |S|
@@ -1155,45 +1410,49 @@
       3>    |                          |<---------- xxA OC-S-F:S--|
             |                          |                rate      |
             |                          |                          |
-      4>    |<-------- xxA OC-S-F:S'---|                          |
+      4>    |<-------- xxA OC-S-F:AS---|                          |
             |              loss        |                          |
         ]]>
 
-          </artwork>
-        </figure>
-        <t><list style="numbers">
-          <t>
-            C originates a request with OC-S-F AVP inicating support for only the
-            loss abatement algorithm.
-          </t>
-          <t>
-            A inspects the OC-S-F AVP and determins it needs to advertise support
-            for additional capabilities.  A removes C's OC-S-F AVP and inserts
-            a new OC-S-F AVP indicating support for both the loss and rate
-            algorithms.
-          </t>
-          <t>
-            S responds, including an OC-S-F AVP indicating that the rate algorithm
-            will be used for overload reports.
-          </t>
-          <t>
-            A determines that C does not support the rate algorithm and, as such,
-            includes an OC-S-F AVP indicating that the loss abatement algorithm
-            will be used for overload
-            reports sent to C.  This implies that A is able to handle rate based
-            overload reports.  How this is done is implementation specific.  It
-            can mean that A handles all abatement resulting from the rate OLR in
-            a similar fashion as discussed in <xref target="uc-nsclient"/>.  It can also mean
-            that A will send loss reports to C in an attempt to conform to the
-            requested reduction contained in the rate OLR.
-          </t>
-        </list></t>
+            </artwork>
+          </figure>
+          <t><list style="numbers">
+            <t>
+              C originates a request with OC-S-F AVP inicating support for only the
+              loss abatement algorithm.
+            </t>
+            <t>
+              A inspects the OC-S-F AVP and determins it needs to advertise support
+              for additional capabilities.  A removes C's OC-S-F AVP and inserts
+              a new OC-S-F AVP indicating support for both the loss and rate
+              algorithms.
+            </t>
+            <t>
+              S responds, including an OC-S-F AVP indicating that the rate algorithm
+              will be used for overload reports.
+            </t>
+            <t>
+              A determines that C does not support the rate algorithm and, as such,
+              includes an OC-S-F AVP indicating that the loss abatement algorithm
+              will be used for overload
+              reports sent to C.  This implies that A is able to handle rate based
+              overload reports.  How this is done is implementation specific.  It
+              can mean that A handles all abatement resulting from the rate OLR in
+              a similar fashion as discussed in <xref target="uc-nsclient"/>.  It can also mean
+              that A will send loss reports to C in an attempt to conform to the
+              requested reduction contained in the rate OLR.
+            </t>
+          </list></t>
+        </section>
         <section title="DOIC Specification Impacts">
           <t>
             Agent must have the ability to replace the OC-S-F AVP in request messages.
           </t>
           <t>
             Agent must have the ability to replace the OC-S-F AVP in answer messages.
+          </t>
+          <t>
+            Agent must have the ability to replace the OC-OLR AVP in answer messages.
           </t>
         </section>
 
@@ -1206,21 +1465,24 @@
         </t>
         <t><list style="numbers">
           <t>
-            Non supporting reacting node.
+            Non supporting transaction client.
           </t>
           <t>
-            Non supporting reporting node.
+            Non supporting transaction server.
           </t>
           <t>
-            Non supporting agent between reacting node and a DOIC agent.
+            Non supporting agent between the transaction client and a DOIC agent.
           </t>
           <t>
-            Non supporting a DOIC agent and the reporting node
+            Non supporting agent between a DOIC agent and the transaction server.
+          </t>
+          <t>
+            Non suupporting agent between DOIC agents.
           </t>
         </list></t>
-        <section anchor="uc-nsclient" title="Non-Supporting Reacting Node" >
+        <section anchor="uc-nsclient" title="Non-Supporting Transaction Client" >
           <t>
-           This section outlines the handling of non supporting reacting nodes.
+           This section outlines the handling of non supporting transaction client.
           </t>
           <t>
             This use case is illustrated in <xref target="non-supp-client"/>.  In
@@ -1241,7 +1503,7 @@
             </artwork>
           </figure>
           <t>
-            <xref target="non-supp-cl1"/> illustrates capability exchange for
+            <xref target="non-supp-cl1"/> illustrates capability announcement for
             both the supporting and non supporting client.
           </t>
           <t>
@@ -1264,25 +1526,69 @@
      |                     |                     |                     |
   2> |<---------------------------xxA OC-S-F:S---|<-----xxA OC-S-F:S---|
      |                     |                     |                     |
-  3> |                     |-- xxR ------------->|-- xxR OC-S-F:A----->|
+  3> |                     |-- xxR ------------->|                     |
      |                     |                     |                     |
-  4> |                     |<------------- xxA---|<-----xxA OC-S-F:S---|
+  4> |                     |                     |-- xxR OC-S-F:A----->|
+     |                     |                     |                     |
+  5> |                     |                     |<-----xxA OC-S-F:S---|
+     |                     |                     |                     |
+  6> |                     |<------------- xxA---|                     |
      |                     |                     |                     |
 
   ]]>
             </artwork>
           </figure>
+          <t><list>
+            <t>
+              C1 supports DOIC and, as such, includes the OC-S-F AVP in all
+              request messages sent.  A relays the request to S based on
+              normal request handling.
+              <vspace blankLines="1"/>
+              Note that this scenario assumes that the capabilities supported
+              by C1 and A are the same.
+            </t>
+            <t>
+              S supports DOIC and, as such, includes the OC-S-F AVP in all
+              response messages sent.  A relays the answer to C1 based on
+              normal answer handling.
+            </t>
+            <t>
+              C2 does not support DOIC and, as such, does not insert the OC-S-F
+              AVP into request messages.
+            </t>
+            <t>
+              A does support DOIC and recognizes that
+              the request does not contain the OC-S-F AVP.  A then inserts
+              an OC-S-F AVP that reflects the OC capabilities of A.
+            </t>
+            <t>
+              S does normal DOIC capability announcement handling, inserting
+              the OC-S-F AVP in the answer.
+            </t>
+            <t>
+              A removes the OC-S-F AVP from the answer given that C2 does not
+              support DOIC.
+            </t>
+          </list></t>
           <t>
             <xref target="non-supp-cl2"/> illustrates overload report handling
             for this scenario.
           </t>
           <t>
             There is no change in overload handling for requests originated by
-            C1.
+            C1.  C1 is responsible for abatement of host routed requests and A
+            is responsible for abatement of realm-routed requests.
           </t>
           <t>
             For requests originated by C2, it becomes the responsibility of A
-            to handle overload abatement requested by S.
+            to handle overload abatement requested by S.  In this case A is
+            responsible for abatement of both host-routed and realm-routed
+            requests, as A has a direct transport connection to S.  If there
+            were an upstream DOIC agent between A and S then A would no longer
+            have a direct transport connection and would not be able to
+            do abatement of realm-routed requests.  It would become the responsibility
+            of the upstream DOIC agent with the transport connection to handle
+            abatement of realm-routed requests.
           </t>
           <figure anchor="non-supp-cl2">
             <artwork><![CDATA[
@@ -1296,14 +1602,14 @@
   2> |<---------------------------xxA OC-S-F:S---|<-----xxA OC-S-F:S---|
      |                     |          OLR        |          OLR        |
      |                     |                     |                     |
-     | Primary abatement handled by C            |                     |
+     |HR abatement handled by C1                 |RR abatement handled by A
      |                     |                     |                     |
   3> |                     |-- xxR ------------->|-- xxR OC-S-F:A----->|
      |                     |                     |                     |
   4> |                     |<------------- xxA---|<-----xxA OC-S-F:S---|
      |                     |                     |          OLR        |
      |                     |                     |                     |
-     |                     |                     | Primary abatement   |
+     |                     |                     | HR and RR abatement |
      |                     |                     | handled by A        |
      |                     |                     |                     |
   5> |                     |-- xxR ------------->|-- xxR OC-S-F:A----->|
@@ -1325,8 +1631,10 @@
               Request from a supporting reacting node.
             </t>
             <t>
-              Response indicating the reporting node is overloaded.  The
-              reacting node C is responsible for abatement host-routed requests
+              Response indicating the reporting node is requesting a reduction in
+              traffic sent due to an overload condition.
+              <vspace blankLines="1"/>
+              The reacting node C is responsible for abatement of host-routed requests
               and A is responsible for abatement of realm-routed requests.
             </t>
             <t>
@@ -1334,11 +1642,15 @@
             </t>
             <t>
               Response indicating that the reporting node is overloaded.  A stores
-              overload state based on the content of the overload report.
+              overload state based on the content of the overload report.  A also
+              removed the OC-S-F adn OC-OLR AVPs from the answer message.
+              <vspace blankLines="1"/>
+              A is
+              responsible for abatement handling of all requests originated by C2.
             </t>
             <t>
               Request from non supporting node originated after the overload report
-              is received.  In this case the request survives throttling.
+              is received.  In this case the request is not throttled by A.
             </t>
             <t>
               Response for message that survived abatement by A.
@@ -1353,9 +1665,16 @@
             </t>
           </list></t>
         </section>
-        <section anchor="uc-nsserver" title="Non Supporting Reporting Node" >
+        <section anchor="uc-nsserver" title="Non Supporting Transaction Server" >
           <t>
-           [Agent acts as reporting node for a non-supporting server.]
+            This section shows the case where there is a mix of transaction servers
+            that support DOIC and those that do not support DOIC.
+          </t>
+          <t>
+            In this case, it becomes the responsibility of a DOIC agent to
+            become the reporting node for the non-supporting transaction server.
+            The method the agent uses to determine if abatement of traffic
+            is required for the non supporting node is implementation specific.
           </t>
           <figure anchor="non-supp-server">
             <artwork><![CDATA[
@@ -1379,26 +1698,58 @@
     |C|                   |A|                  |S1|                  *S2*
     +-+                   ---                  +--+                  ****
      |                     |                     |                     |
-     |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C----->|                     |
+  1> |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C----->|                     |
      |                     |                     |                     |
-     |<-----xxA OC-S-F:S---|<-----xxA OC-S-F:S---|                     |
+  2> |<-----xxA OC-S-F:S---|<-----xxA OC-S-F:S---|                     |
      |                     |          OLR        |                     |
      |                     |                     |                     |
-     |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C--------------------------->|
+  3> |-- xxR OC-S-F:C----->|                     |                     |
      |                     |                     |                     |
-     |<-----xxA OC-S-F:A---|<-----------------------------------xxA ---|
+  4> |                     |-- xxR OC-S-F:C--------------------------->|
+     |                     |                     |                     |
+  5> |                     |<-----------------------------------xxA ---|
+     |                     |                     |                     |
+  6> |<-----xxA OC-S-F:A---|                     |                     |
      |          OLR        |                     |                     |
-     |                     |                     |                     |
      |                     |                     |                     |
 
   ]]>
             </artwork>
           </figure>
+          <t>
+            <list style="numbers">
+              <t>
+                Normal DOIC processing.
+              </t>
+              <t>
+                Normal DOIC processing.
+              </t>
+              <t>
+                Normal DOIC processing
+              </t>
+              <t>
+                Normal DOIC processing.  The agent doesn't know that S2
+                doesn't support DOIC.
+              </t>
+              <t>
+                S2 does not support DOIC and, as a result, does not insert
+                the OC-S-F AVP in the answer message.
+              </t>
+              <t>
+                The answer message does not contain an OC-S-F AVP.  A then takes
+                on resposibility for becoming the reporting node for S2.  In this
+                case A has determined that S2 is in an overload condition and
+                inserts an OC-OLR AVP in the answer message.
+                <vspace blankLines="1"/>
+                C handles the OC-OLR overload report in the same way it handles
+                all OC-OLR reports.
+              </t>
+            </list>
+          </t>
         </section>
         <section anchor="uc-nsagent" title="Non-Supporting Agent" >
           <t>
-           [Two agents in sequence, one non-supporting. Show both with
-           non-supporting agent nearest the server vs earlier in chain.]
+            There are two sub-cases for non-supporting agents.
           </t>
           <t>
             <xref target="non-supp-agent1"/> illustrates the first non supporting
@@ -1434,21 +1785,15 @@
               DOIC.
           </t>
           <t>
-            There are two impacts to this scenario.  The first is that there is
-            no Diameter node in this scenario that can handle abatement of
-            realm-routed requests resulting from a host overload report.
+            In this scenario, there is
+            no DOIC node that has a direct transport connection with S1 and S2.
+            As a result, there is no DOIC node that can handle abatement of
+            realm-routed requests resulting from a host overload report from
+            the transaction servers.
           </t>
           <t>
-            The second impact of this scenario is that A1 might be expected to
-            take on reporting node responsibilities for a non supporting S1 or S2.
-          </t>
-          <t><list><t>
-            It is not been evaluated whether or not agent A1 could effectively
-            manage overload of a node to which it does not have a direct connection.
-          </t></list></t>
-          <t>
-            These two reasons combined lead to the conclusion that this
-            deployment scenario should be avoided.
+            As a result, it is recommended that this deployment scenario be
+            avoided.
           </t>
           <figure anchor="non-supp-agent2">
             <artwork><![CDATA[
@@ -1461,37 +1806,73 @@
           |C2|-----                -----|S2|
           +--+                          +--+
 
-
           ]]>
             </artwork>
           </figure>
-
-
+        </section>
+        <section title="DOIC Specification Impacts">
+          <t>
+            <list style="symbols">
+              <t>
+                Agents must be able to insert OC-S-F AVPs into request and answer
+                messages.
+              </t>
+              <t>
+                Agents must be able to remove OC-S-F AVPs from request and answer
+                messages.
+              </t>
+              <t>
+                Agents must be able to insert OC-OLR AVPs of type Host Report into answer
+                messages.  The ability to insert OC-ORL AVPs of thye Realm Report is
+                already assumed.
+              </t>
+              <t>
+                Agents must be able to remove OC-OLR AVPs from answer
+                messages.
+              </t>
+              <t>
+                Agents must be able to abate host-routed requests.
+              </t>
+            </list>
+          </t>
         </section>
       </section>
-	<section anchor="uc-rate" title="Rate Algorithm" >
-		<t>
-			[Show implications of rate algorithm across an agent.]
-		</t>
-    <t>
-      [steve: I'm not sure we need this scenario.  We have already established
-      that the agent needs to have overload state for host reports.  The fact that
-      agents might have to save transaction state as a result of the host report
-      will need to be covered in the rate draft.]
-    </t>
-	</section>
-	<section anchor="uc-agent-overload" title="Agent Overload" >
-		<t>
-			[Do we need this? May be covered sufficiently in agent overload draft.]
-		</t>
-    <t>
-      [steve: If we are looking for normative language that goes into the DOIC
-      spec then it is handled by the agent overload draft.]
-    </t>
-	</section>
-
-
-
+      <section title="Inter Domain Authorization">
+        <t>
+        </t>
+      </section>
+      <section title="Not needed use cases">
+        <section anchor="uc-chain" title="Chain of Agents" >
+          <t>
+            [steve: propose moving this to after the non supporting client usecase
+            as there are two things that need to be addressed for agent changes --
+            first that only the last agent in a chain becomes a reacting node
+            to use host reports for routing changes.  Second, only the first
+            agent in a chain becomes
+            the reacting node for non supporting clients.]
+          </t>
+        </section>
+      	<section anchor="uc-rate" title="Rate Algorithm" >
+      		<t>
+      			[Show implications of rate algorithm across an agent.]
+      		</t>
+          <t>
+            [steve: I'm not sure we need this scenario.  We have already established
+            that the agent needs to have overload state for host reports.  The fact that
+            agents might have to save transaction state as a result of the host report
+            will need to be covered in the rate draft.]
+          </t>
+      	</section>
+      	<section anchor="uc-agent-overload" title="Agent Overload" >
+      		<t>
+      			[Do we need this? May be covered sufficiently in agent overload draft.]
+      		</t>
+          <t>
+            [steve: If we are looking for normative language that goes into the DOIC
+            spec then it is handled by the agent overload draft.]
+          </t>
+      	</section>
+      </section>
     </section>
     <section title="Recommendation">
       <t>
@@ -1505,7 +1886,7 @@
           Agents may replace OC-S-F AVPs in answer messages.
         </t>
         <t>
-          Agents may add RRR reports into answer messages.
+          Agents may add Realm reports into answer messages.
         </t>
         <t>
           Answer messages must be able to have multiple overload reports.
@@ -1517,7 +1898,7 @@
           Agents are reacting nodes for host reports.
         </t>
         <t>
-          When there is no active RRR report for a realm, then
+          When there is no active Realm report for a realm, then
           Realm-routed requests must be throttled by reacting nodes that
           have direct connections with the reporting node that generated the
           host report.
