@@ -159,13 +159,17 @@
            </t>
            <t hangText="Reacting node:">
             A DOIC endpoint that can receive overload reports from a reporting
-            node, and perform overload abatement. A DOIC endpoint can
+            node, and ensures ensure that overload
+            reports are honored. A DOIC endpoint can
             simultaneously be both a reacting node and reporting node.
            </t>
            <t hangText="Reporting node:">
             A DOIC endpoint that can send overload reports to a reacting node,
-            requesting the reacting node to perform overload abatement.
+            requesting overload abatement.
            </t>
+			<t hangText="Abating node:">
+				A reacting node that directly performs overload abatement.
+			</t>
 		   <t hangText="Transaction Client (TC)">
 		   	A diameter node that originates a Diameter request. This is distinct
 			from "Diameter Client" as used in RFC 6733. Note that a Diameter Server acts as
@@ -224,7 +228,7 @@
       </t>
       <t>
         <xref target="deploy-arch1"/> shows an architecture with a single agent
-        sitting between Diameter clients and Diamter servers.
+        sitting between Diameter clients and Diameter servers.
       </t>
       <figure anchor="deploy-arch1">
         <artwork><![CDATA[
@@ -241,7 +245,7 @@
         </artwork>
       </figure>
       <t>
-        <xref target="deploy-arch2"/> shows an architecture with a multiple agents
+        <xref target="deploy-arch2"/> shows an architecture with multiple agents
         sitting between Diameter clients and Diameter servers.
       </t>
       <figure anchor="deploy-arch2">
@@ -261,10 +265,13 @@
       <t>
         <xref target="deploy-arch4"/> illustrates server partitioning.  In this case
         the agent determines the partition to which a request is routed
-        based on the contents of the message.  For instance, the request might
-        contain an indicator of a user to which the request applies.  All request for
-        that user must be routed to the same server, or more generally that set of
-        servers.
+        based on the contents of the message, according to some
+        local policy.  Each partition may be made up of a server or set of servers. 
+        For instance, all requests for a given user might be handled by a 
+        specific partition. The request might
+        contain an indication of the user to which the request applies.  The
+		agent would ensure that all requests for that user go to the correct
+		partition.
       </t>
 
       <figure anchor="deploy-arch4">
@@ -288,6 +295,14 @@
         case illustrates one instance where individual agents do not have a view
         of the overload status of all servers in the network.
       </t>
+	<t>
+		[Ben: I'm not sure I see how the figure shows that agents don't see the
+		overload status of all servers. Since there's a route between the agents,
+		there's a potential route where any agent could see an OLR from any server.
+		Did you mean to have the cross-connect? I do agree that each agent does not 
+		have a direct peer relationship with all the servers.]
+	</t>
+
       <figure anchor="deploy-arch3">
         <artwork><![CDATA[
 
@@ -318,11 +333,52 @@
        a Diameter application.
       </t></list></t>
       <t>
-       This document focuses on deployments that involve agents.  It is, however,
+       This document focuses on use cases that involve agents, and does not therefore
+       include scenarios with no agent(s) between the transaction client and 
+       transaction server.  It is, however,
        important that any changes to the DOIC solution introduced to support networks
        that contain agents also work when there is no agent sitting between Diameter
        clients and servers.
       </t>
+    </section>
+   <section anchor="reporttypes" title="Diameter Routing">
+     <t>
+       Diameter supports <xref target="RFC6733">two primary methods</xref> for
+       routing requests to a reporting node. Normally, Diameter nodes route
+       requests based on the Destination-Realm and Application-Id AVP values.
+       That is, they select a next hop from their Diameter peer table entry
+       that matches the realm and application of the request. For the sake of
+       this analysis, we refer to requests routed by this method as
+       "realm-routed requests"
+      </t>
+      <t>
+       A Diameter TC may also control the final destination of a request by
+       inserting a Destination-Host AVP. When a node forwards a request that
+       includes Destination-Host, it checks to see if it has a matching
+       Diameter identity in its peer table. If so, it forwards the request to
+       that peer. Otherwise, it follows the normal routing for the realm and
+       application. We refer to requests routed this way as "host-routed
+       requests".
+      </t>
+		<t>
+			In general, throttling is the the only abatement technique that
+			works for host-routed requests. Diversion is typically not possible,
+			since only a single TS can handle the request.
+		</t>
+		<t><list><t>
+	        There may be some
+			exceptions to this rule. For example, a node might have multiple peer table entries that share
+			the same Diameter Identity. A node might map Diameter identities
+			in a way that results in multiple next-hop destinations for a given
+			Destination-Host value.
+		</t></list></t>
+      <t>
+       On the other hand, diversion is often useful for abating realm-routed traffic.
+ 	   Since realm-routed requests are not bound to a
+       particular TS, it is often be possible to divert a number of them to other servers
+       that are less overloaded.
+      </t>
+
     </section>
 	<section anchor="abatement" title="Overload Abatement Methods">
 	      <t>
@@ -377,45 +433,6 @@
 
 	</section>
 
-    <section anchor="reporttypes" title="Diameter Routing">
-     <t>
-       Diameter supports <xref target="RFC6733">two primary methods</xref> for
-       routing requests to a reporting node. Normally, Diameter nodes route
-       requests based on the Destination-Realm and Application-Id AVP values.
-       That is, they select a next hop from their Diameter peer table entry
-       that matches the realm and application of the request. For the sake of
-       this analysis, we refer to requests routed by this method as
-       "realm-routed requests"
-      </t>
-      <t>
-       A Diameter TC may also control the final destination of a request by
-       inserting a Destination-Host AVP. When a node forwards a request that
-       includes Destination-Host, it checks to see if it has a matching
-       Diameter identity in its peer table. If so, it forwards the request to
-       that peer. Otherwise, it follows the normal routing for the realm and
-       application. We refer to requests routed this way as "host-routed
-       requests".
-      </t>
-		<t>
-			In general, throttling is the the only abatement technique that
-			works for host-routed requests. Diversion is typically not possible,
-			since only a single TS can handle the request.
-		</t>
-		<t><list><t>
-	        There may be some
-			exceptions to this rule. For example, a node might have multiple peer table entries that share
-			the same Diameter Identity. A node might map Diameter identities
-			in a way that results in multiple next-hop destinations for a given
-			Destination-Host value.
-		</t></list></t>
-      <t>
-       On the other hand, diversion is often useful for abating realm-routed traffic.
- 	   Since realm-routed requests are not bound to a
-       particular TS, it is often be possible to divert a number of them to other servers
-       that are less overloaded.
-      </t>
-
-    </section>
     <section anchor="doic-uc" title="DOIC Use Cases">
       <t>
        This section outlines example use cases involving agents.  Each of
@@ -835,7 +852,7 @@
                 The agent uses this overload state as input to
                 routing decisions for the request.  In this case it is assumed
                 that there is no alternative route to divert request toward and, as
-                such, the agent throttles the reqeust.
+                such, the agent throttles the request.
               </t>
               <t>
                 The agent generates an error response indicating that the request
