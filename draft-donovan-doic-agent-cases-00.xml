@@ -557,32 +557,7 @@
            This use case illustrates one case where attribution of OC-Supported-Features
            AVP is required.
          </t>
-         <t>
-           [steve: i'm not convinced we need the following use cases]
-			[ben: I think I agree.]
-           <list>
-             <t>
-               Chain of Agents - Overload capability announcement and overload report
-               handling in a deployment with multiple agents between reacting nodes
-               and reporting nodes as illustrated in <xref target="deploy-arch2"/>.
-               In this case all Diameter nodes are assumed to support DOIC.
-               This use case is discussed in
-               <xref target="uc-chain"/>.
-             </t>
-             <t>
-               Support for targeted overload reports [steve: only needed if this makes
-               it into the based DOIC specification.]
-				[ben: Does that mean we can take it out for now?]
-             </t>
-             <t>
-               Hop-by-hop abatement algorithm.
-               <vspace blankLines="1"/>
-               This use case illustrates one case where attribution of OC-Supported-Features
-               AVP is required.
-             </t>
-           </list>
-         </t>
-       </list>
+        </list>
       </t>
 
       <section anchor="uc-simple" title="Simple Agent">
