@@ -605,8 +605,8 @@
           </t>
           <t>
             This use case assumes that the capabilities supported by the TC and
-            those supported by the agent are the same.  The scenario where different
-            capabilities are supported in discussed in <xref target="uc-mixedcaps"/>.
+            those supported by the agent are the same.  (A scenario with differing
+			capabilities is supported in discussed in <xref target="uc-mixedcaps"/>.)
           </t>
           <t>
             <xref target="pr-uc-basic1"/> shows the message flow for this use case.
@@ -635,7 +635,7 @@
           </figure>
           <t>
             <list style="numbers">
-              <t>
+              <t >
                 The transaction client (TC) originates a request.  The TC supports
                 DOIC and, as
                 such, includes the OC-Supported-Features AVP in all requests.  The
@@ -643,16 +643,17 @@
               </t>
               <t>
                 The agent inspects the OC-S-F AVP and determines that the agent
-                does not support additional OC features.  The agent relays the
-                request unchanged to the server.
-                <list style="none"><t>
-                  The scenario where the agent supports a different set of
-                  DOIC features is addressed in <xref target="uc-mixedcaps"/>.
-                </t>
+                supports the same set of OC features.  The agent relays the
+                request unchanged to the server. .)
+                <list style="none">
                 <t>
                   Note: It is an open question whether the agent needs to
                   include an indication that it also supports DOIC or if
-                  attribution of the OC-S-F is needed.
+                  attribution of the OC-S-F is needed. One could also question
+				whether  the agent forwarded OC-S-F:C unchanged, rather than
+				consuming the OC-S-F, and inserted another identical one. This is likely
+				a purely philosophical difference, but might impact the <xref target="uc-authn">
+				inter-domain authorization use case</xref>.
                 </t></list>
               </t>
               <t>
@@ -666,7 +667,7 @@
                 The agent relays the answer message unchanged.
                 <vspace blankLines="1"/>
                 The presence of the OC-S-F header in the answer message indicates
-                to the TC that it needs to be prepared for overlaod reports in
+                to the TC that it needs to be prepared for overload reports in
                 subsequent requests of the same type.
                 <list style="none"><t>
                   With the loss algorithm defined in <xref target="I-D.ietf-dime-ovli"/>
@@ -685,30 +686,33 @@
             <xref target="deploy-arch1"/>.
           </t>
           <t>
-            The following three sub-cases are illustrated:
+            The following three scenarios are illustrated:
             <list style="symbols">
               <t>
-                <xref target="pr-uc-basic2"/> shows the message flow illustrating
+                <xref target="pr-uc-basic2"/> shows a message flow illustrating
                 handling of host reports for host-routed requests and realm-routed
-                requests when there is a single transaction server.
+                requests when there is a single TS.
               </t>
               <t>
                 <xref target="pr-uc-basic4"/> shows the handling of host-routed
-                requests when there is a second server to which requests can
+                requests when there is a second TS to which requests can
                 be diverted when one of the servers is in an overload state.
               </t>
               <t>
                 <xref target="pr-uc-basic3"/> illustrates the agents behavior
                 when it has received a host report from all servers.  In this case
                 the agent generates a Realm report.  This is only possible when
-                the agent has a view of the state of all servers in the Diameter
-                network.
+                the agent knows the overload state of all TSs for the given realm
+                and application.
               </t>
             </list>
           </t>
           <t>
-            In these message flows, "HR" under a request indicates that the request is
-            host-routed.  "RR" indicates the request is realm-routed.  "OLR:Host"
+            In these message flows, "xxR" indicates a Diameter request, and "xxA" indicates an answer.
+           "HR" under a request indicates that the request is
+            host-routed.  "RR" indicates the request is realm-routed. If neither
+            is present for a request, then it can be either host or realm
+            routed.  "OLR:Host"
             indicates an overload report of type Host.  "OLR:Realm" indicates an
             overload report of type Realm.
           </t>
@@ -775,93 +779,92 @@
                 Same as in <xref target="pr-uc-basic1"/>.
               </t>
               <t>
-                The server, acting as a reporting node, has determined that
-                it needs to request a reduction in traffic.  The server includes
-                the OC-S-F AVP per <xref target="I-D.ietf-dime-ovli"/>.  In this
-                case the loss algorithm is indicated as the abatement algorithm
-                to be used for the included OC-OLR.  The server also includes the
+                S, acting as a reporting node, has determined that
+                it needs to request a reduction in traffic.  S includes
+                the OC-S-F AVP per <xref target="I-D.ietf-dime-ovli"/>, and selects
+                the loss algorithm for the included report. S also includes the
                 OC-OLR AVP to indicate the requested reduction in traffic.
               </t>
               <t>
-                The agent saves overload state based on the presence of the
-                OC-OLR AVP.  The agent will use this overload state for handling
+                A saves the overload state of S based on the
+                OC-OLR AVP.  A will use this overload state for handling
                 of future realm routed requests.
-                <vspace blankLines="1"/>
-                The agent relays the answer message unchanged.  Upon receipt of
-                the answer, the client saves overload state associated with the
-                overload report.
                 <list style="none">
                   <t>
-                    Note: This is behavior that it not yet specified in the DOIC
+                    This behavior is not yet specified in the DOIC
                     specification.  It is based on the principle that only nodes
-                    with a direction transport connnection to an overloaded host
+                    with a direction transport connection to an overloaded host
                     should throttle those requests as other nodes earlier in the
                     requests path do not have the topology knowledge to know if
                     diversion of the request would have been successful.
                   </t>
                 </list>
+                A relays the answer message without change to OC-S-F or OC-OLR.  
+                Upon receipt of
+                the answer, C saves overload state based on the
+                overload report.
               </t>
               <t>
-                The client invokes the requested overload abatement algorithm
+                C invokes the "loss" algorithm
                 on host-routed requests.  This step illustrates a host-routed
-                request that is throttled.
-                The client gives application appropriate feedback to the
+                request that is rejected locally by C due to throttling.
+                C gives application appropriate feedback to the
                 client application.
               </t>
               <t>
-                Host-routed requests that are not rejected due to the requested reduction
-                in traffic, as shown in this step, are handled the same as if there
+                This step represents a Host-routed requests that survived
+                abatement. Such requests are handled the same as if there
                 where no overload report for the host to which the request is routed.
               </t>
               <t>
-                The agent relays the request based on the included Destination-Host
+                A relays the request based on the included Destination-Host
                 AVP.
               </t>
               <t>
-                The server generates an answer which includes the OC-S-F AVP and
+                A generates an answer which includes the OC-S-F AVP and
                 OC-OLR AVP.
               </t>
               <t>
-                If the OC-OLR is a new overload report then the agent updates
+                If the OC-OLR is new, then A updates
                 the overload state associated with the report.
-                The agent relays the answer unchanged.
+                A relays the answer without change to OC-S-F or OC-OLR.
                 <vspace blankLines="1" />
-                The client determines if the OC-OLR is new.  If so, the client
-                updates overload state.
+                C determines if the OC-OLR is new.  If so, C
+                updates its locally stored overload state for S.
               </t>
               <t>
-                The client originates a realm-routed request.  The client cannot
-                apply overload abatement to this request as it does not match
-                any locally stored overload control state (the assumption for this
-                scenario is that a realm overload report has not yet been sent.)
+                C originates a realm-routed request.  C does not
+                apply  abatement to this request since it does not match
+                any locally stored overload state (in this scenario, a realm overload 
+                report has not yet been sent.)
               </t>
               <t>
-                The agent determines that there is overload state associated with
+                A determines that there is overload state associated with
                 this request (the host report received from S).
-                The agent uses this overload state as input to
+                A uses this overload state as input to
                 routing decisions for the request.  In this case it is assumed
                 that there is no alternative route to divert request toward and, as
-                such, the agent throttles the request.
+                such, A applies throttling, and rejects the request.
               </t>
               <t>
-                The agent generates an error response indicating that the request
+                A generates an error response indicating that the request
                 was throttled and should not be retried.
               </t>
               <t>
-                The client originates another realm-routed request.
+                C originates another realm-routed request.
               </t>
               <t>
-                The agent determines that there is overload state associated with
+                A determines that there is overload state associated with
                 this request (the host report received from S).
-                The agent uses this overload state as input to
-                routing decisions for the request.  In this case the request
-                is not throttled and is routed to S.
+                A uses this overload state as input to
+                routing decisions for the request.  This request survives
+                abatement and is routed to S.
               </t>
               <t>
                 S generates an answer message.
               </t>
               <t>
-                The agent relays the answer.
+                A relays the answer.
               </t>
             </list>
           </t>
@@ -910,24 +913,24 @@
                 Same as in <xref target="pr-uc-basic1"/>.
               </t>
               <t>
-                The client originates a realm-routed request.  The client cannot
+                C originates a realm-routed request.  C does not
                 apply overload abatement to this request as it does not match
                 any locally stored overload state (the assumption for this
                 scenario is that a realm overload report has not yet been sent.)
               </t>
               <t>
-                The agent determines that there is overload state associated with
+                A determines that there is overload state associated with
                 this request (the host report received from S1).
-                The agent uses this overload state as input to
+                A uses this overload state as input to
                 routing decisions for the request.  In this case, it is assumed
-                that the request would have been routed to S1 but is instead
+                that the request would have been normally routed to S1 but is instead
                 routed to S2 as a result of the overload report.
               </t>
               <t>
-                Server S2 generates an answer message.
+                S2 generates an answer message.
               </t>
               <t>
-                The agent relays the answer.
+                A relays the answer.
               </t>
             </list>
           </t>
@@ -984,15 +987,16 @@
             </t>
             <t>
               Same as in <xref target="pr-uc-basic2"/>, with the addition that
-              server S2 also includes an overload report in the answer message.
+               S2 also includes an overload report in the answer message.
             </t>
             <t>
-              The agent determines that the available capacity of servers in
+              A determines that the available capacity of all servers in
               the realm has been reduced to the degree that it must generate
-              a Realm overload report.  The agent adds this report
-              to the answer message.  The client saves overload state associated
-              with the new Realm overload report.  For the duration of the Realm
-              overload report the client performs the requested abatement on
+              a realm report.  A adds this report
+              to the answer message, in addition to the existing host report from S2 .
+              C saves overload state associated
+              with the new Realm overload report.  For the duration of the realm
+              report the client performs the requested abatement on
               realm-routed requests.
             </t>
           </list></t>
@@ -1006,55 +1010,21 @@
           <t>
             <list style="symbols">
               <t>
-                There can be multiple reacting nodes for a single overload report.
-                A DOIC TC or a DOIC agent when the TC does not support DOIC
-                handle abatement of host-routed requests.  A DOIC node with
-                a direct transport connection to an overloaded host handles abatement
-                of realm-routed requests that would normally be routed to the
-                overloaded host.
+                There can be multiple abating nodes for a single overload report. In
+                this use case, A TC, or an agent when the TC does not support DOIC,
+                handles abatement of host-routed requests.  An agent with
+                a direct transport connection to an overloaded node handles abatement
+                of realm-routed requests that would normally be routed to that node.
               </t>
               <t>
                 Syntax for the OC-OLR AVP must support multiple OC-OLR AVPs in
                 answer messages.
               </t>
               <t>
-                Must define a Diameter-Throttled error response that indicates
+                The working group must define a Diameter-Throttled error response that indicates
                 that the request was rejected due to overload and that the request
                 should not be retried .
               </t>
-<!--
-              <t>
-                Reacting Node - Host Report:
-              </t>
-              <t>
-                Reacting Node - Realm Report: NEED TO VERIFY THAT Realm STATE
-                IS SAVED AND THAT ABATEMENT LOGIC FOR Realm REPORT IS PROPERLY
-                SPECIFIED.
-              </t>
-              <t>
-                Agent: Save host overload report state.  QUESTION: IS THIS
-                CATAGORIZED AS REACTING NODE FOR HOST REPORT?  WE COULD DEFINE
-                INDICATE THAT ANY NODE THAT RECIEVES A HOST REPORT IS A
-                REACTING NODE IF IT HAS A DIRECT CONNECTION TO THE REPORTING NODE
-                OR IF IT CAN ORIGINATE HOST ROUTED REQUESTS TOWARD THE REPORTING
-                NODE.
-              </t>
-              <t>
-                Agent: Use the host overload report state as input to routing decisions
-                for realm-routing request.  QUESTION: IS THE CATAGORIZED AS
-                REACTING NODE BEHAVIOR FOR HOST REPORTS?  THIS CAN BE COVERED BY
-                DEFINING A REACTING NODE FOR HOST REPORTS AS ABOVE AND THEN DEFINING
-                THE BEHAVIOR OF A REACTING NODE TO DO THROTTLING ON REALM-ROUTED REQUESTS
-                ONLY IF THE REACTING NODE HAS A DIRECT CONNECTION TO THE HOST.
-              </t>
-              <t>
-                Reporting Node - Host Report: No change.
-              </t>
-              <t>
-                Reporting Node - Realm Report: Syntax for the OC-OLR AVP must support
-                multiple OC-OLR AVPs in answer messages.
-              </t>
--->
             </list>
           </t>
         </section>
@@ -1785,7 +1755,7 @@
           </t>
         </section>
       </section>
-      <section title="Inter Domain Authorization">
+      <section anchor="uc-authn" title="Inter Domain Authorization">
         <t>
         </t>
       </section>
