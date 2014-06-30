@@ -1789,38 +1789,6 @@
         <t>
         </t>
       </section>
-      <section title="Not needed use cases">
-        <section anchor="uc-chain" title="Chain of Agents" >
-          <t>
-            [steve: propose moving this to after the non supporting client usecase
-            as there are two things that need to be addressed for agent changes --
-            first that only the last agent in a chain becomes a reacting node
-            to use host reports for routing changes.  Second, only the first
-            agent in a chain becomes
-            the reacting node for non supporting clients.]
-          </t>
-        </section>
-      	<section anchor="uc-rate" title="Rate Algorithm" >
-      		<t>
-      			[Show implications of rate algorithm across an agent.]
-      		</t>
-          <t>
-            [steve: I'm not sure we need this scenario.  We have already established
-            that the agent needs to have overload state for host reports.  The fact that
-            agents might have to save transaction state as a result of the host report
-            will need to be covered in the rate draft.]
-          </t>
-      	</section>
-      	<section anchor="uc-agent-overload" title="Agent Overload" >
-      		<t>
-      			[Do we need this? May be covered sufficiently in agent overload draft.]
-      		</t>
-          <t>
-            [steve: If we are looking for normative language that goes into the DOIC
-            spec then it is handled by the agent overload draft.]
-          </t>
-      	</section>
-      </section>
     </section>
     <section title="Recommendations">
       <t>
