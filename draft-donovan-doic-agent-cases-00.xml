@@ -383,32 +383,39 @@
     </section>
 	<section anchor="abatement" title="Overload Abatement Methods">
 	      <t>
-	       When a Diameter node becomes overloaded, there typically must be a
+	       When a Diameter node becomes overloaded, there often must be a
 	       reduction of the number of both realm-routed and host-routed requests, 
 	       in order to have
 	       the desired reduction of the overall offered-load. We refer to this
 	   	   reductions as "Overload Abatement"
 		</t>
 		<t>
-			In general, there are two ways to perform overload abatement. Perhaps the
-			most obvious is to reject some number of Diameter requests, also known
+			There are two ways to perform overload abatement. The first is to reject some number 
+			of Diameter requests, also known
 			as "throttling". When a TC throttles traffic, it rejects or defers certain
 			client application requests, as appropriate for the client application. When
 			an agent or TS throttles traffic, it rejects Diameter requests with an appropriate
 			error code, so that the TC can behave correctly at the client application layer.</t>
 			<t>
-				A second way to abate overload is to move some number of requests from an
+				The second way to abate overload is to move some number of requests from an
 			    overloaded node to one or more eligible nodes that. For the purposes
 			    of this draft, we refer to this abatement method as "Diversion".
 			</t>
 			<t>
-			   There are a few architectural principles that should be considered when building Diameter
-			networks to be resilient to overload, or when deploying DOIC into existing Diameter network:
+				Either method, separately or in combination, continue over the duration of the
+				overload condition. Neither abatement approach affects the transaction on which the OLR is sent. That transaction
+				succeeds or fails depending on the result code the TS sends in the Diameter answer.
+				(<xref target="I-D.ietf-dime-ovli" /> an OLR to be sent in any Diameter answer for the correct
+				realm and application, regardless of whether the transaction itself succeeds or fails.)
 			</t>
-			<t><list style="symbols">
+			<t>
+			   There are a few architectural principles that should be considered when building Diameter
+			networks to be resilient to overload, or when deploying DOIC into existing Diameter network.
+			</t>
 				<t>
-					All things being equal, diversion should be preferred to throttling. Diversion
-					allows more requests to succeed, which will have less negative impact on
+					All things being equal, diversion is better than throttling. Diversion potentially
+					allows more requests to succeed, which will almost always have less negative 
+					impact on
 					the client application. However, there are situations where diversion is
 					not possible. For example, diversion is usually not possible for host-routed
 					requests <xref target="reporttypes" />. Diversion may not be helpful if all potential
@@ -416,40 +423,40 @@
 					diversion for DOIC purposes may be redundant with those mechanisms.
 			    </t>
 				<t>
-					If diversion is performed, the diversion should occur as close as possible to the TS.
-					(Not at the TS itself,since this would defeat the point of overload abatement.)
-					Diversion should preferably occur at a node that shares a direct transport connection 
+					If diversion is performed, the diversion should occur as close as possible to the TS,
+					but not at the TS itself (since this would defeat the point of overload abatement.)
+					Diversion should optimally occur at an immediate peer to the TS; that is, a node
+					 that shares a direct transport connection 
 					with the TS. A directly
 					connected peer will have the most knowledge of alternative destinations and their
 					current loads. If nodes
 					further from the TS attempt to diversion, topology knowledge and overload state knowledge
 					must be pushed further down the chain. Even then, a node usually cannot control how a realm-routed
-					request may be routed beyond the immediate peer.
+					request might be routed upstream of the immediate peer.
 				</t>
 				<t>
-					Throttling should occur at the TC, or as close as possible to the TC.
-					The TC has the best knowledge of the client application,
-					and can choose to reject requests that have the lease impact on the client
+					Throttling should occur at, or as close as possible, to the TC.
+					The TC has the best knowledge of the client application and its current state.
+					The TC can choose to reject requests that have the lease impact on the client
 					application, or provide the most effect for traffic reduction over time.
-					Furthermore, throttling at the TC entirely avoids Diameter overhead for
+					Furthermore, throttling at the TC completely avoids Diameter overhead for
 					rejected requests. Each additional hop traversed by requests that will
 					eventually be rejected increases the impact of those requests.
 				</t>
-			</list></t>
 
 	</section>
 
     <section anchor="doic-uc" title="DOIC Use Cases">
       <t>
        This section outlines example use cases involving agents.  Each of
-       these use cases will be evaluated with the goal of identifying any
+       these use cases is evaluated with the goal of identifying any
        required changes to <xref target="I-D.ietf-dime-ovli"/> needed to
        support the use case.
       </t>
       <t>
        The following is the list of use cases considered. This is not an
        exhaustive list of DOIC use cases but is rather a list of use cases
-       identified as being impacted by the presence of agents in the deployment.
+       identified by the authors as being impacted by the presence of agents in the deployment.
       </t>
       <t>
        <list style="symbols">
@@ -488,7 +495,7 @@
            </list>
          </t>
          <t>
-           Partitioned Servers - Overlaod capability announcement and overload report
+           Partitioned Servers - Capability announcement and report
            handling in a deployment using partitioned servers as illustrated
            in <xref target="deploy-arch3"/>.  In this case all Diameter nodes
            are assumed to support DOIC.  This use case is discussed in
@@ -514,17 +521,16 @@
            cases that are addressed:
              <list style="symbols">
                <t>
-                 Non supporting reacting node.  In this case a DOIC supporting agent
-                 should handle overload abatement for the non supporting node.  An
+                 Non supporting TC. In this case a DOIC supporting agent
+                 handles overload abatement on behalf of the non supporting TC.  An
                  agent or a reporting node can detect if there is a reacting node
                  in the path a request takes by the presence of the OC-Supported-Features
                  AVP in the request message.  This use case is discussed in
                  <xref target="uc-nsclient"/>.
                </t>
                <t>
-                 Non supporting reporting node.  In this case a DOIC supporting agent
-                 may act as the reporting node for any upstream non supporting Diameter
-                 nodes (client or servers depending on the direction of the request).
+                 Non supporting TS.  In this case a DOIC supporting agent
+                 may act as the reporting node on behalf of the TS. 
                  In this case a DOIC supporting agent can detect if there is a reporting
                  node in the path
                  of the transaction by the presence of the OC-Supported-Features AVP
@@ -532,10 +538,10 @@
                  <xref target="uc-nsserver"/>.
                </t>
                <t>
-                 Non supporting agent between reacting node and a supporting agent.
+                 Non supporting agent between the TC and a supporting agent.
                </t>
                <t>
-                 Non supporting agent between a supporting agent and the reporting node.
+                 Non supporting agent between a supporting agent and the TS.
                  In this case, the agent that supports DOIC cannot reliably divert
                  requests as a result of a host report.This use case is discussed in
                  <xref target="uc-nsagent"/>.
@@ -553,6 +559,7 @@
          </t>
          <t>
            [steve: i'm not convinced we need the following use cases]
+			[ben: I think I agree.]
            <list>
              <t>
                Chain of Agents - Overload capability announcement and overload report
@@ -565,6 +572,7 @@
              <t>
                Support for targeted overload reports [steve: only needed if this makes
                it into the based DOIC specification.]
+				[ben: Does that mean we can take it out for now?]
              </t>
              <t>
                Hop-by-hop abatement algorithm.
