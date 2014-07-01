@@ -495,15 +495,6 @@
            </list>
          </t>
          <t>
-           Partitioned Servers - Capability announcement and report
-           handling in a deployment using partitioned servers as illustrated
-           in <xref target="deploy-arch3"/>.  In this case all Diameter nodes
-           are assumed to support DOIC.  This use case is discussed in
-           <xref target="uc-partition"/>.
-           <vspace blankLines="1"/>
-           This case illustrates one scenario where realm reports cannot be used.
-         </t>
-         <t>
            Mixed Capabilities - Overload capability announcement and overload report
            handling in deployments where agents support capabilities that are
            not included in the set of capabilities advertised by reacting
@@ -1031,217 +1022,6 @@
 
       </section>
 
-      <section anchor="uc-partition" title="Partitioned Servers">
-        <t>
-          [STEVE: I'M NOT CONVINCED THAT THESE USE CASES DRIVE ANY
-          NEW PROTOCOL BEHAVIOR.  THE ONLY THING THEY ILLUSTRATE IS
-          AGENT BEHAVIOR FOR PARTITIONING.  I SUGGEST WE REMOVE IT UNLESS
-          WE FIND SOMETHING IN THE PREVIOUS SECTIONS THAT NEEDS ONE OF
-          THESE USE CASES AS JUSTIFICATION.]
-        </t>
-        <t>
-          This use case is based on the basic partitioning deployment
-          architecture illustrated in <xref target="deploy-arch4"/>.
-        </t>
-        <t>
-          This use case illustrates that there are scenarios where a Realm
-          overload report cannot be used.
-        </t>
-        <section title="Capability Announcement">
-          <t>
-            This section explores the capability announcement requirements for the
-            partitioned server use case.
-          </t>
-          <t>
-            <xref target="pr-uc-part1"/> illustrates capability announcement for the
-            partitioned server use case.  There is nothing surprising in this
-            use case for capability announcement.  The reacting node must be prepared to
-            received OC-Supported-Feature AVPs from multiple servers.  This, however,
-            is the case for non partitioned scenarios as well.
-          </t>
-
-          <figure anchor="pr-uc-part1">
-            <artwork><![CDATA[
-
-    +-+                   +-+                  +--+                  +--+
-    |C|                   |A|                  |S1|                  |S2|
-    +-+                   +-+                  +--+                  +--+
-     |                     |                     |                     |
-  1> |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C----->|                     |
-     |                     |                     |                     |
-  2> |<-----xxA OC-S-F:S1--|<-----xxA OC-S-F:S1--|                     |
-     |                     |                     |                     |
-  3> |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C--------------------------->|
-     |                     |                     |                     |
-  4> |<-----xxA OC-S-F:S2--|<---------------------------xxA OC-S-F:S2--|
-     |                     |                     |                     |
-
-  ]]>
-            </artwork>
-          </figure>
-          <t><list style="numbers">
-            <t>
-              The client (reacting node) originates a request that the agent routes to the
-              partition handled by server S1.
-            </t>
-            <t>
-              The server (reporting node) generates and answer that is relayed
-              by the agent.
-            </t>
-            <t>
-              The client (reacting node) originates a request that the agent routes to the
-              partition handled by server S2.
-            </t>
-            <t>
-              The server (reporting node) generates and answer that is relayed
-              by the agent.
-            </t>
-          </list></t>
-        </section>
-        <section anchor="report-handling" title="Overload Report Handling">
-          <t>
-            This section explores the impacts of the partitioned case on the handling of
-            overload reports.
-          </t>
-          <t>
-            <xref target="pr-uc-part2"/> illustrates the message flow that occurs
-            when one of the servers, or more generally, when one of the partitions
-            becomes overloaded.
-          </t>
-          <t>
-            [steve: probably need to explain that in the case that the partition
-            containes more than one server the agent will first try to route
-            abated requests to an alternative server and will only reject them if
-            there is not alternative route.]
-          </t>
-          <t>
-            In this case, server S1 becomes overloaded and send a loss overload report.
-            Upon receipt of subsequent realm-routed requests targeted for that
-            partition, the agent is responsible for applying overload abatement
-            for realm-routed requests, as illustrated in <xref target="uc-simple"/>.  In this
-            case there is no alternative route for the request.
-          </t>
-          <t>
-            <xref target="uc-simple"/> shows the agent generating an Realm overload
-            report in a similar scenario.  The agent cannot generate an Realm report
-            in this case as it would incorrectly lead to requests that would be
-            routed to the S2 partition being throttled when the S2 server is
-            not overloaded.  As a result, the agent must reject requests
-            that to not pass the abatement algorithm.
-          </t>
-          <figure anchor="pr-uc-part2">
-            <artwork><![CDATA[
-
-    +-+                   +-+                  +--+                  +--+
-    |C|                   |A|                  |S1|                  |S2|
-    +-+                   +-+                  +--+                  +--+
-     |                     |                     |                     |
-  1> |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C----->|                     |
-     |                     |                     |                     |
-  2> |<-----xxA OC-S-F:S1--|<-----xxA OC-S-F:S1--|                     |
-     |          OLR:Host   |          OLR:Host   |                     |
-     |                     |                     |                     |
-  3> |-- xxR OC-S-F:C----->|                     |                     |
-     |       RR            |                     |                     |
-     |                     |                     |                     |
-  4> |<--- xxA OC-S-F:S----|                     |                     |
-     |         Reason: Diameter-Throttled        |                     |
-     |                     |                     |                     |
-
-  ]]>
-            </artwork>
-          </figure>
-          <t><list style="numbers">
-            <t>
-              The reacting node generates a request that is routed to S1.  S1 is
-              the only server in the partition.
-            </t>
-            <t>
-              S1 reports host overload.  Both A and C save overload state based
-              on the received host report.
-            </t>
-            <t>
-              C originates a realm-routed request.
-            </t>
-            <t>
-              A applies overload abatement logic and determines that this request
-              must be abated.  A first determines that there is no alternative
-              route for the message.  S2 is not overloaded in this scenario but
-              A is unable to route the request ot S2 because needs to be handled by
-              a server in partition 1.  As a result
-              A must reject the request, indicating that the request was rejected
-              as a result of overload abatement throttling.
-            </t>
-          </list></t>
-          <t>
-            <xref target="pr-uc-part3"/> illustrates the case where servers
-            in both partitions are overloaded.  In a non partitioned case this
-            would result in a realm overload report being generated.  This
-            is not likely to be feasible in this case as the level of overload
-            in each partition might be very different and there is no way to
-            report overload on a subset of servers in the realm.
-          </t>
-          <figure anchor="pr-uc-part3">
-            <artwork><![CDATA[
-
-    +-+                   +-+                  +--+                  +--+
-    |C|                   |A|                  |S1|                  |S2|
-    +-+                   +-+                  +--+                  +--+
-     |                     |                     |                     |
-  1> |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C----->|                     |
-     |                     |                     |                     |
-  2> |<-----xxA OC-S-F:S1--|<-----xxA OC-S-F:S1--|                     |
-     |          OLR:Host   |          OLR:Host   |                     |
-     |                     |                     |                     |
-  3> |-- xxR OC-S-F:C----->|-- xxR OC-S-F:C--------------------------->|
-     |       RR            |                     |                     |
-     |                     |                     |                     |
-  4> |                     |<--------------------------- xxA OC-S-F:S--|
-     |                     |                     |           OLR:Host  |
-  5> |<--- xxA OC-S-F:S----|                     |                     |
-     |         OLR:Host    |                     |                     |
-     |                     |                     |                     |
-  6> |-- xxR OC-S-F:C----->|                     |                     |
-     |       RR            |                     |                     |
-     |                     |                     |                     |
-  7> |<--- xxA OC-S-F:S----|                     |                     |
-     |         Reason: Diameter-Throttled        |                     |
-     |                     |                     |                     |
-
-  ]]>
-            </artwork>
-          </figure>
-          <t>
-            [NEED TO ADD DESCRIPTION OF STEPS.  THIS MIGHT BE A BETTER
-            FLOW TO TO REPLACE THE PREVIOUS ONE.]
-          </t>
-          <t>
-            [NEED TO ILLUSTRATE THAT AN AGENT MIGHT NOT KNOW STATUS OF
-            ALL SERVERS]
-          </t>
-        </section>
-        <section anchor="uc-partition-impacts" title="DOIC Specification Impacts">
-          <t>
-            Agent must have the ability to reject realm-routed requests indicating
-            that the request was rejected due to overload abatement.
-          </t>
-          <t>
-            [steve: this could be handled in a generic way by saying that any reacting
-            node that did not originate the request throttles the request using
-            the indicated response error code.]
-          </t>
-          <t>
-            Reacting nodes must recognize the Diameter-Throttled error code, indicating that the
-            request should not be re-attempted on an alternative route.  The error
-            should be interpretted as a final failure for the transaction.
-          </t>
-          <t>
-            [steve: need to verify there is strong enough wording to indicate
-            that this is a scenario that Realm reports cannot be used.]
-          </t>
-        </section>
-
-      </section>
       <section anchor="uc-mixedcaps" title="Mixed Capabilities" >
         <t>
           This use case explores the impact of having a different set of
@@ -1803,7 +1583,7 @@
 		</t>
 		<t>
 			Reacting nodes must recognize the Diameter-Throttled error code, and interpret it as a
-			final failure for the transaction. (See <xref target="uc-partition-impacts" />.)
+			final failure for the transaction. (See [ref].)
 		</t>
 		<t>
 			The OC-OLR AVP syntax must allow multiple occurrences in the same Diameter answer message.
@@ -1868,7 +1648,7 @@
 		<t>
 			If an agent needs to perform local throttling, it MUST explicitly reject each throttled request
 			with a "Diameter-Throttled" error code. (See <xref target=
-			"uc-simple-impacts" /> and <xref target="uc-partition-impacts" />.)
+			"uc-simple-impacts" />.)
 		</t>
 		<t><list><t>
 			There may be circumstances where an agent must perform local throttling. An obvious example
