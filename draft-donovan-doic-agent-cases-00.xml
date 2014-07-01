@@ -1100,7 +1100,7 @@
             </t>
           </list></t>
         </section>
-        <section title="Mixed Overload Report Type Handling">
+        <section title="Mixed Abatement Algorithms">
           <t>
             <xref target="pr-uc-mixed2"/> illustrates one specific type of mixed
             capabilities.  In this case, C only supports the loss abatement
@@ -1121,50 +1121,67 @@
             |                          |                          |
       3>    |                          |<---------- xxA OC-S-F:S--|
             |                          |                rate      |
+            |                          |             OC-OLR:S     |
+            |                          |                rate      |
             |                          |                          |
       4>    |<-------- xxA OC-S-F:AS---|                          |
             |              loss        |                          |
-        ]]>
+            |           OC-OLR:A       |                          |
+            |              loss        |                          |
+       ]]>
 
             </artwork>
           </figure>
           <t><list style="numbers">
             <t>
-              C originates a request with OC-S-F AVP inicating support for only the
-              loss abatement algorithm.
+              C originates a request with OC-S-F:C, indicating support for only the
+              "loss" algorithm.
             </t>
             <t>
-              A inspects the OC-S-F AVP and determins it needs to advertise support
-              for additional capabilities.  A removes C's OC-S-F AVP and inserts
-              a new OC-S-F AVP indicating support for both the loss and rate
-              algorithms.
+              A inspects OC-S-F:C and determines it needs to advertise support
+              for additional capabilities.  A removes OC-S-F:C and inserts
+              OC-S-F:AC, indicating support for both the "loss" and "rate"
+              algorithms. A stores the state from OC-S-F:C to be referenced when
+			  it receives the associated answer.
             </t>
             <t>
-              S responds, including an OC-S-F AVP indicating that the rate algorithm
-              will be used for overload reports.
+              S responds with OC-S-F:S, indicating that the rate algorithm
+              will be used for overload reports, and OC-OLR:rate, indicating
+              an overload condition with a specific requested rate-limit.
             </t>
             <t>
-              A determines that C does not support the rate algorithm and, as such,
-              includes an OC-S-F AVP indicating that the loss abatement algorithm
-              will be used for overload
-              reports sent to C.  This implies that A is able to handle rate based
-              overload reports.  How this is done is implementation specific.  It
-              can mean that A handles all abatement resulting from the rate OLR in
-              a similar fashion as discussed in <xref target="uc-nsclient"/>.  It can also mean
-              that A will send loss reports to C in an attempt to conform to the
-              requested reduction contained in the rate OLR.
+              A recalls that C did not indicate support the rate algorithm and
+              replaces OC-S-F:S with OC-S-F:AS, which indicates that the loss 
+              abatement algorithm will be used for overload
+              reports sent to C. A must enforce the rate limit locally, so it
+              removes OC-OLR:rate. If C's offered load exceeds what A
+              can handle without violating the requested rate-limit, it
+              inserts OC-OLR:A, requesting a traffic reduction using the "loss"
+              algorithm.  
             </t>
           </list></t>
+			<t>
+			This flow assumes that A is able to handle rate-based
+              overload reports, even though the TC cannot. How this is done 
+             in practice is implementation specific.  In this example, A applies 
+             local rate-limiting, but send loss-based OLRs to C if A cannot handle
+             C's offered load without violating the rate-limit.
+			</t>
+			<t>
+				If A chose to apply local throttling to enforce the rate limit, instead
+				of sending load-based OLRs back to the TC, the scenario would be closer
+				to that for a <xref target="uc-nsclient">TC that did not support DOIC.</xref>
+			</t>
         </section>
         <section title="DOIC Specification Impacts">
           <t>
-            Agent must have the ability to replace the OC-S-F AVP in request messages.
+            An agent must have the ability to replace the OC-S-F AVP in request messages.
           </t>
           <t>
-            Agent must have the ability to replace the OC-S-F AVP in answer messages.
+            An agent must have the ability to remove or replace the OC-S-F AVP in answer messages.
           </t>
           <t>
-            Agent must have the ability to replace the OC-OLR AVP in answer messages.
+            An agent must have the ability to remove or replace the OC-OLR AVP in answer messages.
           </t>
         </section>
 
