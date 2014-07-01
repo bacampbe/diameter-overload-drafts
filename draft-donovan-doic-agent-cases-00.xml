@@ -1025,25 +1025,39 @@
       <section anchor="uc-mixedcaps" title="Mixed Capabilities" >
         <t>
           This use case explores the impact of having a different set of
-          DOIC capabilities supported by the reacting node that originates a
-          request and and agents in the path of the request.
+          DOIC capabilities supported by the TC and one or more agents 
+          in the path of the request.
         </t>
         <section title="Capability Announcement">
           <t>
             <xref target="pr-uc-mixed1"/> illustrates the case.  In this figure,
             "OC-S-F:C"  indicates it carries the set of capabilities supported by C.
-            "OC-S-FC:AC" indicates the merged capabilities of C and A.
-            In most cases this merging will be a union
-            of capabilities.  The exception will be when there are
-            conflicting capabilities. "OC-S-FC:S"
-            indicates S's response to the AC set of capabilities.  OC-S-FC:AS
-            indicates A's modification to S.  This is needed in the case where S's
+            "OC-S-FC:AC" indicates the set of capabilities that A declares to S.
+            "OC-S-FC:S" indicates S's response to the AC set of capabilities.  
+            OC-S-FC:AS
+            indicates A's modification to the capabilities selected by S.  
+            This is needed in the case where S's
             capabilities are not compatible with C's.
+			<list><t>
+				"OC-S-FC:AC" could indicate the merged capabilities of C and A, 
+				based on local policies at A. For example, A could indicate a union
+				or intersection of the its local capabilities with those of C. 
+				Alternately, it A could declare
+				an entirely different set of capabilities towards S. If the capabilites
+				selected between A and S differ from those selected between C and A, A 
+				becomes responsible for mapping any overload information it receives from S
+				to fit the capabilities it negotiated with C. 
+			</t></list>
           </t>
-          <t>
-            [steve: question for doic specification -- do we need guidance that
+<!--          <t>
+            [steve: question for doic specification - do we need guidance that
             specifications for new capabilities must indicate merging logic?]
+			[Ben: I don't think so, or at least no here. For the most part,
+			I think this can be implementation specific. If some feature
+			requires standard merging, it's that feature's problem to say
+			so.]
           </t>
+-->
           <figure anchor="pr-uc-mixed1">
             <artwork><![CDATA[
 
@@ -1064,13 +1078,13 @@
           </figure>
           <t><list style="numbers">
             <t>
-              C originates a request including the OC-S-F AVP indicating the
+              C originates a request including OC-S-F:C, indicating the
               DOIC features supported by C.
             </t>
             <t>
               A inspects OC-S-F:C and determines that A supports features not
-              included.  A relays the request, replacing the OC-S-F APV with
-              an AVP that indicates the merged capabilities of A and C.
+              included.  A relays the request, replacing OC-S-F:C APV with
+              an OC-S-F:AC.
             </t>
             <t>
               S responds to the set of advertised features with the OC-S-F:S
@@ -1079,10 +1093,10 @@
               the features in the received OC-S-F AVP.
             </t>
             <t>
-              A inspects OC-S-F:S.  If necessary A replaces OC-S-F:S with OC-S-F:S'.
+              A inspects OC-S-F:S.  If necessary A replaces OC-S-F:S with OC-S-F:AS'.
               <vspace blankLines="1"/>
-              <xref target="pr-uc-mixed2"/> illustrates one case were A replaces
-              OC-S-F:S with OC-S-F:S'.
+              <xref target="pr-uc-mixed2"/> illustrates one example were A needs to
+              OC-S-F:S with OC-S-F:AS'.
             </t>
           </list></t>
         </section>
