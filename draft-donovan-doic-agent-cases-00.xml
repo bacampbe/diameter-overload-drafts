@@ -6,7 +6,6 @@
      There has to be one entity for each item to be referenced.
      An alternate method (rfc include) is described in the references. -->
 
-<!ENTITY RFC2119 SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
 <!ENTITY RFC2629 SYSTEM "http://xml2rfc.tools.ietf.org//public/rfc/bibxml/reference.RFC.2629.xml">
 <!ENTITY RFC3552 SYSTEM "http://xml2rfc.tools.ietf.org//public/rfc/bibxml/reference.RFC.3552.xml">
 <!ENTITY RFC4006 SYSTEM "http://xml2rfc.tools.ietf.org//public/rfc/bibxml/reference.RFC.4006.xml">
@@ -17,7 +16,9 @@
 <!ENTITY RFC7068 PUBLIC ''
 'http://xml2rfc.tools.ietf.org//public/rfc/bibxml/reference.RFC.7068.xml'>
 <!ENTITY I-D.ietf-dime-ovli PUBLIC ''
-'http://xml2rfc.tools.ietf.org//public/rfc/bibxml3/reference.I-D.draft-ietf-dime-ovli-02.xml'>
+'http://xml2rfc.tools.ietf.org//public/rfc/bibxml3/reference.I-D.draft-ietf-dime-ovli-02.xml'> 
+<!ENTITY I-D.ietf-dime-e2e-sec-req PUBLIC ''
+'http://xml2rfc.tools.ietf.org//public/rfc/bibxml3/reference.I-D.draft-ietf-dime-e2e-sec-req-01.xml'> 
 ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <?rfc-ext refresh-from="draft-donovan-doic-agent-cases-00.xml"?>
@@ -224,7 +225,7 @@
       </t>
       <t>
         In all cases, a small number of client and server nodes are shown for
-        simplicity.  Adding additional cleints and/or servers does not change
+        simplicity.  Adding additional clients and/or servers does not change
         the fundamental characteristics of the deployments.
       </t>
       <t>
@@ -289,50 +290,7 @@
       ]]>
         </artwork>
       </figure>
-      <t>
-        <xref target="deploy-arch3"/> shows a variation of the partitioned server
-        architecture shown in <xref target="deploy-arch4"/>,
-        with agents sitting in front of each partition.  This use
-        case illustrates one instance where individual agents do not have a view
-        of the overload status of all servers in the network.
-      </t>
-	<t>
-		[Ben: I'm not sure I see how the figure shows that agents don't see the
-		overload status of all servers. Since there's a route between the agents,
-		there's a potential route where any agent could see an OLR from any server.
-		Did you mean to have the cross-connect? I do agree that each agent does not 
-		have a direct peer relationship with all the servers.]
-	</t>
 
-      <figure anchor="deploy-arch3">
-        <artwork><![CDATA[
-
-      +--+                +--+ -\
-      |C1|-----      -----|S1|   |
-      +--+     \+--+/     +--+   |
-                |A1|              > Server Partition 1
-      +--+     /+--+\     +--+   |
-      |C2|-----  ||  -----|S2|   |
-      +--+       ||       +--+ -/
-                 ||
-      +--+       ||       +--+ -\
-      |C3|-----  ||  -----|S3|   |
-      +--+     \+--+/     +--+   |
-                |A2|              > Server Partition 2
-      +--+     /+--+\     +--+   |
-      |C4|-----      -----|S4|   |
-      +--+                +--+ -/
-
-      ]]>
-        </artwork>
-      </figure>
-      <t><list><t>
-       Note that only two partitions of the Diameter servers are shown. This
-       is bending to the limitations of ASCII art for drawing complex
-       deployment scenarios. It is possible, and even likely, that real world
-       deployments will have more that two partitions of the servers for
-       a Diameter application.
-      </t></list></t>
       <t>
        This document focuses on use cases that involve agents, and does not therefore
        include scenarios with no agent(s) between the transaction client and 
@@ -505,22 +463,22 @@
            report and replaces it with a new overload report of a different type.
          </t>
          <t>
-           Non supporting DOIC nodes - Agent behavior in the face of Diameter
+           Non-supporting DOIC nodes - Agent behavior in the face of Diameter
            nodes that do not support the DOIC solution.  These use cases are
            addressed in
            <xref target="uc-non-supporting"/>.  There are four sub-use
            cases that are addressed:
              <list style="symbols">
                <t>
-                 Non supporting TC. In this case a DOIC supporting agent
-                 handles overload abatement on behalf of the non supporting TC.  An
+                 Non-supporting TC. In this case a DOIC supporting agent
+                 handles overload abatement on behalf of the non-supporting TC.  An
                  agent or a reporting node can detect if there is a reacting node
                  in the path a request takes by the presence of the OC-Supported-Features
                  AVP in the request message.  This use case is discussed in
                  <xref target="uc-nsclient"/>.
                </t>
                <t>
-                 Non supporting TS.  In this case a DOIC supporting agent
+                 Non-supporting TS.  In this case a DOIC supporting agent
                  may act as the reporting node on behalf of the TS. 
                  In this case a DOIC supporting agent can detect if there is a reporting
                  node in the path
@@ -529,10 +487,10 @@
                  <xref target="uc-nsserver"/>.
                </t>
                <t>
-                 Non supporting agent between the TC and a supporting agent.
+                 Non-supporting agent between the TC and a supporting agent.
                </t>
                <t>
-                 Non supporting agent between a supporting agent and the TS.
+                 Non-supporting agent between a supporting agent and the TS.
                  In this case, the agent that supports DOIC cannot reliably divert
                  requests as a result of a host report.This use case is discussed in
                  <xref target="uc-nsagent"/>.
@@ -545,8 +503,8 @@
          <t>
            Inter domain or untrusted node authorization.
            <vspace blankLines="1"/>
-           This use case illustrates one case where attribution of OC-Supported-Features
-           AVP is required.
+           This use case illustrates one case where a node needs to know if an OC-S-F
+           AVP came from a supported peer, or was forwarded by a non-supporting peer.
          </t>
         </list>
       </t>
@@ -1190,32 +1148,32 @@
         <t>
          This section outlines the impact of agent based scenarios where there
          is a node that does not support DOIC in the path of a request.  There
-         are four variations of this use case:
+         are five variations of this use case:
         </t>
         <t><list style="numbers">
           <t>
-            Non supporting transaction client.
+            Non-supporting TC.
           </t>
           <t>
-            Non supporting transaction server.
+            Non-supporting TS.
           </t>
           <t>
-            Non supporting agent between the transaction client and a DOIC agent.
+            Non-supporting agent between the TC and a DOIC agent.
           </t>
           <t>
-            Non supporting agent between a DOIC agent and the transaction server.
+            Non-supporting agent between a DOIC agent and the TS.
           </t>
           <t>
-            Non suupporting agent between DOIC agents.
+            Non-supporting agent between DOIC agents.
           </t>
         </list></t>
         <section anchor="uc-nsclient" title="Non-Supporting Transaction Client" >
           <t>
-           This section outlines the handling of non supporting transaction client.
+           This section outlines the handling of non-supporting transaction client.
           </t>
           <t>
             This use case is illustrated in <xref target="non-supp-client"/>.  In
-            this case assume that C1 supports DOIC and C2 does not support DOIC.
+            this case assume that C1 supports DOIC and C2 does not.
           </t>
           <figure anchor="non-supp-client">
             <artwork><![CDATA[
@@ -1233,14 +1191,15 @@
           </figure>
           <t>
             <xref target="non-supp-cl1"/> illustrates capability announcement for
-            both the supporting and non supporting client.
+            both the supporting and non-supporting client. This scenario assumes 
+            that the capabilities supported by C1 and A are the same.
           </t>
           <t>
             There is no change from
             the simple agent use case for transactions originated by C1.
           </t>
           <t>
-            For transactions originated by the non supporting reacting node C2, A
+            For transactions originated by the non-supporting reacting node C2, A
             determines that C2 does not support DOIC by the absence of an OC-S-F
             AVP and inserts an OC-S-F AVP indicating the OC features supported by A.
           </t>
@@ -1267,14 +1226,11 @@
   ]]>
             </artwork>
           </figure>
-          <t><list>
+          <t><list style="numbers">
             <t>
               C1 supports DOIC and, as such, includes the OC-S-F AVP in all
               request messages sent.  A relays the request to S based on
               normal request handling.
-              <vspace blankLines="1"/>
-              Note that this scenario assumes that the capabilities supported
-              by C1 and A are the same.
             </t>
             <t>
               S supports DOIC and, as such, includes the OC-S-F AVP in all
@@ -1286,8 +1242,8 @@
               AVP into request messages.
             </t>
             <t>
-              A does support DOIC and recognizes that
-              the request does not contain the OC-S-F AVP.  A then inserts
+              A recognizes that C2 does not support DOIC, since
+              the request does not contain the OC-S-F AVP.  A inserts
               an OC-S-F AVP that reflects the OC capabilities of A.
             </t>
             <t>
@@ -1312,12 +1268,21 @@
             For requests originated by C2, it becomes the responsibility of A
             to handle overload abatement requested by S.  In this case A is
             responsible for abatement of both host-routed and realm-routed
-            requests, as A has a direct transport connection to S.  If there
+            requests, as A has a direct transport connection to S. The way an
+            agent handles this in practice is implementation specific. Depending
+            on the algorithm, an agent might be able to treat requests from all
+            non-supporting clients as a pool. More complex implementations
+            might maintain (and certain algorithms might require) the agent to
+            maintain an overload control state machine for each known non-supporting
+            client.
+            <list><t>
+	        If there
             were an upstream DOIC agent between A and S then A would no longer
             have a direct transport connection and would not be able to
             do abatement of realm-routed requests.  It would become the responsibility
             of the upstream DOIC agent with the transport connection to handle
             abatement of realm-routed requests.
+          </t></list>
           </t>
           <figure anchor="non-supp-cl2">
             <artwork><![CDATA[
@@ -1357,44 +1322,44 @@
           </figure>
           <t><list style="numbers">
             <t>
-              Request from a supporting reacting node.
+              Request from C1, a supporting TC.
             </t>
             <t>
-              Response indicating the reporting node is requesting a reduction in
+              Response indicating S is requesting a reduction in
               traffic sent due to an overload condition.
-              <vspace blankLines="1"/>
-              The reacting node C is responsible for abatement of host-routed requests
-              and A is responsible for abatement of realm-routed requests.
+              C1 becomes responsible for abatement of host-routed requests
+              and A becomes responsible for abatement of realm-routed requests.
             </t>
             <t>
-              Request from a non supporting node.  A inserts an OC-S-F AVP.
+              Request from C2, a non-supporting TC.  A inserts an OC-S-F AVP.
             </t>
             <t>
-              Response indicating that the reporting node is overloaded.  A stores
+              Response indicating that S is overloaded.  A stores
               overload state based on the content of the overload report.  A also
-              removed the OC-S-F adn OC-OLR AVPs from the answer message.
-              <vspace blankLines="1"/>
-              A is
+              removed the OC-S-F and OC-OLR AVPs from the answer message.
+              A becomes
               responsible for abatement handling of all requests originated by C2.
             </t>
             <t>
-              Request from non supporting node originated after the overload report
-              is received.  In this case the request is not throttled by A.
+              Request from non-supporting node originated after the overload report
+              is received.  This request survives abatement by A.
             </t>
             <t>
               Response for message that survived abatement by A.
             </t>
             <t>
-              Request from non supporting node originated after the overload report
-              is received.  In this case the request does not survive throttling
+              Request from non-supporting node originated after the overload report
+              is received.  This request does not survive abatement
               and is rejected by A.
             </t>
             <t>
-              Response for request that did not survive abatement by A.
+              Response for request that did not survive abatement by A, with
+              an appropriate error code to indicate the request was throttled and
+              should not be retried.
             </t>
           </list></t>
         </section>
-        <section anchor="uc-nsserver" title="Non Supporting Transaction Server" >
+        <section anchor="uc-nsserver" title="Non-supporting Transaction Server" >
           <t>
             This section shows the case where there is a mix of transaction servers
             that support DOIC and those that do not support DOIC.
@@ -1403,7 +1368,10 @@
             In this case, it becomes the responsibility of a DOIC agent to
             become the reporting node for the non-supporting transaction server.
             The method the agent uses to determine if abatement of traffic
-            is required for the non supporting node is implementation specific.
+            is required for the non-supporting node is implementation specific.
+            (For example, an agent may infer that a TC is overloaded by observing 
+            Diameter or transport errors, or it may have some proprietary, out-of-band
+            mechanism for learning about TC overload.)
           </t>
           <figure anchor="non-supp-server">
             <artwork><![CDATA[
@@ -1465,8 +1433,9 @@
                 the OC-S-F AVP in the answer message.
               </t>
               <t>
-                The answer message does not contain an OC-S-F AVP.  A then takes
-                on resposibility for becoming the reporting node for S2.  In this
+                A takes
+                on responsibility for becoming the reporting node for S2, and inserts
+                an OC-S-F AVP.  In this
                 case A has determined that S2 is in an overload condition and
                 inserts an OC-OLR AVP in the answer message.
                 <vspace blankLines="1"/>
@@ -1481,7 +1450,7 @@
             There are two sub-cases for non-supporting agents.
           </t>
           <t>
-            <xref target="non-supp-agent1"/> illustrates the first non supporting
+            <xref target="non-supp-agent1"/> illustrates the first non-supporting
             agent case, where the first agent in a chain of agents does not support
             DOIC.
           </t>
@@ -1509,19 +1478,21 @@
             </artwork>
           </figure>
           <t>
-            <xref target="non-supp-agent2"/> illustrates the second non supporting
+            <xref target="non-supp-agent2"/> illustrates the second non-supporting
               agent case, where the last agent in the chain does not support
               DOIC.
           </t>
           <t>
             In this scenario, there is
             no DOIC node that has a direct transport connection with S1 and S2.
-            As a result, there is no DOIC node that can handle abatement of
-            realm-routed requests resulting from a host overload report from
-            the transaction servers.
+            As a result, there is no DOIC node that can correctly handle abatement of
+            realm-routed requests resulting. In the example, A1 cannot perform diversion,
+            because it cannot control whether any given request goes to S1 or S2. And 
+            it cannot correctly determine how much to throttle unless it has advance
+            knowledge of the topology behind A2, which is currently out of scope for DOIC. 
           </t>
           <t>
-            As a result, it is recommended that this deployment scenario be
+            As a result, this deployment scenario should be
             avoided.
           </t>
           <figure anchor="non-supp-agent2">
@@ -1543,82 +1514,148 @@
           <t>
             <list style="symbols">
               <t>
-                Agents must be able to insert OC-S-F AVPs into request and answer
+                Agents must be allowed to insert OC-S-F AVPs into request and answer
                 messages.
               </t>
               <t>
-                Agents must be able to remove OC-S-F AVPs from request and answer
+                Agents must be allowed to remove OC-S-F AVPs from request and answer
                 messages.
               </t>
               <t>
-                Agents must be able to insert OC-OLR AVPs of type Host Report into answer
-                messages.  The ability to insert OC-ORL AVPs of thye Realm Report is
-                already assumed.
+                Agents must be able to insert OC-OLR AVPs of type "Host Report" into answer
+                messages.  (The ability to insert OC-ORL AVPs of type "Realm Report" is
+                already assumed.)
               </t>
               <t>
-                Agents must be able to remove OC-OLR AVPs from answer
+                Agents must be allowed to remove OC-OLR AVPs from answer
                 messages.
               </t>
               <t>
-                Agents must be able to abate host-routed requests.
+                Agents must be allowed to abate host-routed requests.
               </t>
             </list>
           </t>
         </section>
       </section>
-      <section anchor="uc-authn" title="Inter Domain Authorization">
+      <section anchor="uc-authn" title="Inter Domain Authentication"> 
+	<t>
+		<xref target="fig-authn" /> shows three administrative domains,
+		 Dom 1, Dom 2, and Dom 3. Dom 3 does not wish information about
+		the condition of it's network to be shared with Dom 1, but is 
+		willing to share overload information with Dom 2 in order to
+		optimize inter-domain traffic.
+	</t>
+	      <figure anchor="fig-authn">
+            <artwork><![CDATA[
+    +--------------------+  +-----------+  +--------------------+
+    |  Dom 1             |  | Dom 2     |  | Dom 3              | 
+    |     +--+           |  |           |  |            +--+    |
+    |     |C1|-----      |  |   +---+   |  |       -----|S1|    |
+    |     +--+     \+--+--------|A2A|---------+--+/     +--+    |
+    |               |A1| |  |   +---+   |  |  |A3|              |
+    |     +--+     /|  | |  |   *****   |     |  |\     +--+    |
+    |     |C2|----- +--+--------*A2B*---------+--+ -----|S2|    |
+    |     +--+           |  |   *****   |  |            +--+    |  
+    |                    |  |           |  |                    |
+    +--------------------+  +-----------+  +--------------------+
+          ]]>
+            </artwork>
+          </figure>   
         <t>
+		    Dom 2 in in the process of incremental deployment of DOIC. 
+		   Agent A2A supports DOIC, but A2B does not. A1 and A3 are configured
+		   so that Diameter requests between them may traverse either A2A or A2B.
         </t>
+		<t>
+			<xref target="fig-authn-flow" /> shows a Diameter message exchange for
+			each potential route. The originating TC and selected TS are not relevant
+			for the example, so they are omitted from the diagram.
+		</t>
+    
+<figure anchor="fig-authn-flow">
+	            <artwork><![CDATA[
+
+	    +--+                 +---+                 *****                  +--+
+	    |A1|                 |A2A|                 *A2B*                  |A3|
+	    +--+                 +---+                 *****                  +--+
+	     |                     |                     |                     |
+	  1> |-- xxR OC-S-F:A1---->|------xxR OC-S-F:A1----------------------->|
+	     |                     |                     |                     |
+	  2> |<--------------------|<---------------------------xxA OC-S-F:A3--|
+	     |                     |                     |                     |
+	  3> |---xxR OC-S-F:A1-------------------------->|-xxR OC-S-F:A1------>|
+	     |                     |                     |                     |
+	  4> |<---------------------------xxA OC-S-F:A3--|<-----xxA OC-S-F:A3--|
+	     |                     |                     |                     |
+	  ]]>
+	            </artwork>
+</figure>
+         <t><list style="numbers">
+             <t>
+             	A1 sends a request that contains OC-S-F:A1 to A2A. A2A supports the
+                same DOIC capabilities, so it forwards the request with OC-S-F:A1
+                unchanged. 
+             </t>
+			 <t>
+			 	A3 receives the answer from the TC. It forwards the response to A2A,
+		        including it's capabilities in OC-S-F:A3. A2A is configured to enforce
+		        Dom 3's wishes that it's overload information not be sent to Dom 1,
+		        so it strips the AVP before forwarding the response back to A1.
+			 </t>
+			 <t>
+			 	A1 again sends a request including OC-S-F:A1, but this one
+			    traverses A2B. Since A2B does not support DOIC at all, it treats
+			    the AVP as an unknown AVP and forwards it unchanged to A3. Note
+			    that the OC-S-F AVP observed by A3 is identical to that from
+			    step 1.
+			 </t>
+ 			 <t>
+			 	A3 receives the answer from the TC. It mistakenly believes A2B
+			    supports DOIC, and therefore forwards the response . 
+		        with it's DOIC capabilities in OC-S-F:A3. Since A2B does not recognize
+		        the AVP, it forwards it back to A1 without change.
+			 </t>   		
+         </list></t>
+       <t>This is a somewhat contrived example, but it shows a case where Dom 3 leaked information to an
+	      untrusted domain, because it could not tell the difference between an OC-S-F AVP received from
+	      a trusted peer that supports DOIC, or one forwarded from downstream by a non-supporting peer.
+	   </t>
+       <section title="DOIC Specification Impacts"> 
+			<t>
+				A DOIC supporting node must be able to distinguish between an OC-S-F AVP sent by
+				a peer that supports DOIC, and one sent by a non-adjacent node and forwarded by a
+				non-supporting peer. That is not possible in DOIC at the time of this writing.
+			<list><t>
+				The ability to limit overload information to nodes that are authorized to receive it
+				may require the ability to fully attribute a given OC-S-F AVP to the node that originated.
+				Whether this is required, and how an AVP that is forwarded by a DOIC supporting relay
+				is for further study.
+			</t></list>	
+			</t>
+       </section>
       </section>
     </section>
     <section title="Recommendations">
-      <t>
-       This section is to be completed once the document has been reviewed.
-      </t>
-      <t><list style="symbols">
-        <t>
-          Agents may replace OC-S-F AVPs in request messages.
-        </t>
-        <t>
-          Agents may replace OC-S-F AVPs in answer messages.
-        </t>
-        <t>
-          Agents may add Realm reports into answer messages.
-        </t>
-        <t>
-          Answer messages must be able to have multiple overload reports.
-        </t>
-        <t>
-          Request may be rejected using the Diameter-Rejected response code.
-        </t>
-        <t>
-          Agents are reacting nodes for host reports.
-        </t>
-        <t>
-          When there is no active Realm report for a realm, then
-          Realm-routed requests must be throttled by reacting nodes that
-          have direct connections with the reporting node that generated the
-          host report.
-        </t>
-        <t>
-          Agents may handle overload abatement for non DOIC nodes.
-        </t>
-        <t>
-          Agents may serve as reporting node for non DOIC nodes.
-        </t>
-      </list></t>
+	<t>This section summarizes the recommendations made in previous sections. These recommendations
+		are presented without normative language, but the authors expect that some of the recommendations
+		will require new normative language in <xref target="I-D.ietf-dime-ovli"/>. Others may result
+		in non-normative guidance.</t>
+	 <t>
+	 	As noted earlier, nothing in this draft should imply that relays are required to
+	    deploy DOIC. The majority of these recommendations should be interpreted to allow certain
+	    relay behaviors, but not to require them, and to offer architectural guidance on
+	    how an operator can best utilize relays in a DOIC deployment if they choose to do so.
+	 </t>   
 	<section anchor="general-recommendations" title="General Recommendations">
 		<t>This section describes recommendations that apply to the DOIC mechanism in general:</t>
 		<t>The working group should define a "Diameter-Throttled" error code, that indicates a request
-			has failed due to overload, and should not be retried. (See <xref target="uc-simple-impacts" />.) 
-		</t>
-		<t>
-			Reacting nodes must recognize the Diameter-Throttled error code, and interpret it as a
-			final failure for the transaction. (See [ref].)
+			has failed due to overload, and should not be retried.[<xref target="uc-simple-impacts" />] 
+            TCs need to recognize the Diameter-Throttled error code, and interpret it as a
+			final failure for the transaction.
 		</t>
 		<t>
 			The OC-OLR AVP syntax must allow multiple occurrences in the same Diameter answer message.
-			(See <xref target="uc-simple-impacts" />.)
+			[<xref target="uc-simple-impacts" />]
 		</t>
 
 	</section>
@@ -1631,25 +1668,27 @@
 		
 	<section anchor="ocsf-recommendations" title="Capabilites Exchange Behaviors">
 		<t>This section describes recommended Agent behaviors with respect to the OC-Supported-Features AVP.</t>
-		<t>A DOIC supporting agent acts as a reporting-node, a reacting-node, or both.</t>
+		<t>A DOIC supporting agent may act as a reporting-node, a reacting-node, or both.</t>
+		<t>An agent may act as a reporting node on behalf of a non-supporting TS, an abating node on behalf of
+			a non-supporting TC.[<xref target="uc-non-supporting"/>]</t>
 		<t>
-			An agent that acts as a reacting node MUST include an OC-Supported-Features in each Diameter 
+			An agent that acts as a reacting node must include an OC-Supported-Features in each Diameter 
 			request that it forwards in that role.
-			If the inbound request included an OC-Supported-Features AVP, the relay MAY copy its content to 
-			the one in the outbound request, or MAY modify the contents if it wishes to indicate
-			different DOIC capabilities to upstream nodes. If the inbound request did not
-			contain an OC-Supported-Features AVP, the agent MUST insert one into the outbound
+			If the inbound request included an OC-Supported-Features AVP, the relay may copy its content to 
+			the one in the outbound request, or may replace the contents if it wishes to indicate
+			different DOIC capabilities to upstream nodes. If an inbound request does not
+			contain an OC-Supported-Features AVP, the agent must insert one into the outbound
 			request, indicating the DOIC capabilities of the agent itself.
 		</t>
 		<t>
-			An agent that acts as a reporting node MUST include an OC-Supported-Features AVP in each Diameter answer
+			An agent that acts as a reporting node must include an OC-Supported-Features AVP in each Diameter answer
 			that it forwards in that role. If the agent modified the OC-Supported-Features AVP in the associated request,
-			it MUST perform a reciprocal modification of the OC-Supported-Features AVP in the response.
+			it must perform a reciprocal modification of the OC-Supported-Features AVP in the response.
 		</t>
 		<t>
 			An agent that does not support the DOIC mechanism is likely to forward an OC-Supported-Features AVP without 
-			modification. A DOIC node MUST be able to tell between an OC-Supported-Features AVP that was forwarded by
-			such a non-supporting agent, and one inserted or copied by a DOIC-supporting node [ref?].
+			modification. A DOIC node must be able to tell between an OC-Supported-Features AVP that was forwarded by
+			such a non-supporting agent, and one inserted or copied by a DOIC-supporting node.[<xref target="uc-authn" />]
 		</t>
     </section>	
 	<section anchor="olr-recommendations" title="Overload Report Behaviors">	
@@ -1661,46 +1700,50 @@
 			abatement to downstream nodes, or a combination of both.
 		</t>
 		<t>
-			If a relay can honor the OLR by locally diverting traffic, it SHOULD do so before resorting
+			If a relay can honor the OLR by locally diverting traffic, it should do so before resorting
 			to throttling. For example, if a relay
 			receives a realm report from its upstream peer, and has other less-overloaded peers that
 			are valid for the realm and application, it diverts traffic to the less overloaded peers
-			as needed. The relay SHOULD apply any knowledge it has of the peers' relative load and capacity
-			in determining how to divert traffic.
+			as needed. The relay should apply any knowledge it has of the peers' relative load and capacity
+			in determining how to divert traffic. Note that only a relay that has a direct peer relationship
+			with the servers in question can effectively perform diversion, since a Diameter node cannot
+			directly control how upstream relays will route requests.[<xref target="uc-simple" />]
 		</t>
-		<t>
-			When an overload condition requires throttling of traffic, an agent SHOULD delegate that
+		<t>                                           
+			When an overload condition requires throttling of traffic, an agent should delegate that
 			throttling to downstream nodes if at all possible. Depending on local policy and the nature
 			of the overload condition, this means the agent either originates a new OLR to send downstream,
 			or forwards an OLR received from upstream. For example, if a relay receives a host report (which usually
-			requires traffic throttling), the relay typically forwards that report downstream. The relay MAY modify
+			requires traffic throttling), the relay typically forwards that report downstream. The relay may modify
 			the report based on local policy.
 		</t>
 		<t>
-			If an agent needs to perform local throttling, it MUST explicitly reject each throttled request
-			with a "Diameter-Throttled" error code. (See <xref target=
-			"uc-simple-impacts" />.)
+			If an agent needs to perform local throttling, it must explicitly reject each throttled request
+			with a "Diameter-Throttled" error code.[<xref target=
+			"uc-simple" />]
 		</t>
 		<t><list><t>
 			There may be circumstances where an agent must perform local throttling. An obvious example
 			is when  downstream nodes do not support DOIC, that is, requests from downstream nodes do not contain
-			OC-Supported-Features AVPs. Mismatched upstream and downstream capabilities could require local
+			OC-Supported-Features AVPs. Mismatched upstream and downstream capabilities may require local
 			throttling. For example, if a relay uses a rate-limiting abatement algorithm upstream, but downstream
 			devices do not support rate-limiting, it may have to locally throttle traffic to meet
 			its upstream abatement commitment. It might still invoke the "loss" algorithm downstream in order
-			to reduce the amount of traffic that must be locally throttled.
+			to reduce the amount of traffic that must be locally throttled.[<xref target="uc-mixedcaps"/>,
+			<xref target="uc-non-supporting"/>]
 		</t></list></t>
 		<t>
-			A relay SHOULD apply all the information at hand to determine upstream overload. For example,
+			A relay should apply all the information at hand to determine upstream overload. For example,
 			if a relay receives a host-report from a directly attached TS, that relay can reasonable infer that
-			the overload condition applies to all traffic for the realm and application, and also abate
-			realm-routed requests that it knows would go to the overloaded TS. A relay might also have knowledge
-			of the overload or load state of other nodes through some non-DOIC mechanism.
+			the overload condition applies to all traffic for the realm, and perform local abatement by diverting
+			realm-routed traffic to other servers. If there is insufficient capacity to do so, then it can generate realm-reports
+			downstream. A relay might also have knowledge
+			of the overload or load state of other nodes through some non-DOIC mechanism.[<xref target="uc-simple"/>]
 		</t>
 		<t>
-			Finally, a relay SHOULD NOT generate or forward OLRs in a way likely to cause redundant abatement. For example,
+			Finally, a relay should not generate or forward OLRs in a way likely to cause redundant abatement. For example,
 			if a relay locally throttles traffic due to a "loss" algorithm OLR, it should not forward the OLR downstream
-			where other nodes will also apply abatement to the same traffic.
+			where other nodes will also apply abatement to the same traffic. [<xref target="uc-non-supporting"/>]
 		</t>
 		<t><list><t>
 			The idea of redundant abatement is at least somewhat specific to the algorithm. For example, a rate-limiting
@@ -1715,24 +1758,39 @@
     </section>
     <section title="Security Considerations">
       <t>
-       [ToDO]
+       Several use cases in this document involve Agents inserting, removing, or modifying DOIC related AVPs.
+	   <xref target="RFC6733" /> does not allow "relay" agents to modify any part of a Diameter message 
+	   except for routing information. This has one of two implications; either relay agents cannot take
+	   and active role in DOIC, or the DOIC AVPs should be designated as "routing AVPs". The authors
+	   recommend the second.
       </t>
+      <t>
+      	But regardless of whether a relay is allowed to modify DOIC AVPs, proxy agents will almost certainly
+        need to do so. Diameter currently only offers hop-by-hop integrity protection of message contents, but
+        the DIME working group is considering <xref target="I-D.ietf-dime-e2e-sec-req">requirements for 
+        end-to-end protection</xref> at the time of this writing. Those requirements current recognize that
+        different AVPs may require different security treatments. The working group should carefully consider
+        how DOIC will interact with end-to-end security when it is completed.
+      </t>
+	  <t>
+	  	Until such end-to-end protection is deployed, Diameter follows a fundamentally transitive trust model.
+	    Adjacent nodes can authenticate each other's identity, and protect exchanged messages from tampering
+	    or eavesdropping. But Diameter nodes have no way of authenticating message content received from non-adjacent nodes,
+	    other than trusting the immediate peer to do the right thing.
+	  </t>
+	  <t>DOIC related information may be sensitive, and could be destructive if forged or modified by unauthorized parties.
+		DOIC nodes must trust DOIC supporting peers to ensure that no unauthorized parties insert overload reports, and
+		 to ensure that reports are not delivered to unauthorized parties. Peers that do not support DOIC cannot be expected
+		to enforce such policies.</t>
+		<t> 
+			At the time of this writing, DOIC provides no way for a supporting node to distinguish between
+		a DOIC AVP from a immediate peer that supports DOIC, and one forwarded by a non-supporting peer. This issue
+		needs to be addressed before DOIC can meet requirements 27, 28, and 29 of <xref target="RFC7068" /> </t>
     </section>
   </middle>
   <back>
-<!-- References split into informative and normative -->
-<!-- There are 2 ways to insert reference entries from the citation libraries:
-     1. define an ENTITY at the top, and use "ampersand character"RFC2629; here (as shown)
-     2. simply use a PI "less than character"?rfc include="reference.RFC.2119.xml"?> here
- (for I-Ds: include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")
-
-     Both are cited textually in the same manner: by using xref elements.
-     If you use the PI option, xml2rfc will, by default, try to find included files in the same
-     directory as the including file. You can also define the XML_LIBRARY environment variable
-     with a value containing a set of directories to search.  These can be either in the local
-     filing system or remote ones accessed by http (http://domain/dir/... ).-->
     <references title="Normative References">
-		&I-D.ietf-dime-ovli;
+	&I-D.ietf-dime-ovli;
     &RFC4006;
     &RFC6733;
        <reference anchor='agent-overload'>
@@ -1767,7 +1825,6 @@
 
     </references>
     <references title="Informative References">
-<!-- Here we use entities that we defined at the beginning. -->
 
       &RFC2629;
 
@@ -1775,27 +1832,8 @@
 
       &RFC7068;
 
-      <!-- A reference written by by an organization not a person.
+      &I-D.ietf-dime-e2e-sec-req;
 
-      <reference anchor="DOMINATION"
-   target="http://www.example.com/dominator.html">
- <front>
-   <title>Ultimate Plan for Taking Over the World</title>
-
-   <author>
-     <organization>Mad Dominators, Inc.</organization>
-   </author>
-
-   <date year="1984" />
- </front>
-      </reference>
-
-      -->
     </references>
-    <section anchor="app-additional" title="Additional Stuff">
-      <t>
-       This becomes an Appendix.
-      </t>
-    </section>
   </back>
 </rfc>
