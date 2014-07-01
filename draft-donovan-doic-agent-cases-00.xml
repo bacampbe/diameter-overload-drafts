@@ -93,7 +93,7 @@
 <!-- uri and facsimile elements may also be added -->
       </address>
     </author>
-    <date month="April" year="2014" />
+    <date month="July" year="2014" />
 <!-- If the month and year are both specified and are the current ones, xml2rfc will fill
   in the current day for you. If only the current year is specified, xml2rfc will fill
     in the current day and month for you. If the year is not the current one, it is
