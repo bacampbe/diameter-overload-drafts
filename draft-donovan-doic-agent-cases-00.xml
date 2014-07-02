@@ -116,7 +116,7 @@
       <t>
        The Diameter Overload Information Conveyance (DOIC) solution describes
        a mechanism for exchanging information about Diameter Overload among
-       Diameter nodes. A DOIC endpoint is a Diameter node that acts as either
+       Diameter nodes. A DOIC node is a Diameter node that acts as either
        a reporting node are a reacting node. A reporting node originates
        overload reports, requesting reacting nodes to reduce the amount of
        traffic sent. DOIC allows Diameter agents to act as reporting nodes,
@@ -133,7 +133,8 @@
        The <xref target="I-D.ietf-dime-ovli"> Diameter Overload Information
        Conveyance (DOIC) </xref> solution describes a mechanism for exchanging
        diameter overload information among Diameter nodes. DOIC defines the
-       concept of a DOIC endpoint. A DOIC endpoint is a Diameter node that
+       concept of a DOIC endpoint (referred to as a "DOIC node" in this document.)
+       A DOIC node is a Diameter node that
        acts as either a reporting node or a reacting node. A reporting node
        originates overload reports, requesting reacting nodes to reduce the
        offered load. An overload report has a "type". The type of overload
@@ -141,8 +142,8 @@
        possibly other semantics.
       </t>
       <t>
-       DOIC endpoints do not necessarily correspond to Diameter clients and
-       servers. Any Diameter node that supports DOIC can be a DOIC endpoint.
+       DOIC nodes do not necessarily correspond to Diameter clients and
+       servers. Any Diameter node that supports DOIC is a DOIC node.
        This includes Diameter agents, as well as Diameter clients and servers.
        However, DOIC does not currently describe how agents should behave as
        part of an overload control solution. This document explores several
@@ -155,19 +156,14 @@
            <t hangText="Diameter Node:">
             A Diameter client, agent or server.
            </t>
-           <t hangText="DOIC Endpoint:">
-            A Diameter node that supports the DOIC solution and acts as either
-            a reporting node, a reacting node, or both.
+           <t hangText="DOIC node:">
+            A Diameter node that supports DOIC.  A DOIC node can simultaneously be both a reacting node and a reporting node.
            </t>
            <t hangText="Reacting node:">
-            A DOIC endpoint that can receive overload reports from a reporting
-            node, and ensures ensure that overload
-            reports are honored. A DOIC endpoint can
-            simultaneously be both a reacting node and reporting node.
+            A DOIC node that can receive overload reports from a reporting node and ensures that the overload reports are honored.
            </t>
            <t hangText="Reporting node:">
-            A DOIC endpoint that can send overload reports to a reacting node,
-            requesting overload abatement.
+            A DOIC node that can send overload reports, requesting overload abatement.
            </t>
 			<t hangText="Abating node:">
 				A reacting node that directly performs overload abatement.
@@ -265,33 +261,6 @@
         </artwork>
       </figure>
       <t>
-        <xref target="deploy-arch4"/> illustrates server partitioning.  In this case
-        the agent determines the partition to which a request is routed
-        based on the contents of the message, according to some
-        local policy.  Each partition may be made up of a server or set of servers.
-        For instance, all requests for a given user might be handled by a
-        specific partition. The request might
-        contain an indication of the user to which the request applies.  The
-		agent would ensure that all requests for that user go to the correct
-		partition.
-      </t>
-
-      <figure anchor="deploy-arch4">
-        <artwork><![CDATA[
-
-      +--+                +--+
-      |C1|-----      -----|S1|  > Server Partition 1
-      +--+     \+--+/     +--+
-                |A1|
-      +--+     /+--+\     +--+
-      |C2|-----      -----|S2|  > Server Partition 2
-      +--+                +--+
-
-      ]]>
-        </artwork>
-      </figure>
-
-      <t>
        This document focuses on use cases that involve agents, and does not therefore
        include scenarios with no agent(s) between the transaction client and
        transaction server.  It is, however,
@@ -361,10 +330,7 @@
 			</t>
 			<t>
 				Either method, separately or in combination, continue over the duration of the
-				overload condition. Neither abatement approach affects the transaction on which the OLR is sent. That transaction
-				succeeds or fails depending on the result code the TS sends in the Diameter answer.
-				(According to <xref target="I-D.ietf-dime-ovli" /> an OLR to be sent in any Diameter answer for the correct
-				realm and application, regardless of whether the transaction itself succeeds or fails.)
+				overload condition.
 			</t>
 			<t>
 			   There are a few architectural principles that should be considered when building Diameter
