@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- This template is for creating an Internet Draft using xml2rfc,
+     which is available here: http://xml.resource.org. -->
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!-- One method to get references from the online citation libraries.
+     There has to be one entity for each item to be referenced.
+     An alternate method (rfc include) is described in the references. -->
+
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC2629 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2629.xml">
+<!ENTITY RFC3552 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3552.xml">
+<!ENTITY RFC4006 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4006.xml">
+<!ENTITY RFC6733 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6733.xml">
+<!ENTITY RFC7068 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7068.xml">
+<!ENTITY I-D.ietf-dime-ovli PUBLIC ''
+'http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dime-ovli-03.xml'>
+<!ENTITY I-D.tschofenig-dime-dlba PUBLIC ''
+'http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-tschofenig-dime-dlba-00.xml'>
+<!ENTITY I-D.roach-dime-overload-ctrl PUBLIC ''
+'http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-roach-dime-overload-ctrl-03.xml'>
+<!ENTITY I-D.korhonen-dime-ovl PUBLIC ''
+'http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-korhonen-dime-ovl-01.xml'>
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<!-- used by XSLT processors -->
+<!-- For a complete list and description of processing instructions (PIs),
+     please see http://xml.resource.org/authoring/README.html. -->
+<!-- Below are generally applicable Processing Instructions (PIs) that most I-Ds might want to use.
+     (Here they are set differently than their defaults in xml2rfc v1.32) -->
+<?rfc strict="yes" ?>
+<!-- give errors regarding ID-nits and DTD validation -->
+<!-- control the table of contents (ToC) -->
+<?rfc toc="yes"?>
+<!-- generate a ToC -->
+<?rfc tocdepth="4"?>
+<!-- the number of levels of subsections in ToC. default: 3 -->
+<!-- control references -->
+<?rfc symrefs="yes"?>
+<!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?>
+<!-- sort the reference entries alphabetically -->
+<!-- control vertical white space
+     (using these PIs as follows is recommended by the RFC Editor) -->
+<?rfc compact="yes" ?>
+<!-- do not start each main section on a new page -->
+<?rfc subcompact="no" ?>
+<!-- keep one blank line between list items -->
+<!-- end of list of popular I-D processing instructions -->
+<rfc category="info" docName="draft-campbell-dime-load-considerations-00" ipr="trust200902">
+<!-- category values: std, bcp, info, exp, and historic
+     ipr values: full3667, noModification3667, noDerivatives3667
+     you can add the attributes updates="NNNN" and obsoletes="NNNN"
+     they will automatically be output with "(if approved)" -->
+<!-- ***** FRONT MATTER ***** -->
+  <front>
+<!-- The abbreviated title is used in the page header - it is only necessary if the
+  full title is longer than 39 characters -->
+    <title abbrev="Abbreviated Title">Architectural Considerations for Diameter Load Information</title>
+<!-- add 'role="editor"' below for the editors if appropriate -->
+<!-- Another author who claims to be an editor -->
+    <author fullname="Ben Campbell" initials="B."
+     surname="Campbell">
+      <organization>Oracle</organization>
+      <address>
+        <postal>
+          <street>7460 Warren Parkway # 300</street>
+<!-- Reorder these if your country does things differently -->
+          <city>Frisco</city>
+          <region>Texas</region>
+          <code>75034</code>
+          <country>USA</country>
+        </postal>
+        <phone></phone>
+        <email>ben@nostrum.com</email>
+<!-- uri and facsimile elements may also be added -->
+      </address>
+    </author>
+    <date month="October" year="2014" />
+<!-- If the month and year are both specified and are the current ones, xml2rfc will fill
+  in the current day for you. If only the current year is specified, xml2rfc will fill
+    in the current day and month for you. If the year is not the current one, it is
+    necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the
+    purpose of calculating the expiry date).  With drafts it is normally sufficient to
+    specify just the year. -->
+<!-- Meta-data Declarations -->
+    <area>General</area>
+    <workgroup>Internet Engineering Task Force</workgroup>
+<!-- WG name at the upperleft corner of the doc,
+  IETF is fine for individual submissions.
+    If this element is not present, the default is "Network Working Group",
+  which is used by the RFC Editor as a nod to the history of the IETF. -->
+    <keyword>Diameter</keyword> 
+	<keyword>load</keyword>
+<!-- Keywords will be incorporated into HTML output
+  files in a meta tag but they have no effect on text or nroff
+  output. If you submit your draft to the RFC Editor, the
+  keywords will be used for the search engine. -->
+    <abstract>
+      <t>
+       RFC 7068 describes requirements for Overload Control in Diameter. This
+ 	   includes a requirement to allow Diameter nodes to send "load" information,
+	   even when the load is not overloaded. The 
+ 	   Diameter Overload Information Conveyance (DOIC) solution describes
+       a mechanism meeting most of the defined requirements. However, DOIC does
+	   not currently include the ability to send load. This document explores
+	   some architectural considerations for a mechanism to send load information.
+      </t>
+    </abstract>
+  </front>
+  <middle>
+    <section anchor="intro" title="Introduction">
+		<t><xref target="RFC7068"/> describes requirements for Overload Control
+		in <xref target="RFC6733">Diameter</xref>.  At the time of this writing,
+		the DIME working group is working on the Diameter Overload Information Conveyance
+		(DOIC) mechanism. As currently specified, DOIC fulfills some, but not all, of the
+		requirements.</t>
+		<t>In particular, DOIC does not fulfill Req 24, which requires a mechanism
+			where Diameter nodes can indicate their current load, even if they are not
+			currently overloaded. DOIC also does not fulfill Req 23, which requires that
+			nodes that divert traffic away from overloaded nodes be provided with
+			sufficient information to select targets that are most likely to have sufficient capacity.</t>
+		 <t>Additionally, there are several other requirements in RFC 7068 that mention both overload and load
+			information that are only partially fulfilled by DOIC.</t>
+		 <t>The DIME working group explicitly chose not to fulfill these requirements in DOIC due to several
+			reasons. A principal reason was that the working group did not agree on a general approach
+			for conveying load information. It chose to progress the rest of DOIC, and defer load information
+			conveyance to a DOIC extension or a separate mechanism.</t>
+		 <t>This document describes some high level architectural decisions that the working group will
+			need to consider in order to solve the load-related requirements from RFC 7068.</t>
+		    <t>At the time of this writing, there have been several attempts to create mechanisms
+			for conveyance of both load and overload control information that have not been
+			adopted by the DIME working group. While these drafts are not expected to progress, they
+			may be instructive when considering these decisions.</t> 
+			<t><list style="symbols">
+				<t><xref target="I-D.tschofenig-dime-dlba"/> proposed a dedicated Diameter application
+					for exchanging load balancing information.</t>
+				 <t><xref target="I-D.roach-dime-overload-ctrl"/> described a strictly peer-to-peer
+					exchange of both load and overload information in new AVPs piggy-backed on
+					existing Diameter messages.</t>
+				 <t><xref target="I-D.korhonen-dime-ovl"/> described a dedicated Diameter
+				application for exchanging both load and overload information.</t>
+				</list></t> 
+    </section>
+	<section anchor="load-overload" title="Differences between Load and Overload information">
+		<t>Discussion on the differences and relationship between Load and Overload.</t>
+		<t>Previous discussions of how to solve the load-related requirements in <xref target="RFC7068"/>
+		have shown that people do not have an agreed-upon idea of how "load" information differs from "overload"
+		information. The two concepts are highly interrelated, and so far the working group has
+		not defined a bright line between what constitutes "load" information and what constitutes "overload"
+		information.</t>
+		<t>In the author's opinion, there are two primary differences. First, a Diameter node always has a load.
+			At any given time that load maybe effectively zero, effectively fully loaded, or somewhere in between.
+			In contrast, "overload" is an exceptional condition. A node only has "overload information" when it
+			in an overloaded state. Furthermore, the relationship between a node's load level and overload state
+			at any given time may be vague. For example, a node may normally operate at a "fully loaded" level,
+			but still not be considered overloaded. Another node may declare itself to be "overloaded" even though
+			it might not be fully "loaded".
+		 </t>
+		 <t>Second, Overload information, in the form of a <xref target="I-D.ietf-dime-ovli"> DOIC 
+			Overload Report (OLR) </xref> indicates an explicit request for action on the part of the
+			reacting node. That is, the OLR requests that the reacting node reduce the offered load
+			by an indicated amount or to an indicated level. Effectively, DOIC provides a contract
+			between the reporting node and the reacting node.</t>
+		 <t> In contrast, load  is informational. That is, load information can be considered a hint
+			to the recipient node. That node may use the load information for load balancing purposes,
+			as an input to certain overload abatement techniques, to make inferences about the likelihood
+			that the sending node becomes overloaded in the immediate future, or for other purposes.
+		 </t>
+		 <t>None of this prevents a Diameter node from deciding to reduce the offered load based on
+			load information. The fundamental difference is that an overload report requires
+			that reduction.
+		 </t>
+	</section>
+	<section anchor="use" title="How is Load Information Used?">
+	     <t><xref target="RFC7068"/> contemplates two primary uses for load information. 
+			Req 23 discusses how load information might be used when performing diversion
+			as an overload abatement technique, as described in <xref target="I-D.ietf-dime-ovli"/>.
+			When a reacting node diverts traffic away from an overloaded node, it needs load information
+			for the other candidates for that traffic in order to effectively load
+			balance the diverted load between potential candidates. Otherwise, diversion has the potential
+			to drive other nodes into overload.
+		</t>
+		<t>
+			Req 24 discusses how a Diameter information might be used when no overload condition currently
+			exists. Diameter nodes can use the load information to make decisions to try to avoid overload
+			conditions in the first place. Normal load-balancing falls into this category. A node might
+			also take other proactive steps to reduce offered load based on load information, so that the loaded
+			node never goes into overload in the first place. 
+		</t>
+		<t>
+			If the loaded nodes are Diameter servers (or clients in the case of server-to-client transactions), 
+			both of these uses are most effectively accomplished 
+			by a Diameter node that performs server selection. Typically, server selection is performed
+			by a node (a client or an agent) that is an immediate peer of the server. However
+			a client or proxy that is not an immediate peer to the selected server can enforce
+			server selection by inserting a Destination-Host AVP.
+		</t> 
+	</section>
+	<section anchor="pigsorapps" title="Piggy-Backing vs a Dedicated Application.">
+		<t>
+		 	<xref target="I-D.roach-dime-overload-ctrl"/> piggy-backed load and overload information
+			onto messages of existing applications. This has the advantage of not requiring new
+			messages to carry load information. It has an additional advantage of scaling with load;
+			that is, the more the transaction load, the more opportunities to send load information.
+		</t>
+		<t>
+			<xref target="I-D.ietf-dime-ovli">DOIC</xref> also uses a piggy-backed approach to send
+			OLRs. Given the potentially tight connection between load and overload information, there may
+			be advantages to maintaining consistency with DOIC.
+		</t>
+		<t>
+			<xref target="I-D.tschofenig-dime-dlba"/> used a dedicated application to carry load information.
+			This application has polling semantics, where a "load balancer" typically acts as a client,
+			sending requests for load information to a server, which sends the load information in an answer.
+			This has the advantage of only sending load information when a client needs it. It has the common 
+			disadvantage of polling; that is, the client doesn't know when the load information may become invalid.
+			This can either lead to clients operating on stale information, or from excessive poll attempts.
+		</t>
+		<t>
+			<xref target="I-D.korhonen-dime-ovl"/> also used a dedicated application, but allowed nodes
+			to send unsolicited reports containing load and overload information. This avoids the polling issue. However
+			it adds the issue that the sender of load information may not know which other nodes need it.
+		</t>
+		<t>
+			Another potential approach that was not used by any of the proposals is that of a dedicated Diameter application
+			with subscription semantics. In such an application, a node that consumes load information sends a Diameter
+			request to the source of the load information. This request indicates that the consumer wishes to receive load
+			information for some period of time. The load source would send periodic Diameter requests indicating the current
+			load level, until such time that the subscription period expired, or the subscribe explicitly unsubscribed.
+		</t>
+		<t>
+			A subscription-based approach would avoid the issues of polling, while making it clear exactly which nodes need to
+			to receive the load information.
+		</t>
+	</section>
+	<section anchor="p2p-e2e" title="Which Nodes Exchange Load Information?">
+		<t> Previous load related efforts have made different assumptions about which
+			Diameter nodes exchange load information.
+		</t>
+		<t>
+			 <xref target="I-D.roach-dime-overload-ctrl"/> operated in a strictly peer-to-peer
+			 mode. Each node would only learn the load (and overload) information from its immediate
+			 peers.
+		 </t>
+		 <t>
+			 <xref target="I-D.korhonen-dime-ovl"/> and <xref target="I-D.tschofenig-dime-dlba"/>
+			 are each effectively any-to-any. That is, they each allowed any node to send load information
+			 to any other node that supported
+			 the dedicated overload or load application, respectively. 
+		</t>
+		<t>
+			In the latter case, load
+			is effectively sent between clients and servers of the dedicated
+			application, but those roles may not match the client and server roles for the "main" Diameter
+			applications in use. For example, a pair of adjacent diameter agents might be "client" and "server"
+			for the dedicated "load" application, effectively creating a peer-to-peer relationship similar to that
+			of <xref target="I-D.roach-dime-overload-ctrl"/>.
+		</t>
+		<t>
+			Each approach has advantages. Since server selection is typically done by immediate peers to the servers,
+			peer-to-peer transmission covers most cases. Additionally, selection of non-terminal nodes is exclusively
+			done on a peer-to-peer basis. If the loaded node is an agent, for example, the load information is only useful
+			to immediate peers. Peer-to-peer transmission is the easiest to negotiation. (See <xref target="negotiation"/>)
+		</t>
+		<t>
+			Any-to-Any transmission offers more flexibility, and could potentially cover the case where server 
+			selection is done by nodes that
+			are not peers to the candidate servers.
+		</t> 	
+			
+	</section>
+	<section anchor="scope" title="Scope of Load Information">
+		<t>Discussion of whether load is scoped to connection, node, or something else. Can it
+			have multiple scopes, like overload?</t>
+	</section>
+	<section anchor="semantics" title="Load Information Semantics">
+		<t>Discussion of how load is encoded, soft-state vs hard-state, etc.</t>
+	</section>
+	<section anchor="negotiation" title="Is Negotiation of Support Needed?">
+		<t>Discussion of whether nodes need to declare or negotiate support for load.</t>
+	</section>
+	<section anchor="security" title="Security Considerations"></section>
+	<section anchor="iana" title="IANA Considerations"></section>
+</middle>
+  <back>
+    <references title="Normative References">
+	&RFC6733;
+	&RFC7068;
+	&I-D.ietf-dime-ovli;
+	</references>
+    <references title="Informative References">
+	&I-D.tschofenig-dime-dlba;
+	&I-D.roach-dime-overload-ctrl;
+	&I-D.korhonen-dime-ovl;
+    </references>
+  </back>
+</rfc>
