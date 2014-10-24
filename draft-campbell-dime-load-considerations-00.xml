@@ -12,6 +12,7 @@
 <!ENTITY RFC4006 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4006.xml">
 <!ENTITY RFC6733 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6733.xml">
 <!ENTITY RFC7068 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7068.xml">
+<!ENTITY RFC2782 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2782.xml">
 <!ENTITY I-D.ietf-dime-ovli PUBLIC ''
 'http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-dime-ovli-03.xml'>
 <!ENTITY I-D.tschofenig-dime-dlba PUBLIC ''
@@ -99,9 +100,9 @@
       <t>
        RFC 7068 describes requirements for Overload Control in Diameter. This
  	   includes a requirement to allow Diameter nodes to send "load" information,
-	   even when the load is not overloaded. The 
+	   even when the node is not overloaded. The 
  	   Diameter Overload Information Conveyance (DOIC) solution describes
-       a mechanism meeting most of the defined requirements. However, DOIC does
+       a mechanism meeting most of the requirements, but does
 	   not currently include the ability to send load. This document explores
 	   some architectural considerations for a mechanism to send load information.
       </t>
@@ -117,9 +118,9 @@
 		<t>In particular, DOIC does not fulfill Req 24, which requires a mechanism
 			where Diameter nodes can indicate their current load, even if they are not
 			currently overloaded. DOIC also does not fulfill Req 23, which requires that
-			nodes that divert traffic away from overloaded nodes be provided with
+			nodes that diverts traffic away from overloaded nodes be provided with
 			sufficient information to select targets that are most likely to have sufficient capacity.</t>
-		 <t>Additionally, there are several other requirements in RFC 7068 that mention both overload and load
+		 <t>There are several other requirements in RFC 7068 that mention both overload and load
 			information that are only partially fulfilled by DOIC.</t>
 		 <t>The DIME working group explicitly chose not to fulfill these requirements in DOIC due to several
 			reasons. A principal reason was that the working group did not agree on a general approach
@@ -128,7 +129,7 @@
 		 <t>This document describes some high level architectural decisions that the working group will
 			need to consider in order to solve the load-related requirements from RFC 7068.</t>
 		    <t>At the time of this writing, there have been several attempts to create mechanisms
-			for conveyance of both load and overload control information that have not been
+			for conveyance of both load and overload control information that were not
 			adopted by the DIME working group. While these drafts are not expected to progress, they
 			may be instructive when considering these decisions.</t> 
 			<t><list style="symbols">
@@ -142,15 +143,14 @@
 				</list></t> 
     </section>
 	<section anchor="load-overload" title="Differences between Load and Overload information">
-		<t>Discussion on the differences and relationship between Load and Overload.</t>
 		<t>Previous discussions of how to solve the load-related requirements in <xref target="RFC7068"/>
-		have shown that people do not have an agreed-upon idea of how "load" information differs from "overload"
+		have shown that people do not have an agreed-upon concept of how "load" information differs from "overload"
 		information. The two concepts are highly interrelated, and so far the working group has
-		not defined a bright line between what constitutes "load" information and what constitutes "overload"
+		not defined a bright line between what constitutes load information and what constitutes overload
 		information.</t>
 		<t>In the author's opinion, there are two primary differences. First, a Diameter node always has a load.
 			At any given time that load maybe effectively zero, effectively fully loaded, or somewhere in between.
-			In contrast, "overload" is an exceptional condition. A node only has "overload information" when it
+			In contrast, overload is an exceptional condition. A node only has overload information when it
 			in an overloaded state. Furthermore, the relationship between a node's load level and overload state
 			at any given time may be vague. For example, a node may normally operate at a "fully loaded" level,
 			but still not be considered overloaded. Another node may declare itself to be "overloaded" even though
@@ -177,7 +177,7 @@
 			as an overload abatement technique, as described in <xref target="I-D.ietf-dime-ovli"/>.
 			When a reacting node diverts traffic away from an overloaded node, it needs load information
 			for the other candidates for that traffic in order to effectively load
-			balance the diverted load between potential candidates. Otherwise, diversion has the potential
+			balance the diverted load between potential candidates. Otherwise, diversion has a greater potential
 			to drive other nodes into overload.
 		</t>
 		<t>
@@ -198,8 +198,9 @@
 	</section>
 	<section anchor="pigsorapps" title="Piggy-Backing vs a Dedicated Application.">
 		<t>
-		 	<xref target="I-D.roach-dime-overload-ctrl"/> piggy-backed load and overload information
-			onto messages of existing applications. This has the advantage of not requiring new
+		 	<xref target="I-D.roach-dime-overload-ctrl"/> imbeds load and overload information
+			onto messages of existing applications. This is known as a "piggy-back" approach. 
+			Such an approach has the advantage of not requiring new
 			messages to carry load information. It has an additional advantage of scaling with load;
 			that is, the more the transaction load, the more opportunities to send load information.
 		</t>
@@ -210,27 +211,24 @@
 		</t>
 		<t>
 			<xref target="I-D.tschofenig-dime-dlba"/> used a dedicated application to carry load information.
-			This application has polling semantics, where a "load balancer" typically acts as a client,
-			sending requests for load information to a server, which sends the load information in an answer.
-			This has the advantage of only sending load information when a client needs it. It has the common 
-			disadvantage of polling; that is, the client doesn't know when the load information may become invalid.
-			This can either lead to clients operating on stale information, or from excessive poll attempts.
+			This application has quasi-subscription semantics, where a client requests updates according to a
+			cadence. The server can send unsolicited updates if the load level changes between updates
+			in the cadence.
 		</t>
 		<t>
 			<xref target="I-D.korhonen-dime-ovl"/> also used a dedicated application, but allowed nodes
-			to send unsolicited reports containing load and overload information. This avoids the polling issue. However
-			it adds the issue that the sender of load information may not know which other nodes need it.
+			to send unsolicited reports containing load and overload information. 
+			The mechanism has an issue that the sender of load information may not know which other nodes need it. It may be
+			possible to infer that information from the primary Diameter applications.
 		</t>
 		<t>
-			Another potential approach that was not used by any of the proposals is that of a dedicated Diameter application
-			with subscription semantics. In such an application, a node that consumes load information sends a Diameter
+			Another potential approach is that of a dedicated Diameter application
+			with a slightly different subscription semantic than that of <xref target="I-D.tschofenig-dime-dlba"/>.
+			In such an application, a node that consumes load information sends a Diameter
 			request to the source of the load information. This request indicates that the consumer wishes to receive load
 			information for some period of time. The load source would send periodic Diameter requests indicating the current
-			load level, until such time that the subscription period expired, or the subscribe explicitly unsubscribed.
-		</t>
-		<t>
-			A subscription-based approach would avoid the issues of polling, while making it clear exactly which nodes need to
-			to receive the load information.
+			load level, until such time that the subscription period expired, or the subscribe explicitly unsubscribed. After
+			the initial notification, the sender would only send updates when the load level changed.
 		</t>
 	</section>
 	<section anchor="p2p-e2e" title="Which Nodes Exchange Load Information?">
@@ -270,17 +268,92 @@
 			
 	</section>
 	<section anchor="scope" title="Scope of Load Information">
-		<t>Discussion of whether load is scoped to connection, node, or something else. Can it
-			have multiple scopes, like overload?</t>
+		<t>The "scope" of load information defines what the load indication applies to. For example, load could apply to a whole 
+			Diameter node, or a node could report different load for different application. It might be possible to have a load value
+			for a whole realm, or a group of nodes.
+		</t>
+		<t>
+			<xref target="I-D.roach-dime-overload-ctrl"/> has a very expressive concept of scope, which applies both to load and overload
+			information. It defines the scopes of "Destination-Realm", "Application-ID", "Destination-Host", "Host", 
+			"Connection", "Session", and "Session-Group". Scopes can be combined.
+		</t>
+		<t>
+			<xref target="I-D.tschofenig-dime-dlba"/> does not have an explicit concept of scope. Load information
+			describes the load of a server for all Diameter purposes.
+		</t>
+		<t>
+			<xref target="I-D.korhonen-dime-ovl"/> defines several scopes for overload information. However, load
+			information applies to the a whole node.  		
+		</t>
+		<t>
+			The author's opinion is that the load level of a Diameter node will usually apply to the whole node. Thus,
+			the working group should consider a single "whole node" scope for load information. Alternatively,
+			a "per-connection" scope could simulate "whole node" scope without requiring the recipient to pay attention to
+			whether multiple transport connections terminate at the same peer.
+		</t>
+		
+		 
 	</section>
 	<section anchor="semantics" title="Load Information Semantics">
-		<t>Discussion of how load is encoded, soft-state vs hard-state, etc.</t>
+		<t>
+			Both <xref target="I-D.tschofenig-dime-dlba"/> and <xref target="I-D.korhonen-dime-ovl"/> define load level to be a range
+			between zero and some maximum value, where zero means no load at all and the max value means fully loaded.
+			 The former uses a range of 0-10, while the later uses 0-100
+		</t>
+		<t>
+			<xref target="I-D.roach-dime-overload-ctrl"/> treats load information as a strictly relative weighting factor. 
+			The weight is only meaningful when load-balancing
+			across multiple destinations. That is, a maximum load value does not necessarily imply that the node is 
+			cannot handle more traffic.  The load level scale is zero to 65535. That scale was chosen to match the 
+			resolution of the weight field
+			from a <xref target="RFC2782">DNS SRV record,</xref> 
+		</t>
 	</section>
 	<section anchor="negotiation" title="Is Negotiation of Support Needed?">
-		<t>Discussion of whether nodes need to declare or negotiate support for load.</t>
+		<t>The working group should discuss whether a load conveyance mechanism requires negotiation or declaration of support. 
+			Several considerations apply to this discussion.
+		</t>
+		<t> If load information is treated as a hint, it can be safely ignored by nodes that don't understand it. However, security
+			considerations may apply if load information is accidentally leaked across a non-supporting node to a node that is not
+			authorized to receive it.
+		</t>
+		<t>
+			If load information is conveyed using a dedicated Diameter application, the normal mechanisms for negotiation
+			support for Diameter applications apply. However, the <xref target="RFC6733">Diameter Capabilities Exchange</xref> mechanism
+			is inherently peer-to-peer. If there is an need to convey load information across a node that does not understand
+			the mechanism, the standard Diameter mechanism would involve probing by support by sending load requests and watching for
+		    error answers with a result code of DIAMETER_APPLICATION_UNSUPPORTED. If the probe request also includes load
+		    information, there is again a potential for leaking load information to unauthorized parties.
+		</t>
+		<t>
+			If load information was treated in a strictly peer-to-peer fashion, there would be no need to probe to see if non-adjacent
+			nodes support the mechanism. However, there would still be a need to control whether a non-supporting node would leak
+			load information. Such a leak could be prevented if adjacent peers declared support, and never sent load
+			information to a peer that did not declare support.
+		</t>
+		<t>
+			A peer-to-peer mechanism would also need a way to make sure that, if load information leaked across a non-supporting node,
+			the receiving node would not mistakenly think the information came from the non-supporting node. This could be mitigated with
+            a mechanism to declare support as in the previous paragraph, or with a mechanism to identify the origin of the load information.
+			In the latter case, the receiving node would treat any load information as invalid if the origin of that information
+			did not match the identity of the peer node.
+		</t>
 	</section>
-	<section anchor="security" title="Security Considerations"></section>
-	<section anchor="iana" title="IANA Considerations"></section>
+	<section anchor="security" title="Security Considerations">
+		<t>
+			Load information may be sensitive information in some cases. Depending on the mechanism. an unauthorized recipient
+			 might be able to infer the topology of a Diameter network from load information. Load information might be useful
+			in identifying targets for Denial of Service (DoS) attacks, where a node known to be already heavily loaded might
+			be a tempting target. Load information might also be useful as feedback about the success of an ongoing DoS attack.    
+		</t>
+		<t>Any load information conveyance mechanism will need to allow operators to avoid sending load information to 
+		   nodes that are not authorized to receive it. Since Diameter currently only offers authentication of nodes at the transport
+		   level, any solution that sends load information to non-peer nodes might require a transitive-trust model.
+		</t>
+	</section>
+	<section anchor="iana" title="IANA Considerations">
+		<t>This document makes no requests of IANA.</t>
+	</section>
 </middle>
   <back>
     <references title="Normative References">
@@ -292,6 +365,7 @@
 	&I-D.tschofenig-dime-dlba;
 	&I-D.roach-dime-overload-ctrl;
 	&I-D.korhonen-dime-ovl;
+	&RFC2782;
     </references>
   </back>
 </rfc>
